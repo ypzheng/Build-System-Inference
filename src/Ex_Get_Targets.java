@@ -1,14 +1,14 @@
 import java.io.File;
-import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.Target;
-import org.apache.tools.ant.types.Path;
-import java.util.*;
-public class Testing {
 
-	public static void main(String[] args) throws IOException {
+public class Ex_Get_Targets {
+
+	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Project project = new Project();
 		ProjectHelper helper = new ProjectHelper();
