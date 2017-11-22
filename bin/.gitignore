@@ -3,3 +3,8 @@
 /TestBuildFile3
 /TestBuildFile3.xml
 /TestBuildFile4.xml
+/TestSuite1.class
+/AntBuildAnalyzer.class
+/Driver.class
+/BuildFileAnalyzer.class
+/BuildFileAnalyzerAdapter.class
