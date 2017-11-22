@@ -38,11 +38,9 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 		Enumeration vEnum = sortedTargets.elements();
 		while(vEnum.hasMoreElements()) {
 			Target t = (Target) vEnum.nextElement();
-			if((t.getName().contains("compile")||
-					(t.getName().contains("build")))){
-				if(containsJavac(t.getTasks()))
-					potentialTargets.add(t);
-					System.out.println(t.getName());
+			if(containsJavac(t.getTasks())) {
+				potentialTargets.add(t);
+				System.out.println(t.getName());
 			}
 		}
 	}
@@ -57,7 +55,16 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 	}
 	
 	public String getCompileSrcTarget() {
-		
+		Enumeration vEnum = potentialTargets.elements();
+		while(vEnum.hasMoreElements()) {
+			Target t = (Target) vEnum.nextElement();
+			if(t.getName().equalsIgnoreCase("build")||
+					(t.getName().equalsIgnoreCase("compile")||
+							(t.getName().equalsIgnoreCase("prepare")))) {
+				return t.getName();
+			}
+		}
+		//TODO: other target names
 		return "";
 	}
 }
