@@ -97,7 +97,7 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 		//Infer Src Directory from Compile Target
 		/**
 		 * Find "javac" Task
-		 * Looks for "source" attribute
+		 * Looks for "srcdir" attribute
 		 */
 		Task[] tasks = compileSrcTarget.getTasks();
 		for(Task t : tasks) {
@@ -105,7 +105,7 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 				RuntimeConfigurable rt =t.getRuntimeConfigurableWrapper();
 				Hashtable att_map = rt.getAttributeMap();
 				
-				String srcDirectory = (String) att_map.get("source");
+				String srcDirectory = (String) att_map.get("srcdir");
 				if(srcDirectory == null) {
 					return "";
 				}else {
