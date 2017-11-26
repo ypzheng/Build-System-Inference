@@ -1,4 +1,5 @@
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.apache.tools.ant.types.Path;
 
 public class AntBuildAnalyzer implements BuildFileAnalyzer{
 	private Vector sortedTargets,potentialTargets;
+	private ArrayList<Target> potentialSrcTargets, potentialTestTargets;
 	private Target compileSrcTarget, compileTestTarget;
 	
 	
@@ -20,6 +22,8 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 		//Initialize Variables
 		compileSrcTarget = null;
 		compileTestTarget = null;
+		potentialSrcTargets = new ArrayList<Target>();
+		potentialTestTargets = new ArrayList<Target>();
 		
 		Project project = new Project();
 		project.init();
@@ -45,8 +49,14 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 		while(vEnum.hasMoreElements()) {
 			Target t = (Target) vEnum.nextElement();
 			if(containsJavac(t.getTasks())) {
-				potentialTargets.add(t);
-				System.out.println(t.getName());
+				if(t.getName().contains("test")) {
+					potentialTestTargets.add(t);
+					System.out.println("test: "+t.getName());
+				}
+				else{
+					potentialSrcTargets.add(t);
+					System.out.println("src: "+t.getName());
+				}
 			}
 		}
 	}
@@ -61,19 +71,19 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 	}
 	
 	public String getCompileSrcTarget() {
-		Enumeration vEnum = potentialTargets.elements();
-		while(vEnum.hasMoreElements()) {
-			Target t = (Target) vEnum.nextElement();
-			if(t.getName().equalsIgnoreCase("build")||
-					(t.getName().equalsIgnoreCase("compile")||
-							(t.getName().equalsIgnoreCase("prepare")))) {
-				
-				compileSrcTarget = t;
-				return t.getName();
-			}
+		int size = potentialSrcTargets.size();
+		if(size == 0) {
+			System.out.println("Cannot find target that compiles source");
+			return "";
 		}
-		//TODO: other target names
-		return "";
+		else if(size == 1) {
+			compileSrcTarget = potentialSrcTargets.get(0);
+		}
+		else if(size > 1) {
+			compileSrcTarget = potentialSrcTargets.get(size - 1);
+		}
+		
+		return compileSrcTarget.getName();
 	}
 	
 	/**
