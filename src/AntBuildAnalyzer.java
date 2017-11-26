@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
+import org.apache.tools.ant.RuntimeConfigurable;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Path;
@@ -14,7 +15,12 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 	private Vector sortedTargets,potentialTargets;
 	private Target compileSrcTarget, compileTestTarget;
 	
+	
 	public AntBuildAnalyzer(File f) {
+		//Initialize Variables
+		compileSrcTarget = null;
+		compileTestTarget = null;
+		
 		Project project = new Project();
 		project.init();
 		ProjectHelper helper = new ProjectHelper();
@@ -61,10 +67,54 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 			if(t.getName().equalsIgnoreCase("build")||
 					(t.getName().equalsIgnoreCase("compile")||
 							(t.getName().equalsIgnoreCase("prepare")))) {
+				
+				compileSrcTarget = t;
 				return t.getName();
 			}
 		}
 		//TODO: other target names
 		return "";
+	}
+	
+	/**
+	 * Find source directory of compilation
+	 * 
+	 * IF directory is not found return an empty String
+	 * 
+	 * @return String
+	 */
+	public String getCompileSrcDirectory() {
+		
+		//Compile Target is not found yet
+		if(compileSrcTarget == null) {
+			
+			//Cannot find Compile Target
+			if(getCompileSrcTarget().equals("")) {
+				return "";
+			}
+		} 
+		
+		//Infer Src Directory from Compile Target
+		/**
+		 * Find "javac" Task
+		 * Looks for "source" attribute
+		 */
+		Task[] tasks = compileSrcTarget.getTasks();
+		for(Task t : tasks) {
+			if(t.getTaskType().equals("javac")) {
+				RuntimeConfigurable rt =t.getRuntimeConfigurableWrapper();
+				Hashtable att_map = rt.getAttributeMap();
+				
+				String srcDirectory = (String) att_map.get("source");
+				if(srcDirectory == null) {
+					return "";
+				}else {
+					return srcDirectory;
+				}
+			}
+		}
+		return "";
+		
+		
 	}
 }

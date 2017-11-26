@@ -1,11 +1,10 @@
+/AntBuildAnalyzer.class
+/BuildFileAnalyzer.class
+/BuildFileAnalyzerAdapter.class
+/Driver.class
 /TestBuildFile1.xml
 /TestBuildFile2.xml
-/TestBuildFile3
 /TestBuildFile3.xml
 /TestBuildFile4.xml
 /TestSuite1.class
-/AntBuildAnalyzer.class
-/Driver.class
-/BuildFileAnalyzer.class
-/BuildFileAnalyzerAdapter.class
-/build2.xml
+/TestBuildFile0.xml

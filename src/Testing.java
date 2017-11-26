@@ -3,6 +3,7 @@ import java.io.IOException;
 
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
+import org.apache.tools.ant.RuntimeConfigurable;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Path;
@@ -26,7 +27,17 @@ public class Testing {
 			System.out.println("Name: " + str + ", Description: " + target.getDescription());
 			Task[] tasks = target.getTasks();
 			for(int i =0; i < tasks.length; i++) {
-				System.out.println("   Task "+i+": "+tasks[i].getTaskName());
+				System.out.println("Task "+i+": "+tasks[i].getTaskName());
+				RuntimeConfigurable rt =tasks[i].getRuntimeConfigurableWrapper();
+				Hashtable att_map = rt.getAttributeMap();
+				Enumeration att_names = att_map.keys();
+				
+				while(att_names.hasMoreElements()) {
+					String att_name = (String) att_names.nextElement();
+					
+					System.out.println("Attribute: "+att_name+" "+att_map.get(att_name));
+				}
+				System.out.println(".....................................");
 			}
 		}
 		
