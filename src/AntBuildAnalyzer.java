@@ -13,7 +13,7 @@ import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Path;
 
 public class AntBuildAnalyzer implements BuildFileAnalyzer{
-	private Vector sortedTargets,potentialTargets;
+	private Vector sortedTargets;
 	private ArrayList<Target> potentialSrcTargets, potentialTestTargets;
 	private Target compileSrcTarget, compileTestTarget;
 	
@@ -30,7 +30,8 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 		ProjectHelper helper = new ProjectHelper();
 		helper.configureProject(project, f);
 		sortedTargets = project.topoSort(project.getDefaultTarget(), project.getTargets());
-		potentialTargets = new Vector();
+		
+		//Print out all targets in execution order
 		Enumeration vEnum = sortedTargets.elements();
 	    System.out.println("Targets sorted in order of execution:");
 	    while(vEnum.hasMoreElements())
@@ -44,6 +45,13 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 		return null;
 	}
 	
+	/**
+	 * If a target contains javac: check if the target name contains "test",
+	 * add it to the list that contains potential compile-test targets; if it does
+	 * not contain "test", add it to the list that contains potential compile-source
+	 * target.
+	 * 
+	 */
 	private void getPotentialCompileTargets() {
 		Enumeration vEnum = sortedTargets.elements();
 		while(vEnum.hasMoreElements()) {
@@ -84,6 +92,21 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 		}
 		
 		return compileSrcTarget.getName();
+	}
+	
+	public String getCompileTestTarget() {
+		int size = potentialTestTargets.size();
+		if(size == 0) {
+			return "";
+		}
+		else if(size == 1) {
+			compileTestTarget = potentialTestTargets.get(0);
+		}
+		else if(size > 1) {
+			compileTestTarget = potentialTestTargets.get(size - 1);
+		}
+		System.out.println("test target: "+compileTestTarget.getName());
+		return compileTestTarget.getName();
 	}
 	
 	/**

@@ -14,7 +14,7 @@ public class TestSuite1 {
 	
 	
 	@Test
-	public void srcCompileTarget() {
+	public void getCompileSrcTarget() {
 		
 		assertEquals("compile", aba0.getCompileSrcTarget());
 		assertEquals("compile", aba1.getCompileSrcTarget());
@@ -23,5 +23,12 @@ public class TestSuite1 {
 		
 //		assertEquals("", aba0.getCompileSrcDirectory());
 	}
-
+	
+	@Test
+	public void getCompileTestTarget() {
+		assertEquals("compile.tests", aba0.getCompileTestTarget());
+		assertEquals("compile", aba1.getCompileTestTarget());
+		assertEquals("compile-tests", aba2.getCompileTestTarget());
+		assertEquals("test", aba3.getCompileTestTarget());
+	}
 }

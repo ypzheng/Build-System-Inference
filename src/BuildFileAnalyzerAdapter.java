@@ -1,6 +1,6 @@
 import java.io.File;
 
-public class BuildFileAnalyzerAdapter {
+public class BuildFileAnalyzerAdapter implements BuildFileAnalyzer{
 	AntBuildAnalyzer aa;
 	//Other kinds of build files can be added here.
 	
