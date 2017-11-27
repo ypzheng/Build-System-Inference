@@ -69,6 +69,11 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 		}
 	}
 	
+	/**
+	 * Helpter method that checks if a task contains javac.
+	 * @param tasks
+	 * @return
+	 */
 	private boolean containsJavac(Task[] tasks) {
 		for(Task t : tasks) {
 			if(t.getTaskType().equals("javac")) {
@@ -78,6 +83,14 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 		return false;
 	}
 	
+	/**
+	 * Get compile-source target from the potential targets array.
+	 * TODO: If the array is empty, we should check if the buid file is valid.
+	 * If the array contains exactly one element, it is the target we are looking for.
+	 * If the array contains more than one element, we can find compile-source target
+	 * at the end of the list, since the list is sorted in execution order.
+	 * @return
+	 */
 	public String getCompileSrcTarget() {
 		int size = potentialSrcTargets.size();
 		if(size == 0) {
@@ -94,6 +107,13 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 		return compileSrcTarget.getName();
 	}
 	
+	/**
+	 * Similar to the method above.
+	 * TODO: Need to consider the case when the compile-test target doesn't contain
+	 * the key word "test".  For example, TestBuildFile1 compiles test and source 
+	 * together in the target "compile".s
+	 * @return
+	 */
 	public String getCompileTestTarget() {
 		int size = potentialTestTargets.size();
 		if(size == 0) {
