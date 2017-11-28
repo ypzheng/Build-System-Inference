@@ -39,12 +39,6 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 	    this.getPotentialCompileTargets();
 	}
 
-	@Override
-	public File infer() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
 	/**
 	 * If a target contains javac: check if the target name contains "test",
 	 * add it to the list that contains potential compile-test targets; if it does
@@ -128,7 +122,19 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 		System.out.println("test target: "+compileTestTarget.getName());
 		return compileTestTarget.getName();
 	}
-	
+
+	@Override
+	public String getSrcDir() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getTestDir() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	/**
 	 * Find source directory of compilation
 	 * 
@@ -136,38 +142,60 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 	 * 
 	 * @return String
 	 */
-	public String getCompileSrcDirectory() {
-		
+	@Override
+	public String getCompSrcDir() {
 		//Compile Target is not found yet
-		if(compileSrcTarget == null) {
-			
-			//Cannot find Compile Target
-			if(getCompileSrcTarget().equals("")) {
-				return "";
-			}
-		} 
-		
-		//Infer Src Directory from Compile Target
-		/**
-		 * Find "javac" Task
-		 * Looks for "srcdir" attribute
-		 */
-		Task[] tasks = compileSrcTarget.getTasks();
-		for(Task t : tasks) {
-			if(t.getTaskType().equals("javac")) {
-				RuntimeConfigurable rt =t.getRuntimeConfigurableWrapper();
-				Hashtable att_map = rt.getAttributeMap();
+				if(compileSrcTarget == null) {
+					
+					//Cannot find Compile Target
+					if(getCompileSrcTarget().equals("")) {
+						return "";
+					}
+				} 
 				
-				String srcDirectory = (String) att_map.get("srcdir");
-				if(srcDirectory == null) {
-					return "";
-				}else {
-					return srcDirectory;
+				//Infer Src Directory from Compile Target
+				/**
+				 * Find "javac" Task
+				 * Looks for "srcdir" attribute
+				 */
+				Task[] tasks = compileSrcTarget.getTasks();
+				for(Task t : tasks) {
+					if(t.getTaskType().equals("javac")) {
+						RuntimeConfigurable rt =t.getRuntimeConfigurableWrapper();
+						Hashtable att_map = rt.getAttributeMap();
+						
+						String srcDirectory = (String) att_map.get("srcdir");
+						if(srcDirectory == null) {
+							return "";
+						}else {
+							return srcDirectory;
+						}
+					}
 				}
-			}
-		}
-		return "";
-		
-		
+				return "";
+	}
+
+	@Override
+	public String getCompTestDir() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getSrcDep() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getTestDep() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getTestList() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

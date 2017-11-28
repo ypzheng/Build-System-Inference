@@ -11,7 +11,56 @@ public class BuildFileAnalyzerAdapter implements BuildFileAnalyzer{
 		//Add another kind of build file here
 	}
 	
-	public File infer() {
+	@Override
+	public String getCompileSrcTarget() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getCompileTestTarget() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getSrcDir() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getTestDir() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getCompSrcDir() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getCompTestDir() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getSrcDep() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getTestDep() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getTestList() {
 		// TODO Auto-generated method stub
 		return null;
 	}
