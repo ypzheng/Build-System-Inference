@@ -110,8 +110,8 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 	 */
 	public String getCompileTestTarget() {
 		int size = potentialTestTargets.size();
-		if(size == 0) {
-			return "";
+		if(size ==0 && this.getCompileSrcTarget()!=null) {
+			compileTestTarget = this.compileSrcTarget;
 		}
 		else if(size == 1) {
 			compileTestTarget = potentialTestTargets.get(0);
@@ -119,7 +119,6 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 		else if(size > 1) {
 			compileTestTarget = potentialTestTargets.get(size - 1);
 		}
-		System.out.println("test target: "+compileTestTarget.getName());
 		return compileTestTarget.getName();
 	}
 
