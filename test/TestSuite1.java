@@ -10,6 +10,7 @@ public class TestSuite1 {
 	AntBuildAnalyzer aba1 = new AntBuildAnalyzer(new File("test/TestBuildFile1.xml"));
 	AntBuildAnalyzer aba2 = new AntBuildAnalyzer(new File("test/TestBuildFile2.xml"));
 	AntBuildAnalyzer aba3 = new AntBuildAnalyzer(new File("test/TestBuildFile3.xml"));
+	AntBuildAnalyzer aba4 = new AntBuildAnalyzer(new File("test/TestBuildFile4.xml"));
 	
 	
 	
@@ -20,6 +21,8 @@ public class TestSuite1 {
 		assertEquals("compile", aba1.getCompileSrcTarget());
 		assertEquals("build", aba2.getCompileSrcTarget());
 		assertEquals("compile", aba3.getCompileSrcTarget());
+		assertEquals("compile", aba4.getCompileSrcTarget());
+		
 		
 //		assertEquals("", aba0.getCompileSrcDirectory());
 	}
@@ -30,5 +33,6 @@ public class TestSuite1 {
 		assertEquals("compile", aba1.getCompileTestTarget());
 		assertEquals("compile-tests", aba2.getCompileTestTarget());
 		assertEquals("test", aba3.getCompileTestTarget());
+		assertEquals("unittests", aba4.getCompileTestTarget());
 	}
 }
