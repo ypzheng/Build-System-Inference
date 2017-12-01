@@ -57,14 +57,21 @@ public class PathParser {
 	
 	public String parse(String path) {
 	
-		this.path = path;
+		//Incomplete
+		return this.properties.getProperty(extractKey(path)); 
+	}
+	
+	public String extractKey(String path) {
+		
 		
 		int index = path.indexOf('$');
 		int end = path.indexOf('}');
 		if(index >= 0 && end >=0 && end >= index) {
-			System.out.println(path.substring(index, end+1));
+			String temp_key = path.substring(index, end+1);
+			return temp_key.substring(temp_key.indexOf('{')+1, temp_key.indexOf('}'));
 		}
 		return "";
 	}
+	
 	
 }

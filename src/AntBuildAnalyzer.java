@@ -184,8 +184,8 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 							return "";
 						}else {
 							
-							pp.parse(srcDirectory);
-							return FileUtils.translatePath(srcDirectory);
+							return pp.parse(srcDirectory);
+							//return FileUtils.translatePath(srcDirectory);
 						}
 					}
 				}
