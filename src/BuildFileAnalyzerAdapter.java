@@ -14,13 +14,13 @@ public class BuildFileAnalyzerAdapter implements BuildFileAnalyzer{
 	@Override
 	public String getCompileSrcTarget() {
 		// TODO Auto-generated method stub
-		return null;
+		return aa.getCompileSrcTarget();
 	}
 
 	@Override
 	public String getCompileTestTarget() {
 		// TODO Auto-generated method stub
-		return null;
+		return aa.getCompileTestTarget();
 	}
 
 	@Override
