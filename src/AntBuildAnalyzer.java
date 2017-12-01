@@ -11,11 +11,16 @@ import org.apache.tools.ant.RuntimeConfigurable;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.util.FileUtils;
+import util.PathParser;
+import util.Debugger;
 
 public class AntBuildAnalyzer implements BuildFileAnalyzer{
 	private Vector sortedTargets;
 	private ArrayList<Target> potentialSrcTargets, potentialTestTargets;
 	private Target compileSrcTarget, compileTestTarget;
+	
+	private PathParser pp;
 	
 	
 	public AntBuildAnalyzer(File f) {
@@ -24,7 +29,13 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 		compileTestTarget = null;
 		potentialSrcTargets = new ArrayList<Target>();
 		potentialTestTargets = new ArrayList<Target>();
+		pp = new PathParser();
 		
+		
+		//Enable Console printing
+		//Debugger.enable();
+		
+		//Load in build.xml file
 		Project project = new Project();
 		project.init();
 		ProjectHelper helper = new ProjectHelper();
@@ -33,9 +44,11 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 		
 		//Print out all targets in execution order
 		Enumeration vEnum = sortedTargets.elements();
-	    System.out.println("Targets sorted in order of execution:");
+		
+		Debugger.log("Targets sorted in order of execution:");
+		
 	    while(vEnum.hasMoreElements())
-	    		System.out.print(vEnum.nextElement() + "\n");
+	    		Debugger.log(vEnum.nextElement() + "\n");
 	    this.getPotentialCompileTargets();
 	}
 
@@ -53,11 +66,11 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 			if(containsJavac(t.getTasks())) {
 				if(t.getName().contains("test")) {
 					potentialTestTargets.add(t);
-					System.out.println("test: "+t.getName());
+					Debugger.log("test: "+t.getName());
 				}
 				else{
 					potentialSrcTargets.add(t);
-					System.out.println("src: "+t.getName());
+					Debugger.log("src: "+t.getName());
 				}
 			}
 		}
@@ -88,7 +101,7 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 	public String getCompileSrcTarget() {
 		int size = potentialSrcTargets.size();
 		if(size == 0) {
-			System.out.println("Cannot find target that compiles source");
+			Debugger.log("Cannot find target that compiles source");
 			return "";
 		}
 		else if(size == 1) {
@@ -119,6 +132,9 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 		else if(size > 1) {
 			compileTestTarget = potentialTestTargets.get(size - 1);
 		}
+
+		Debugger.log("test target: "+compileTestTarget.getName());
+
 		return compileTestTarget.getName();
 	}
 
@@ -167,7 +183,9 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 						if(srcDirectory == null) {
 							return "";
 						}else {
-							return srcDirectory;
+							
+							pp.parse(srcDirectory);
+							return FileUtils.translatePath(srcDirectory);
 						}
 					}
 				}
