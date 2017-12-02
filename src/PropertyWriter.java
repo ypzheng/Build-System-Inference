@@ -23,7 +23,7 @@ public class PropertyWriter {
 
 		propertyFile.setProperty("src.compile", adapter.getCompileSrcTarget());
 		propertyFile.setProperty("test.compile", adapter.getCompileTestTarget());
-		propertyFile.setProperty("test.compile2", "test2");
+		propertyFile.setProperty("src.dir", adapter.getSrcDir());
 		saveProperties(propertyFile);
 		//	loadProperties(propertyFile);
 	

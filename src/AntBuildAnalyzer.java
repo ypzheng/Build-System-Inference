@@ -142,18 +142,13 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	
 	private String getDirectoryHelper(String dirType, Target target) {
 		//Compile Target is not found yet
-		if(target == null) {
-
-			//Cannot find Compile Target
-			return "";
-		}
-
+		Task[] tasks = target.getTasks();
+		String ret = "";
 		//Infer Src Directory from Compile Target
 		/**
 		 * Find "javac" Task
 		 * Looks for "srcdir" attribute
 		 */
-		Task[] tasks = target.getTasks();
 		for(Task t : tasks) {
 			if(t.getTaskType().equals("javac")) {
 				RuntimeConfigurable rt =t.getRuntimeConfigurableWrapper();
@@ -161,15 +156,14 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 
 				String srcDirectory = (String) att_map.get(dirType);
 				if(srcDirectory == null) {
+					System.out.println("no "+dirType+" exists");
 					return "";
 				}else {
-//					System.out.println(srcDirectory);
-					return pp.parse(srcDirectory);
-					//return FileUtils.translatePath(srcDirectory);
+					ret+=pp.parse(srcDirectory+", ");
 				}
 			}
 		}
-		return "";
+		return ret;
 	}
 
 	/**
