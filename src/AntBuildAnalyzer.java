@@ -180,12 +180,12 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 						Hashtable att_map = rt.getAttributeMap();
 						
 						String srcDirectory = (String) att_map.get("srcdir");
+						//If the directory is not null, parse and return the directory in String
 						if(srcDirectory == null) {
 							return "";
 						}else {
 							
 							return pp.parse(srcDirectory);
-							//return FileUtils.translatePath(srcDirectory);
 						}
 					}
 				}
