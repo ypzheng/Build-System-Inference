@@ -5,7 +5,7 @@ public interface BuildFileAnalyzer {
 	public String getCompileTestTarget();
 	public String getSrcDir();
 	public String getTestDir();
-	public String getCompSrcDir();
+	public String getCompDir();
 	public String getCompTestDir();
 	public String getSrcDep();
 	public String getTestDep();

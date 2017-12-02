@@ -36,7 +36,7 @@ public class BuildFileAnalyzerAdapter implements BuildFileAnalyzer{
 	}
 
 	@Override
-	public String getCompSrcDir() {
+	public String getCompDir() {
 		// TODO Auto-generated method stub
 		return null;
 	}
