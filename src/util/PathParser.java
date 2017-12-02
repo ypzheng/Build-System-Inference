@@ -133,9 +133,10 @@ public class PathParser {
 	//a wrapper method for properties.getPorperty
 	private String getProperty(String key) {
 		
+		String resolved = null;
 		//Look for property value using project.getProperty
 		if(this.project != null) {
-			String resolved = this.project.getProperty(key);
+			resolved = this.project.getProperty(key);
 			if(resolved != null)
 				return resolved;
 		}
@@ -145,13 +146,9 @@ public class PathParser {
 		if(resolved != null)
 			return resolved;
 		
-		if(key.equals("basedir")) {
-			if(this.project != null) {
-				return this.project.getBaseDir().toString();
-			}
-		}
 		
-		return null;
+		
+		return resolved;
 		
 		
 	}
