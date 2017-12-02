@@ -172,10 +172,10 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		noDupList = javacTasks.stream().distinct().collect(Collectors.toList());
 		for(int i=0; i<noDupList.size()-1; i++) {
 			if(targetType.equals("test") && noDupList.get(i).contains("test")) {
-				ret+=pp.parse(noDupList.get(i)+", ");
+				ret+=pp.parse(noDupList.get(i)) + ", ";
 			}
 			else if(targetType.equals("compile"))
-				ret+=pp.parse(noDupList.get(i)+", ");
+				ret+=pp.parse(noDupList.get(i)) + ", ";
 		}
 		ret+=pp.parse(noDupList.get(noDupList.size()-1));
 		return ret;
