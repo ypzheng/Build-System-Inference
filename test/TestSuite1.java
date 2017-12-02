@@ -60,4 +60,12 @@ public class TestSuite1 {
 		assertEquals("build/classes", aba4.getCompDir());
 	}
 	
+	public void getCompTestDir() {
+		assertEquals("target/tests", aba0.getCompTestDir());
+		assertEquals("../build/classes", aba1.getCompTestDir()); //There are multiple, need to work on this
+		assertEquals("build/testcases", aba2.getCompTestDir());
+		assertEquals("target/test-classes", aba3.getCompTestDir());
+		assertEquals("build/classes", aba4.getCompTestDir());
+	}
+	
 }
