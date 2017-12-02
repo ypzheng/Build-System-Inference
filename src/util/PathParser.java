@@ -5,12 +5,22 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.Properties;
+
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Target;
 
 public class PathParser {
 	
 	private String path;
 	private Properties properties;
+	
+
+	private Project project;
 	
 	public PathParser() {
 		
@@ -34,7 +44,20 @@ public class PathParser {
 			}
 		}
 		//For Testing only ends *******************
+
+		this.project = null;
 	}
+	
+	public PathParser(Project project) {
+		//Default tasks
+		this.properties = new Properties();
+
+		
+		//Load in the build.xml
+		this.project = project;
+		this.loadProperties();
+	}
+	
 	
 	/**
 	 * Add property files for parsing
@@ -80,7 +103,7 @@ public class PathParser {
 		 */
 		while(index >= 0 && end >=0 && end >= index+2 ) {
 			String temp_key = temp.substring(index+2, end);
-			String temp_resolved = this.properties.getProperty(temp_key);
+			String temp_resolved = this.getProperty(temp_key);
 			
 			//If key exists, replace the value in path
 			if(temp_resolved != null) {
@@ -105,6 +128,42 @@ public class PathParser {
 		
 		//Attach rest of the path that doesn't need parsing
 		return result + temp;
+	}
+	
+	//a wrapper method for properties.getPorperty
+	private String getProperty(String key) {
+		
+		String resolved = null;
+		//Look for property value using project.getProperty
+		if(this.project != null) {
+			resolved = this.project.getProperty(key);
+			if(resolved != null)
+				return resolved;
+		}
+		
+		//Look for property value in .properties files
+		resolved = this.properties.getProperty(key);
+		if(resolved != null)
+			return resolved;
+		
+		
+		
+		return resolved;
+		
+		
+	}
+	
+	private void loadProperties() {
+		Hashtable property_map = this.project.getProperties();
+		
+		Enumeration names = property_map.keys();
+		
+		while(names.hasMoreElements()) {
+			String str = (String) names.nextElement();
+			String t =  property_map.get(str).toString();
+			System.out.println("Name: " + str + ", Description: " + t);
+		}
+		System.out.println("............................................................");
 	}
 	
 	

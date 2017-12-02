@@ -30,7 +30,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		compileTestTarget = null;
 		potentialSrcTargets = new ArrayList<Target>();
 		potentialTestTargets = new ArrayList<Target>();
-		pp = new PathParser();
+		
 		
 		
 		//Enable Console printing
@@ -51,6 +51,9 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	    while(vEnum.hasMoreElements())
 	    		Debugger.log(vEnum.nextElement() + "\n");
 	    this.getPotentialCompileTargets();
+	    
+	    //Path Parser
+	    pp = new PathParser(project);
 	}
 
 	/**
