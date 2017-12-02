@@ -138,10 +138,46 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 		return compileTestTarget.getName();
 	}
 
+	/**
+	 * Find directory of compiled classes
+	 * 
+	 * IF directory is not found return an empty String
+	 * 
+	 * @return String
+	 */
 	@Override
-	public String getSrcDir() {
-		// TODO Auto-generated method stub
-		return null;
+	public String getCompDir() {
+		//Compile Target is not found yet
+		if(compileSrcTarget == null) {
+			
+			//Cannot find Compile Target
+			if(getCompileSrcTarget().equals("")) {
+				return "";
+			}
+		} 
+		
+		//Infer Src Directory from Compile Target
+		/**
+		 * Find "javac" Task
+		 * Looks for "srcdir" attribute
+		 */
+		Task[] tasks = compileSrcTarget.getTasks();
+		for(Task t : tasks) {
+			if(t.getTaskType().equals("javac")) {
+				RuntimeConfigurable rt =t.getRuntimeConfigurableWrapper();
+				Hashtable att_map = rt.getAttributeMap();
+				
+				String srcDirectory = (String) att_map.get("destdir");
+				//If the directory is not null, parse and return the directory in String
+				if(srcDirectory == null) {
+					return "";
+				}else {
+					
+					return pp.parse(srcDirectory);
+				}
+			}
+		}
+		return "";
 	}
 
 	@Override
@@ -158,7 +194,7 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 	 * @return String
 	 */
 	@Override
-	public String getCompSrcDir() {
+	public String getSrcDir() {
 		//Compile Target is not found yet
 		if(compileSrcTarget == null) {
 			
