@@ -15,7 +15,7 @@ import org.apache.tools.ant.util.FileUtils;
 import util.PathParser;
 import util.Debugger;
 
-public class AntBuildAnalyzer implements BuildFileAnalyzer{
+public class AntBuildAnalyzer implements BuildAnalyzer{
 	private Vector sortedTargets;
 	private ArrayList<Target> potentialSrcTargets, potentialTestTargets;
 	private Target compileSrcTarget, compileTestTarget;

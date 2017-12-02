@@ -16,9 +16,9 @@ public class Driver {
             }
             System.out.println();
         }
-//		File buildFile = new File("src/build.xml");
-//		File outputFile = new File("build.properties");
-//		PropertyWriter pw = new PropertyWriter("ant", buildFile, outputFile);
+		File buildFile = new File("src/build.xml");
+		File outputFile = new File("build.properties");
+		PropertyWriter pw = new PropertyWriter("ant", buildFile, outputFile);
 	}
 
 }

@@ -1,6 +1,6 @@
 import java.io.File;
 
-public interface BuildFileAnalyzer {
+public interface BuildAnalyzer {
 	public String getCompileSrcTarget();
 	public String getCompileTestTarget();
 	public String getSrcDir();
