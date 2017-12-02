@@ -15,6 +15,7 @@ public class PathParser {
 		
 		this.properties = new Properties();
 		
+		//For Testing only *******************
 		//Load the property file
 		InputStream file = null;
 		try{
@@ -31,6 +32,7 @@ public class PathParser {
 				}
 			}
 		}
+		//For Testing only ends *******************
 	}
 	
 	/**
@@ -56,21 +58,43 @@ public class PathParser {
 	}
 	
 	public String parse(String path) {
-	
-		//Incomplete
-		return this.properties.getProperty(extractKey(path)); 
-	}
-	
-	public String extractKey(String path) {
 		
+		String result = path;
 		
-		int index = path.indexOf('$');
-		int end = path.indexOf('}');
-		if(index >= 0 && end >=0 && end >= index) {
-			String temp_key = path.substring(index, end+1);
-			return temp_key.substring(temp_key.indexOf('{')+1, temp_key.indexOf('}'));
+		/**
+		 * Try to find the first key in result
+		 * key is in format ${key_name}
+		 */
+		int index = result.indexOf('$');
+		int last_index = index;
+		int end = result.indexOf('}');
+		
+		/**
+		 * Extract the key and get the property.
+		 * Replace key in result with the property
+		 * 
+		 * Keep looking for more key in result
+		 */
+		while(index >= 0 && end >=0 && end >= index+2 ) {
+			String temp_key = result.substring(index+2, end);
+			String temp_resolved = this.properties.getProperty(temp_key);
+			
+			if(temp_resolved != null) {
+				if(end == result.length()-1)
+					result = result.substring(0, index) + temp_resolved;
+				else
+					result= result.substring(0, index) + temp_resolved +result.substring(end+1);
+			}
+			
+			
+			index = result.indexOf('$');
+			end = result.indexOf('}');
+			
+			//Prevent infinite loop
+			if(index == last_index)
+				break;
 		}
-		return "";
+		return result;
 	}
 	
 	
