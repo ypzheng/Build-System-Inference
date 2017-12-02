@@ -36,4 +36,13 @@ public class TestSuite1 {
 		assertEquals("test", aba3.getCompileTestTarget());
 		assertEquals("unittests", aba4.getCompileTestTarget());
 	}
+	
+	@Test
+	public void getSrcDir() {
+		assertEquals("src/main/java", aba0.getSrcDir());
+		assertEquals("../sandwich-shared/src", aba1.getSrcDir());
+		assertEquals("src/main", aba2.getSrcDir());
+		assertEquals("src", aba3.getSrcDir());
+		assertEquals("src", aba4.getSrcDir());
+	}
 }
