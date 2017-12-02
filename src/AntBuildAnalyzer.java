@@ -144,7 +144,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		return compileTestTarget.getName();
 	}
 	
-	private String getDirectoryHelper(String targetType, String dirType, Target target) {
+	private String getDirectoryHelper(String taskType, String dirType, Target target) {
 		//Compile Target is not found yet
 		Task[] tasks = target.getTasks();
 		List<String> javacTasks = new ArrayList<String>();
@@ -157,13 +157,13 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		 * Looks for "srcdir" attribute
 		 */
 		for(Task t : tasks) {
-			if(t.getTaskType().equals("javac")) {
+			if(t.getTaskType().equals(taskType)) {
 				RuntimeConfigurable rt =t.getRuntimeConfigurableWrapper();
 				Hashtable att_map = rt.getAttributeMap();
 
 				String srcDirectory = (String) att_map.get(dirType);
 				if(srcDirectory == null) {
-					System.out.println("no "+dirType+" exists in "+target.getName());
+					Debugger.log("no "+dirType+" exists in "+target.getName());
 				}else {
 					javacTasks.add(srcDirectory);
 				}
@@ -171,13 +171,11 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		}
 		noDupList = javacTasks.stream().distinct().collect(Collectors.toList());
 		for(int i=0; i<noDupList.size()-1; i++) {
-			if(targetType.equals("test") && noDupList.get(i).contains("test")) {
-				ret+=pp.parse(noDupList.get(i)) + ", ";
-			}
-			else if(targetType.equals("compile") && !noDupList.get(i).contains("test"))
+
 				ret+=pp.parse(noDupList.get(i)) + ", ";
 		}
 		ret+=pp.parse(noDupList.get(noDupList.size()-1));
+		
 		return ret;
 	}
 
@@ -190,13 +188,13 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 */
 	@Override
 	public String getCompDir() {
-		return this.getDirectoryHelper("compile","destdir", compileSrcTarget);
+		return this.getDirectoryHelper("javac","destdir", compileSrcTarget);
 	}
 
 	@Override
 	public String getTestDir() {
 		// TODO Auto-generated method stub
-		return this.getDirectoryHelper("test", "srcdir", compileTestTarget);
+		return this.getDirectoryHelper("javac", "srcdir", compileTestTarget);
 	}
 
 	/**
@@ -208,13 +206,13 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 */
 	@Override
 	public String getSrcDir() {
-		return this.getDirectoryHelper("compile", "srcdir", compileSrcTarget);
+		return this.getDirectoryHelper("javac", "srcdir", compileSrcTarget);
 	}
 
 	@Override
 	public String getCompTestDir() {
 		// TODO Auto-generated method stub
-		return this.getDirectoryHelper("test", "destdir", compileTestTarget);
+		return this.getDirectoryHelper("javac", "destdir", compileTestTarget);
 	}
 
 	@Override

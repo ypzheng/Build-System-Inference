@@ -1,6 +1,7 @@
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.nio.file.Paths;
 
 import org.junit.Test;
 
@@ -36,38 +37,53 @@ public class TestSuite1 {
 	
 	@Test
 	public void getSrcDir() {
-		assertEquals("src/main/java", aba0.getSrcDir());
-		//assertEquals("../sandwich-shared/src", aba1.getSrcDir());
-		assertEquals("src/main", aba2.getSrcDir());
-		assertEquals("src", aba3.getSrcDir());
-		assertEquals("src", aba4.getSrcDir());
+		assertEquals(Paths.get("src/main/java").toString(), aba0.getSrcDir());
+		
+		String aba2_expected=	Paths.get("../sandwich-shared/src").toString() + ", " +
+								Paths.get("../sandwich-server/src").toString() + ", " +
+								Paths.get("../sandwich-client/src").toString() + ", " +
+								Paths.get("../sandwich-test/src").toString() + ", " +
+								Paths.get("../sandwich-tests/src").toString() + ", " +
+								Paths.get("../sandwich-tests/test").toString() + ", " +
+								Paths.get("../sharedvalidation/src").toString() + ", " +
+								Paths.get("../sharedvalidationexample/src").toString() + ", " +
+								Paths.get("../sharedvalidationexample/test").toString() + ", " +
+								Paths.get("../framework/src").toString() + ", " +
+								Paths.get("src").toString() + ", " +
+								Paths.get("unit").toString() + ", " +
+								Paths.get("integration").toString();
+		
+		assertEquals(aba2_expected, aba1.getSrcDir());
+		assertEquals(Paths.get("src/main").toString(), aba2.getSrcDir());
+		assertEquals(Paths.get("src").toString(), aba3.getSrcDir());
+		assertEquals(Paths.get("src").toString(), aba4.getSrcDir());
 	}
 	
 	@Test
 	public void getTestDir() {
-		assertEquals("src/test/java", aba0.getTestDir());
-		//assertEquals("../sandwich-shared/src", aba1.getTestDir()); //There are multiple, need to work on this
-		assertEquals("src/tests/junit", aba2.getTestDir());
-		assertEquals("test", aba3.getTestDir());
-		assertEquals("src", aba4.getTestDir());
+		assertEquals(Paths.get("src/test/java").toString(), aba0.getTestDir());
+		assertEquals(Paths.get("../sandwich-shared/src").toString(), aba1.getTestDir()); //There are multiple, need to work on this
+		assertEquals(Paths.get("src/tests/junit").toString(), aba2.getTestDir());
+		assertEquals(Paths.get("test").toString(), aba3.getTestDir());
+		assertEquals(Paths.get("src").toString(), aba4.getTestDir());
 	}
 	
 	@Test
 	public void getCompDir() {
-		assertEquals("target/classes", aba0.getCompDir());
-		assertEquals("../build/classes", aba1.getCompDir()); //There are multiple, need to work on this
-		assertEquals("build/classes", aba2.getCompDir());
-		assertEquals("target/classes", aba3.getCompDir());
-		assertEquals("build/classes", aba4.getCompDir());
+		assertEquals(Paths.get("target/classes").toString(), aba0.getCompDir());
+		assertEquals(Paths.get("../build/classes").toString(), aba1.getCompDir()); //There are multiple, need to work on this
+		assertEquals(Paths.get("build/classes").toString(), aba2.getCompDir());
+		assertEquals(Paths.get("target/classes").toString(), aba3.getCompDir());
+		assertEquals(Paths.get("build/classes").toString(), aba4.getCompDir());
 	}
 	
 	@Test
 	public void getCompTestDir() {
-		assertEquals("target/tests", aba0.getCompTestDir());
-		assertEquals("../build/classes", aba1.getCompTestDir()); //There are multiple, need to work on this
-		assertEquals("build/testcases", aba2.getCompTestDir());
-		assertEquals("target/test-classes", aba3.getCompTestDir());
-		assertEquals("build/classes", aba4.getCompTestDir());
+		assertEquals(Paths.get("target/tests").toString(), aba0.getCompTestDir());
+		assertEquals(Paths.get("../build/classes").toString(), aba1.getCompTestDir()); //There are multiple, need to work on this
+		assertEquals(Paths.get("build/testcases").toString(), aba2.getCompTestDir());
+		assertEquals(Paths.get("target/test-classes").toString(), aba3.getCompTestDir());
+		assertEquals(Paths.get("build/classes").toString(), aba4.getCompTestDir());
 	}
 	
 }

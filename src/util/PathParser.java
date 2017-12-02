@@ -94,7 +94,7 @@ public class PathParser {
 		//String result stores the output string
 		String result = "";
 		//String temp stores the unparsed/worked section of String path
-		System.out.println(path);
+		
 		String temp = Paths.get(path).toString();
 		
 		/**
@@ -136,7 +136,9 @@ public class PathParser {
 		}
 		
 		//Attach rest of the path that doesn't need parsing
-		return result + temp;
+		
+		return Paths.get(result + temp).toString();
+	
 	}
 	
 	//a wrapper method for properties.getPorperty
@@ -180,7 +182,6 @@ public class PathParser {
 			}//End for loop
 			
 		}//End while loop
-		//System.out.println("..................");
 	}
 	
 	
