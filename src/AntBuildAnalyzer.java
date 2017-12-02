@@ -174,7 +174,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 			if(targetType.equals("test") && noDupList.get(i).contains("test")) {
 				ret+=pp.parse(noDupList.get(i)) + ", ";
 			}
-			else if(targetType.equals("compile"))
+			else if(targetType.equals("compile") && !noDupList.get(i).contains("test"))
 				ret+=pp.parse(noDupList.get(i)) + ", ";
 		}
 		ret+=pp.parse(noDupList.get(noDupList.size()-1));
