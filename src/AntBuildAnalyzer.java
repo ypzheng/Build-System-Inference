@@ -74,6 +74,8 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 				}
 			}
 		}
+		getCompileSrcTarget();
+		getCompileTestTarget();
 	}
 	
 	/**
@@ -137,6 +139,38 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 
 		return compileTestTarget.getName();
 	}
+	
+	private String getDirectoryHelper(String dirType, Target target) {
+		//Compile Target is not found yet
+		if(target == null) {
+
+			//Cannot find Compile Target
+			return "";
+		}
+
+		//Infer Src Directory from Compile Target
+		/**
+		 * Find "javac" Task
+		 * Looks for "srcdir" attribute
+		 */
+		Task[] tasks = target.getTasks();
+		for(Task t : tasks) {
+			if(t.getTaskType().equals("javac")) {
+				RuntimeConfigurable rt =t.getRuntimeConfigurableWrapper();
+				Hashtable att_map = rt.getAttributeMap();
+
+				String srcDirectory = (String) att_map.get(dirType);
+				if(srcDirectory == null) {
+					return "";
+				}else {
+//					System.out.println(srcDirectory);
+					return pp.parse(srcDirectory);
+					//return FileUtils.translatePath(srcDirectory);
+				}
+			}
+		}
+		return "";
+	}
 
 	/**
 	 * Find directory of compiled classes
@@ -147,43 +181,13 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 */
 	@Override
 	public String getCompDir() {
-		//Compile Target is not found yet
-		if(compileSrcTarget == null) {
-			
-			//Cannot find Compile Target
-			if(getCompileSrcTarget().equals("")) {
-				return "";
-			}
-		} 
-		
-		//Infer Src Directory from Compile Target
-		/**
-		 * Find "javac" Task
-		 * Looks for "destdir" attribute
-		 */
-		Task[] tasks = compileSrcTarget.getTasks();
-		for(Task t : tasks) {
-			if(t.getTaskType().equals("javac")) {
-				RuntimeConfigurable rt =t.getRuntimeConfigurableWrapper();
-				Hashtable att_map = rt.getAttributeMap();
-				
-				String srcDirectory = (String) att_map.get("destdir");
-				//If the directory is not null, parse and return the directory in String
-				if(srcDirectory == null) {
-					return "";
-				}else {
-					
-					return pp.parse(srcDirectory);
-				}
-			}
-		}
-		return "";
+		return this.getDirectoryHelper("destdir", compileSrcTarget);
 	}
 
 	@Override
 	public String getTestDir() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.getDirectoryHelper("srcdir", compileTestTarget);
 	}
 
 	/**
@@ -195,43 +199,13 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 */
 	@Override
 	public String getSrcDir() {
-		//Compile Target is not found yet
-		if(compileSrcTarget == null) {
-			
-			//Cannot find Compile Target
-			if(getCompileSrcTarget().equals("")) {
-				return "";
-			}
-		} 
-		
-		//Infer Src Directory from Compile Target
-		/**
-		 * Find "javac" Task
-		 * Looks for "srcdir" attribute
-		 */
-		Task[] tasks = compileSrcTarget.getTasks();
-		for(Task t : tasks) {
-			if(t.getTaskType().equals("javac")) {
-				RuntimeConfigurable rt =t.getRuntimeConfigurableWrapper();
-				Hashtable att_map = rt.getAttributeMap();
-				
-				String srcDirectory = (String) att_map.get("srcdir");
-				//If the directory is not null, parse and return the directory in String
-				if(srcDirectory == null) {
-					return "";
-				}else {
-					
-					return pp.parse(srcDirectory);
-				}
-			}
-		}
-		return "";
+		return this.getDirectoryHelper("srcdir", compileSrcTarget);
 	}
 
 	@Override
 	public String getCompTestDir() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.getDirectoryHelper("destdir", compileTestTarget);
 	}
 
 	@Override
