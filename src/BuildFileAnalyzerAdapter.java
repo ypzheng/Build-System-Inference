@@ -1,12 +1,12 @@
 import java.io.File;
 
 public class BuildFileAnalyzerAdapter implements BuildAnalyzer{
-	AntBuildAnalyzer aa;
+	BuildAnalyzer analyzer;
 	//Other kinds of build files can be added here.
 	
 	public BuildFileAnalyzerAdapter(String buildFileType, File buildFile) {
 		if(buildFileType.equalsIgnoreCase("ant")) {
-			aa = new AntBuildAnalyzer(buildFile);
+			analyzer = new AntBuildAnalyzer(buildFile);
 		}
 		//Add another kind of build file here
 	}
@@ -14,54 +14,54 @@ public class BuildFileAnalyzerAdapter implements BuildAnalyzer{
 	@Override
 	public String getCompileSrcTarget() {
 		// TODO Auto-generated method stub
-		return aa.getCompileSrcTarget();
+		return analyzer.getCompileSrcTarget();
 	}
 
 	@Override
 	public String getCompileTestTarget() {
 		// TODO Auto-generated method stub
-		return aa.getCompileTestTarget();
+		return analyzer.getCompileTestTarget();
 	}
 
 	@Override
 	public String getSrcDir() {
 		// TODO Auto-generated method stub
-		return aa.getSrcDir();
+		return analyzer.getSrcDir();
 	}
 
 	@Override
 	public String getTestDir() {
 		// TODO Auto-generated method stub
-		return aa.getTestDir();
+		return analyzer.getTestDir();
 	}
 
 	@Override
 	public String getCompDir() {
 		// TODO Auto-generated method stub
-		return aa.getCompDir();
+		return analyzer.getCompDir();
 	}
 
 	@Override
 	public String getCompTestDir() {
 		// TODO Auto-generated method stub
-		return aa.getCompTestDir();
+		return analyzer.getCompTestDir();
 	}
 
 	@Override
 	public String getSrcDep() {
 		// TODO Auto-generated method stub
-		return aa.getSrcDep();
+		return analyzer.getSrcDep();
 	}
 
 	@Override
 	public String getTestDep() {
 		// TODO Auto-generated method stub
-		return aa.getTestDep();
+		return analyzer.getTestDep();
 	}
 
 	@Override
 	public String getTestList() {
 		// TODO Auto-generated method stub
-		return aa.getTestList();
+		return analyzer.getTestList();
 	}
 }
