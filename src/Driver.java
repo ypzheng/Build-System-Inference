@@ -16,7 +16,7 @@ public class Driver {
 //            }
 //            System.out.println();
 //        }
-		File buildFile = new File("src/TestBuildFile2.xml");
+		File buildFile = new File("src/TestBuildFile1.xml");
 		File outputFile = new File("build.properties");
 		PropertyWriter pw = new PropertyWriter("ant", buildFile, outputFile);
         

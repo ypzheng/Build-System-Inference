@@ -4,6 +4,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
@@ -143,7 +144,10 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	private String getDirectoryHelper(String dirType, Target target) {
 		//Compile Target is not found yet
 		Task[] tasks = target.getTasks();
+		List<String> javacTasks = new ArrayList<String>();
+		List<String> noDupList;
 		String ret = "";
+		
 		//Infer Src Directory from Compile Target
 		/**
 		 * Find "javac" Task
@@ -157,12 +161,16 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 				String srcDirectory = (String) att_map.get(dirType);
 				if(srcDirectory == null) {
 					System.out.println("no "+dirType+" exists");
-					return "";
 				}else {
-					ret+=pp.parse(srcDirectory+", ");
+					javacTasks.add(srcDirectory);
 				}
 			}
 		}
+		noDupList = javacTasks.stream().distinct().collect(Collectors.toList());
+		for(int i=0; i<noDupList.size()-1; i++) {
+			ret+=pp.parse(noDupList.get(i)+", ");
+		}
+		ret+=pp.parse(noDupList.get(noDupList.size()-1));
 		return ret;
 	}
 
