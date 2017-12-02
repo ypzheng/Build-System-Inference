@@ -1,5 +1,5 @@
 import java.io.File;
-
+import java.util.Vector;
 public interface BuildAnalyzer {
 	public String getCompileSrcTarget();
 	public String getCompileTestTarget();
