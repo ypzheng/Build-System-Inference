@@ -16,15 +16,15 @@ public class Driver {
             }
             System.out.println();
         }
-		File buildFile = new File("src/build.xml");
-//		File outputFile = new File("build.properties");
-//		PropertyWriter pw = new PropertyWriter("ant", buildFile, outputFile);
+		File buildFile = new File("src/TestBuildFile1.xml");
+		File outputFile = new File("build.properties");
+		PropertyWriter pw = new PropertyWriter("ant", buildFile, outputFile);
         
-//        AntBuildAnalyzer aba = new AntBuildAnalyzer(buildFile);
-//        System.out.println(aba.getCompDir());
-//        System.out.println(aba.getTestDir());
-//        System.out.println(aba.getSrcDir());
-//        System.out.println(aba.getCompTestDir());
+        AntBuildAnalyzer aba = new AntBuildAnalyzer(buildFile);
+        System.out.println("compiled classes: " +aba.getCompDir());
+        System.out.println("test source: "+aba.getTestDir());
+        System.out.println("source dir: "+aba.getSrcDir());
+        System.out.println("compiled test classes: "+aba.getCompTestDir());
 	}
 
 }
