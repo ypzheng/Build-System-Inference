@@ -19,6 +19,7 @@ public class PathParser {
 	private String path;
 	private Properties properties;
 	
+	private File build_file;
 
 	private Project project;
 	
@@ -48,14 +49,16 @@ public class PathParser {
 		this.project = null;
 	}
 	
-	public PathParser(Project project) {
+	public PathParser(Project project, File f) {
 		//Default tasks
 		this.properties = new Properties();
 
 		
 		//Load in the build.xml
 		this.project = project;
+		this.build_file = f;
 		this.loadProperties();
+		
 	}
 	
 	
@@ -154,16 +157,7 @@ public class PathParser {
 	}
 	
 	private void loadProperties() {
-		Hashtable property_map = this.project.getProperties();
-		
-		Enumeration names = property_map.keys();
-		
-		while(names.hasMoreElements()) {
-			String str = (String) names.nextElement();
-			String t =  property_map.get(str).toString();
-			System.out.println("Name: " + str + ", Description: " + t);
-		}
-		System.out.println("............................................................");
+		System.out.println(XmlParser.getPropertiesFiles(this.build_file));
 	}
 	
 	

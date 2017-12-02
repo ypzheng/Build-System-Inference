@@ -53,7 +53,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	    this.getPotentialCompileTargets();
 	    
 	    //Path Parser
-	    pp = new PathParser(project);
+	    pp = new PathParser(project, f);
 	}
 
 	/**
