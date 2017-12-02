@@ -5,11 +5,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Vector;
 
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
@@ -69,16 +71,18 @@ public class PathParser {
 		//Load the property file
 		InputStream file = null;
 		try{
+		
 		file = new FileInputStream(filename);
+		
 		this.properties.load(file);
 		} catch(IOException ex) {
-			ex.printStackTrace();
+			//ex.printStackTrace();
 		} finally {
 			if(file != null) {
 				try {
 					file.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			}
 		}
@@ -86,10 +90,12 @@ public class PathParser {
 	
 	public String parse(String path) {
 		
+		
 		//String result stores the output string
 		String result = "";
 		//String temp stores the unparsed/worked section of String path
-		String temp = path;
+		System.out.println(path);
+		String temp = Paths.get(path).toString();
 		
 		/**
 		 * Try to find the first key in result
@@ -157,7 +163,24 @@ public class PathParser {
 	}
 	
 	private void loadProperties() {
-		System.out.println(XmlParser.getPropertiesFiles(this.build_file));
+		Vector<String> files = XmlParser.getPropertiesFiles(this.build_file);
+		boolean changed = true;
+		while(changed) {
+			changed = false;
+			
+			for(String file : files) {
+				String parsed_file = this.parse(file);
+				if(parsed_file.indexOf('$') < 0) {
+					this.addProperties(file);
+					
+					changed = true;
+					files.remove(file);
+					break;
+				}
+			}//End for loop
+			
+		}//End while loop
+		//System.out.println("..................");
 	}
 	
 	

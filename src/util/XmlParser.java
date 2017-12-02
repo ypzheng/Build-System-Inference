@@ -28,7 +28,6 @@ public class XmlParser {
 
 			NodeList nList = doc.getElementsByTagName("property");
 
-			System.out.println("----------------------------");
 
 			for (int temp = 0; temp < nList.getLength(); temp++) {
 
