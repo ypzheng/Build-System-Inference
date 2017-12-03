@@ -4,6 +4,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
@@ -29,7 +30,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		compileTestTarget = null;
 		potentialSrcTargets = new ArrayList<Target>();
 		potentialTestTargets = new ArrayList<Target>();
-		pp = new PathParser();
+		
 		
 		
 		//Enable Console printing
@@ -50,6 +51,9 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	    while(vEnum.hasMoreElements())
 	    		Debugger.log(vEnum.nextElement() + "\n");
 	    this.getPotentialCompileTargets();
+	    
+	    //Path Parser
+	    pp = new PathParser(project, f);
 	}
 
 	/**
@@ -140,36 +144,39 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		return compileTestTarget.getName();
 	}
 	
-	private String getDirectoryHelper(String dirType, Target target) {
+	private String getDirectoryHelper(String taskType, String dirType, Target target) {
 		//Compile Target is not found yet
-		if(target == null) {
-
-			//Cannot find Compile Target
-			return "";
-		}
-
+		Task[] tasks = target.getTasks();
+		List<String> javacTasks = new ArrayList<String>();
+		List<String> noDupList;
+		String ret = "";
+		
 		//Infer Src Directory from Compile Target
 		/**
 		 * Find "javac" Task
 		 * Looks for "srcdir" attribute
 		 */
-		Task[] tasks = target.getTasks();
 		for(Task t : tasks) {
-			if(t.getTaskType().equals("javac")) {
+			if(t.getTaskType().equals(taskType)) {
 				RuntimeConfigurable rt =t.getRuntimeConfigurableWrapper();
 				Hashtable att_map = rt.getAttributeMap();
 
 				String srcDirectory = (String) att_map.get(dirType);
 				if(srcDirectory == null) {
-					return "";
+					Debugger.log("no "+dirType+" exists in "+target.getName());
 				}else {
-//					System.out.println(srcDirectory);
-					return pp.parse(srcDirectory);
-					//return FileUtils.translatePath(srcDirectory);
+					javacTasks.add(srcDirectory);
 				}
 			}
 		}
-		return "";
+		noDupList = javacTasks.stream().distinct().collect(Collectors.toList());
+		for(int i=0; i<noDupList.size()-1; i++) {
+
+				ret+=pp.parse(noDupList.get(i)) + ", ";
+		}
+		ret+=pp.parse(noDupList.get(noDupList.size()-1));
+		
+		return ret;
 	}
 
 	/**
@@ -181,13 +188,13 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 */
 	@Override
 	public String getCompDir() {
-		return this.getDirectoryHelper("destdir", compileSrcTarget);
+		return this.getDirectoryHelper("javac","destdir", compileSrcTarget);
 	}
 
 	@Override
 	public String getTestDir() {
 		// TODO Auto-generated method stub
-		return this.getDirectoryHelper("srcdir", compileTestTarget);
+		return this.getDirectoryHelper("javac", "srcdir", compileTestTarget);
 	}
 
 	/**
@@ -199,13 +206,13 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 */
 	@Override
 	public String getSrcDir() {
-		return this.getDirectoryHelper("srcdir", compileSrcTarget);
+		return this.getDirectoryHelper("javac", "srcdir", compileSrcTarget);
 	}
 
 	@Override
 	public String getCompTestDir() {
 		// TODO Auto-generated method stub
-		return this.getDirectoryHelper("destdir", compileTestTarget);
+		return this.getDirectoryHelper("javac", "destdir", compileTestTarget);
 	}
 
 	@Override
