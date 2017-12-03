@@ -1,6 +1,6 @@
 import java.io.File;
 
-public class BuildFileAnalyzerAdapter implements BuildFileAnalyzer{
+public class BuildFileAnalyzerAdapter implements BuildAnalyzer{
 	AntBuildAnalyzer aa;
 	//Other kinds of build files can be added here.
 	
@@ -36,7 +36,7 @@ public class BuildFileAnalyzerAdapter implements BuildFileAnalyzer{
 	}
 
 	@Override
-	public String getCompSrcDir() {
+	public String getCompDir() {
 		// TODO Auto-generated method stub
 		return null;
 	}

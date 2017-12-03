@@ -11,11 +11,16 @@ import org.apache.tools.ant.RuntimeConfigurable;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.util.FileUtils;
+import util.PathParser;
+import util.Debugger;
 
-public class AntBuildAnalyzer implements BuildFileAnalyzer{
+public class AntBuildAnalyzer implements BuildAnalyzer{
 	private Vector sortedTargets;
 	private ArrayList<Target> potentialSrcTargets, potentialTestTargets;
 	private Target compileSrcTarget, compileTestTarget;
+	
+	private PathParser pp;
 	
 	
 	public AntBuildAnalyzer(File f) {
@@ -24,7 +29,13 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 		compileTestTarget = null;
 		potentialSrcTargets = new ArrayList<Target>();
 		potentialTestTargets = new ArrayList<Target>();
+		pp = new PathParser();
 		
+		
+		//Enable Console printing
+		//Debugger.enable();
+		
+		//Load in build.xml file
 		Project project = new Project();
 		project.init();
 		ProjectHelper helper = new ProjectHelper();
@@ -33,9 +44,11 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 		
 		//Print out all targets in execution order
 		Enumeration vEnum = sortedTargets.elements();
-	    System.out.println("Targets sorted in order of execution:");
+		
+		Debugger.log("Targets sorted in order of execution:");
+		
 	    while(vEnum.hasMoreElements())
-	    		System.out.print(vEnum.nextElement() + "\n");
+	    		Debugger.log(vEnum.nextElement() + "\n");
 	    this.getPotentialCompileTargets();
 	}
 
@@ -53,14 +66,16 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 			if(containsJavac(t.getTasks())) {
 				if(t.getName().contains("test")) {
 					potentialTestTargets.add(t);
-					System.out.println("test: "+t.getName());
+					Debugger.log("test: "+t.getName());
 				}
 				else{
 					potentialSrcTargets.add(t);
-					System.out.println("src: "+t.getName());
+					Debugger.log("src: "+t.getName());
 				}
 			}
 		}
+		getCompileSrcTarget();
+		getCompileTestTarget();
 	}
 	
 	/**
@@ -88,7 +103,7 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 	public String getCompileSrcTarget() {
 		int size = potentialSrcTargets.size();
 		if(size == 0) {
-			System.out.println("Cannot find target that compiles source");
+			Debugger.log("Cannot find target that compiles source");
 			return "";
 		}
 		else if(size == 1) {
@@ -119,19 +134,60 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 		else if(size > 1) {
 			compileTestTarget = potentialTestTargets.get(size - 1);
 		}
+
+		Debugger.log("test target: "+compileTestTarget.getName());
+
 		return compileTestTarget.getName();
 	}
+	
+	private String getDirectoryHelper(String dirType, Target target) {
+		//Compile Target is not found yet
+		if(target == null) {
 
+			//Cannot find Compile Target
+			return "";
+		}
+
+		//Infer Src Directory from Compile Target
+		/**
+		 * Find "javac" Task
+		 * Looks for "srcdir" attribute
+		 */
+		Task[] tasks = target.getTasks();
+		for(Task t : tasks) {
+			if(t.getTaskType().equals("javac")) {
+				RuntimeConfigurable rt =t.getRuntimeConfigurableWrapper();
+				Hashtable att_map = rt.getAttributeMap();
+
+				String srcDirectory = (String) att_map.get(dirType);
+				if(srcDirectory == null) {
+					return "";
+				}else {
+//					System.out.println(srcDirectory);
+					return pp.parse(srcDirectory);
+					//return FileUtils.translatePath(srcDirectory);
+				}
+			}
+		}
+		return "";
+	}
+
+	/**
+	 * Find directory of compiled classes
+	 * 
+	 * IF directory is not found return an empty String
+	 * 
+	 * @return String
+	 */
 	@Override
-	public String getSrcDir() {
-		// TODO Auto-generated method stub
-		return null;
+	public String getCompDir() {
+		return this.getDirectoryHelper("destdir", compileSrcTarget);
 	}
 
 	@Override
 	public String getTestDir() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.getDirectoryHelper("srcdir", compileTestTarget);
 	}
 
 	/**
@@ -142,42 +198,14 @@ public class AntBuildAnalyzer implements BuildFileAnalyzer{
 	 * @return String
 	 */
 	@Override
-	public String getCompSrcDir() {
-		//Compile Target is not found yet
-				if(compileSrcTarget == null) {
-					
-					//Cannot find Compile Target
-					if(getCompileSrcTarget().equals("")) {
-						return "";
-					}
-				} 
-				
-				//Infer Src Directory from Compile Target
-				/**
-				 * Find "javac" Task
-				 * Looks for "srcdir" attribute
-				 */
-				Task[] tasks = compileSrcTarget.getTasks();
-				for(Task t : tasks) {
-					if(t.getTaskType().equals("javac")) {
-						RuntimeConfigurable rt =t.getRuntimeConfigurableWrapper();
-						Hashtable att_map = rt.getAttributeMap();
-						
-						String srcDirectory = (String) att_map.get("srcdir");
-						if(srcDirectory == null) {
-							return "";
-						}else {
-							return srcDirectory;
-						}
-					}
-				}
-				return "";
+	public String getSrcDir() {
+		return this.getDirectoryHelper("srcdir", compileSrcTarget);
 	}
 
 	@Override
 	public String getCompTestDir() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.getDirectoryHelper("destdir", compileTestTarget);
 	}
 
 	@Override

@@ -24,7 +24,8 @@ public class TestSuite1 {
 		assertEquals("compile", aba4.getCompileSrcTarget());
 		
 		
-//		assertEquals("", aba0.getCompileSrcDirectory());
+		assertEquals("src/main/java", aba0.getSrcDir());
+		assertEquals("target/classes", aba0.getCompDir());
 	}
 	
 	@Test
