@@ -1,7 +1,8 @@
 import java.io.File;
-import java.io.IOException;
+import java.io.IOException;import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Map;
+import java.nio.file.Paths;
 
 public class Driver {
 
@@ -16,7 +17,7 @@ public class Driver {
 //            }
 //            System.out.println();
 //        }
-		File buildFile = new File("src/TestBuildFile1.xml");
+		File buildFile = new File("src/TestBuildFile4.xml");
 		File outputFile = new File("build.properties");
 		PropertyWriter pw = new PropertyWriter("ant", buildFile, outputFile);
         
@@ -25,6 +26,7 @@ public class Driver {
         System.out.println("test source: "+aba.getTestDir());
         System.out.println("source dir: "+aba.getSrcDir());
         System.out.println("compiled test classes: "+aba.getCompTestDir());
+        
 	}
 
 }
