@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
@@ -24,12 +25,12 @@ public class PathParser {
 	private Properties properties;
 		
 	private Map<String, String> properties_map;
-	private File build_file;
+
 
 	private Project project;
 	
 	
-	public PathParser(Project project, File f) {
+	public PathParser(Project project) {
 		//Default tasks
 		this.properties = new Properties();
 
@@ -39,7 +40,6 @@ public class PathParser {
 
 		//Load in the build.xml
 		this.project = project;
-		this.build_file = f;
 		this.loadPropertiesFromTarget();
 		
 	}
@@ -95,7 +95,6 @@ public class PathParser {
 		}
 		
 		//Attach rest of the path that doesn't need parsing
-		
 		return Paths.get(result + temp).toString();
 	
 	}
@@ -123,30 +122,55 @@ public class PathParser {
 		
 	}
 	
-
+	/**
+	 * Load Properties Under Target Such As Int
+	 * 
+	 * For Furture: Only load from Init Targets, or Targets that compile/build Target depends on.
+	 */
 	
 	private void loadPropertiesFromTarget() {
 		
+		//Get ALL Target
 		Hashtable target_map = project.getTargets();
 		
 		Enumeration names = target_map.keys();
 		
+		//Get all properties
 		while(names.hasMoreElements()) {
 			String str = (String) names.nextElement();
 			Target t = (Target) target_map.get(str);
 			Task[] tasks = t.getTasks();
+			//Get all Tasks
 			for(Task task : tasks) {
+				//Only care about property tasks
 				if(task.getTaskType() == "property") {
 					RuntimeConfigurable rt = task.getRuntimeConfigurableWrapper();
 					Hashtable att_map = rt.getAttributeMap();
 
+					//Get attribute "name" & "value"
 					String key = (String) att_map.get("name");
 					String value = (String) att_map.get("value");
-					this.properties_map.put(key, value);
+					if(key!=null && value != null)
+						this.properties_map.put(key, value);
 				}
 			}
 		}
-
+		//Get all properties End
+		
+		
+		//Resolve all properties in properties_map
+		Iterator it = this.properties_map.entrySet().iterator();
+		while(it.hasNext()) {
+			Map.Entry pair =(Map.Entry)it.next();
+			String key = (String) pair.getKey();
+			String value = (String) pair.getValue();
+			
+			//Check if resolve is needed
+			if(value.indexOf('$') >= 0)
+				this.properties_map.put( key, this.parse(value));
+			
+		}
+		//Resolve End
 	}
 	
 	

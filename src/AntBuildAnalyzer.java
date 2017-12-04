@@ -53,7 +53,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	    this.getPotentialCompileTargets();
 	    
 	    //Path Parser
-	    pp = new PathParser(project, f);
+	    pp = new PathParser(project);
 	}
 
 	/**
@@ -170,11 +170,17 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 			}
 		}
 		noDupList = javacTasks.stream().distinct().collect(Collectors.toList());
+		
+		Debugger.log("Show Directory list Before Parsing");
+		Debugger.log(noDupList.toString());
+		
 		for(int i=0; i<noDupList.size()-1; i++) {
-
 				ret+=pp.parse(noDupList.get(i)) + ", ";
 		}
 		ret+=pp.parse(noDupList.get(noDupList.size()-1));
+		
+		Debugger.log("Show Directory list After Parsing");
+		Debugger.log(ret);
 		
 		return ret;
 	}
@@ -212,6 +218,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	@Override
 	public String getCompTestDir() {
 		// TODO Auto-generated method stub
+		
 		return this.getDirectoryHelper("javac", "destdir", compileTestTarget);
 	}
 
