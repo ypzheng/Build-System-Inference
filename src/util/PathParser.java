@@ -14,52 +14,33 @@ import java.util.Properties;
 import java.util.Vector;
 
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.RuntimeConfigurable;
 import org.apache.tools.ant.Target;
+import org.apache.tools.ant.Task;
 
 public class PathParser {
 	
 	private String path;
 	private Properties properties;
-	
+		
+	private Map<String, String> properties_map;
 	private File build_file;
 
 	private Project project;
 	
-	public PathParser() {
-		
-		this.properties = new Properties();
-		
-		//For Testing only *******************
-		//Load the property file
-		InputStream file = null;
-		try{
-		file = new FileInputStream("src/default.properties");
-		this.properties.load(file);
-		} catch(IOException ex) {
-			ex.printStackTrace();
-		} finally {
-			if(file != null) {
-				try {
-					file.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		//For Testing only ends *******************
-
-		this.project = null;
-	}
 	
 	public PathParser(Project project, File f) {
 		//Default tasks
 		this.properties = new Properties();
 
 		
+		//Properties under target
+		this.properties_map = new HashMap<String, String>();
+
 		//Load in the build.xml
 		this.project = project;
 		this.build_file = f;
-		this.loadProperties();
+		this.loadPropertiesFromTarget();
 		
 	}
 	
@@ -153,7 +134,7 @@ public class PathParser {
 		}
 		
 		//Look for property value in .properties files
-		resolved = this.properties.getProperty(key);
+		resolved = this.properties_map.get(key);
 		if(resolved != null)
 			return resolved;
 		
@@ -183,6 +164,31 @@ public class PathParser {
 			
 		}//End while loop
 	}
+	
+	private void loadPropertiesFromTarget() {
+		
+		Hashtable target_map = project.getTargets();
+		
+		Enumeration names = target_map.keys();
+		
+		while(names.hasMoreElements()) {
+			String str = (String) names.nextElement();
+			Target t = (Target) target_map.get(str);
+			Task[] tasks = t.getTasks();
+			for(Task task : tasks) {
+				if(task.getTaskType() == "property") {
+					RuntimeConfigurable rt = task.getRuntimeConfigurableWrapper();
+					Hashtable att_map = rt.getAttributeMap();
+
+					String key = (String) att_map.get("name");
+					String value = (String) att_map.get("value");
+					this.properties_map.put(key, value);
+				}
+			}
+		}
+
+	}
+	
 	
 	
 }

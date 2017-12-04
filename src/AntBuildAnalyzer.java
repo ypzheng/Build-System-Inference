@@ -153,8 +153,8 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		
 		//Infer Src Directory from Compile Target
 		/**
-		 * Find "javac" Task
-		 * Looks for "srcdir" attribute
+		 * Find taskType Task
+		 * Looks for dirType attribute
 		 */
 		for(Task t : tasks) {
 			if(t.getTaskType().equals(taskType)) {
