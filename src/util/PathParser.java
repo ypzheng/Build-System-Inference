@@ -45,29 +45,7 @@ public class PathParser {
 	}
 	
 	
-	/**
-	 * Add property files for parsing
-	 */
-	public void addProperties(String filename) {
-		//Load the property file
-		InputStream file = null;
-		try{
-		
-		file = new FileInputStream(filename);
-		
-		this.properties.load(file);
-		} catch(IOException ex) {
-			//ex.printStackTrace();
-		} finally {
-			if(file != null) {
-				try {
-					file.close();
-				} catch (IOException e) {
-					//e.printStackTrace();
-				}
-			}
-		}
-	}
+
 	
 	public String parse(String path) {
 		
@@ -145,25 +123,7 @@ public class PathParser {
 		
 	}
 	
-	private void loadProperties() {
-		Vector<String> files = XmlParser.getPropertiesFiles(this.build_file);
-		boolean changed = true;
-		while(changed) {
-			changed = false;
-			
-			for(String file : files) {
-				String parsed_file = this.parse(file);
-				if(parsed_file.indexOf('$') < 0) {
-					this.addProperties(file);
-					
-					changed = true;
-					files.remove(file);
-					break;
-				}
-			}//End for loop
-			
-		}//End while loop
-	}
+
 	
 	private void loadPropertiesFromTarget() {
 		
@@ -190,5 +150,30 @@ public class PathParser {
 	}
 	
 	
+	/**
+	 * Add property files for parsing
+	 * 
+	 * No longer Necessary
+	 */
+	public void addProperties(String filename) {
+		//Load the property file
+		InputStream file = null;
+		try{
+		
+		file = new FileInputStream(filename);
+		
+		this.properties.load(file);
+		} catch(IOException ex) {
+			//ex.printStackTrace();
+		} finally {
+			if(file != null) {
+				try {
+					file.close();
+				} catch (IOException e) {
+					//e.printStackTrace();
+				}
+			}
+		}
+	}
 	
 }
