@@ -44,14 +44,8 @@ public class AttributeParser {
             String matchResult = matcher.group();
             String property_value = propertyParser.get_property(matchResult.replaceAll(regex2,""));
             if (property_value != null) {
-                valueMap.put(matchResult, property_value);
+                new_value = new_value.replace(matchResult,property_value);
             }
-        }
-
-        Set<String> keys = valueMap.keySet();
-        // replace ${stuff} with real value from property parser
-        for (String key : keys) {
-            new_value = new_value.replace(key,valueMap.get(key));
         }
         return new_value;
     }
