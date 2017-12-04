@@ -9,84 +9,43 @@ import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.RuntimeConfigurable;
 import org.apache.tools.ant.Target;
+import org.apache.tools.ant.Task;
 
 public class PathParser {
 	
 	private String path;
 	private Properties properties;
-	
-	private File build_file;
+		
+	private Map<String, String> properties_map;
+
 
 	private Project project;
 	
-	public PathParser() {
-		
-		this.properties = new Properties();
-		
-		//For Testing only *******************
-		//Load the property file
-		InputStream file = null;
-		try{
-		file = new FileInputStream("src/default.properties");
-		this.properties.load(file);
-		} catch(IOException ex) {
-			ex.printStackTrace();
-		} finally {
-			if(file != null) {
-				try {
-					file.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		//For Testing only ends *******************
-
-		this.project = null;
-	}
 	
-	public PathParser(Project project, File f) {
+	public PathParser(Project project) {
 		//Default tasks
 		this.properties = new Properties();
 
 		
+		//Properties under target
+		this.properties_map = new HashMap<String, String>();
+
 		//Load in the build.xml
 		this.project = project;
-		this.build_file = f;
-		this.loadProperties();
+		this.loadPropertiesFromTarget();
 		
 	}
 	
 	
-	/**
-	 * Add property files for parsing
-	 */
-	public void addProperties(String filename) {
-		//Load the property file
-		InputStream file = null;
-		try{
-		
-		file = new FileInputStream(filename);
-		
-		this.properties.load(file);
-		} catch(IOException ex) {
-			//ex.printStackTrace();
-		} finally {
-			if(file != null) {
-				try {
-					file.close();
-				} catch (IOException e) {
-					//e.printStackTrace();
-				}
-			}
-		}
-	}
+
 	
 	public String parse(String path) {
 		
@@ -136,7 +95,6 @@ public class PathParser {
 		}
 		
 		//Attach rest of the path that doesn't need parsing
-		
 		return Paths.get(result + temp).toString();
 	
 	}
@@ -153,7 +111,7 @@ public class PathParser {
 		}
 		
 		//Look for property value in .properties files
-		resolved = this.properties.getProperty(key);
+		resolved = this.properties_map.get(key);
 		if(resolved != null)
 			return resolved;
 		
@@ -164,25 +122,82 @@ public class PathParser {
 		
 	}
 	
-	private void loadProperties() {
-		Vector<String> files = XmlParser.getPropertiesFiles(this.build_file);
-		boolean changed = true;
-		while(changed) {
-			changed = false;
-			
-			for(String file : files) {
-				String parsed_file = this.parse(file);
-				if(parsed_file.indexOf('$') < 0) {
-					this.addProperties(file);
-					
-					changed = true;
-					files.remove(file);
-					break;
+	/**
+	 * Load Properties Under Target Such As Int
+	 * 
+	 * For Furture: Only load from Init Targets, or Targets that compile/build Target depends on.
+	 */
+	
+	private void loadPropertiesFromTarget() {
+		
+		//Get ALL Target
+		Hashtable target_map = project.getTargets();
+		
+		Enumeration names = target_map.keys();
+		
+		//Get all properties
+		while(names.hasMoreElements()) {
+			String str = (String) names.nextElement();
+			Target t = (Target) target_map.get(str);
+			Task[] tasks = t.getTasks();
+			//Get all Tasks
+			for(Task task : tasks) {
+				//Only care about property tasks
+				if(task.getTaskType() == "property") {
+					RuntimeConfigurable rt = task.getRuntimeConfigurableWrapper();
+					Hashtable att_map = rt.getAttributeMap();
+
+					//Get attribute "name" & "value"
+					String key = (String) att_map.get("name");
+					String value = (String) att_map.get("value");
+					if(key!=null && value != null)
+						this.properties_map.put(key, value);
 				}
-			}//End for loop
+			}
+		}
+		//Get all properties End
+		
+		
+		//Resolve all properties in properties_map
+		Iterator it = this.properties_map.entrySet().iterator();
+		while(it.hasNext()) {
+			Map.Entry pair =(Map.Entry)it.next();
+			String key = (String) pair.getKey();
+			String value = (String) pair.getValue();
 			
-		}//End while loop
+			//Check if resolve is needed
+			if(value.indexOf('$') >= 0)
+				this.properties_map.put( key, this.parse(value));
+			
+		}
+		//Resolve End
 	}
 	
+	
+	/**
+	 * Add property files for parsing
+	 * 
+	 * No longer Necessary
+	 */
+	public void addProperties(String filename) {
+		//Load the property file
+		InputStream file = null;
+		try{
+		
+		file = new FileInputStream(filename);
+		
+		this.properties.load(file);
+		} catch(IOException ex) {
+			//ex.printStackTrace();
+		} finally {
+			if(file != null) {
+				try {
+					file.close();
+				} catch (IOException e) {
+					//e.printStackTrace();
+				}
+			}
+		}
+	}
 	
 }

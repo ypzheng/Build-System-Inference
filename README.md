@@ -14,8 +14,8 @@ Project Root
 		| --- default package
 			|
 			| --- BuildAnalyzer Interface
-			| --- AntBuildAnalyzer (implements BuildFileAnalyzer)
-			| --- BuildAnalyzerAdapter (implements BuildFileAnalyzer)
+			| --- AntBuildAnalyzer (implements BuildAnalyzer)
+			| --- BuildAnalyzerAdapter (implements BuildAnalyzer)
 			| --- PropertyWriter (writes inferred properties into .properties file)
 			| --- Driver (specifies input build file and output file, runs the analyzer)
 			|
@@ -23,6 +23,7 @@ Project Root
 			|
 			| --- Debugger (manages console printing)
 			| --- PathParser (parses paths in property files that come along with build files)
+			| --- XmlParser (helper class to parse <property> tag in order to load .properties file)
 			|
 	| --- test
 		|
