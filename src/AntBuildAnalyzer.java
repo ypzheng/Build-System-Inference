@@ -53,13 +53,14 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		
 	    while(vEnum.hasMoreElements())
 	    		Debugger.log(vEnum.nextElement() + "\n");
-	    this.getPotentialCompileTargets();
 	    
 	    //Path Parser
 	    pp = new PathParser(project);
 	    
-	    //DirectoryHelper
+	    //taskHelper
 	    taskHelper = new TaskHelper(pp);
+	    
+	    this.getPotentialCompileTargets();
 	}
 
 	/**
@@ -84,10 +85,36 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 				}
 			}
 		}
-		getCompileSrcTarget();
-		getCompileTestTarget();
+//		getCompileSrcTarget();
+//		getCompileTestTarget();
+		enhanceSrcTargetFinding();
+		enhanceTestTargetFinding();
 	}
 	
+	private void enhanceSrcTargetFinding() {
+		if(potentialSrcTargets.size() == 0) {
+			Debugger.log("Cannot find target that compiles source.");
+		}
+		else{
+			this.compileSrcTarget = potentialSrcTargets.get(potentialSrcTargets.size()-1);
+		}
+		
+		// if no target name that contains "test" and there is exactly one compile source target, 
+		// check if the compile source target contains multiple javac.  If true, test.compile = src.compile
+	
+	}
+	private void enhanceTestTargetFinding() {
+		if(potentialTestTargets.size() == 0 && potentialSrcTargets.size() == 1) {
+			Target target = potentialSrcTargets.get(0);
+			if(taskHelper.getTasks("javac", target).size()>1) {
+				this.compileTestTarget = target;
+			}
+		}
+		else{
+			this.compileTestTarget = potentialTestTargets.get(potentialTestTargets.size()-1);
+		}
+		
+	}
 	/**
 	 * Helpter method that checks if a task contains javac.
 	 * @param tasks
@@ -111,17 +138,17 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 * @return
 	 */
 	public String getCompileSrcTarget() {
-		int size = potentialSrcTargets.size();
-		if(size == 0) {
-			Debugger.log("Cannot find target that compiles source");
-			return "";
-		}
-		else if(size == 1) {
-			compileSrcTarget = potentialSrcTargets.get(0);
-		}
-		else if(size > 1) {
-			compileSrcTarget = potentialSrcTargets.get(size - 1);
-		}
+//		int size = potentialSrcTargets.size();
+//		if(size == 0) {
+//			Debugger.log("Cannot find target that compiles source");
+//			return "";
+//		}
+//		else if(size == 1) {
+//			compileSrcTarget = potentialSrcTargets.get(0);
+//		}
+//		else if(size > 1) {
+//			compileSrcTarget = potentialSrcTargets.get(size - 1);
+//		}
 		
 		return compileSrcTarget.getName();
 	}
@@ -134,18 +161,18 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 * @return
 	 */
 	public String getCompileTestTarget() {
-		int size = potentialTestTargets.size();
-		if(size ==0 && this.getCompileSrcTarget()!=null) {
-			compileTestTarget = this.compileSrcTarget;
-		}
-		else if(size == 1) {
-			compileTestTarget = potentialTestTargets.get(0);
-		}
-		else if(size > 1) {
-			compileTestTarget = potentialTestTargets.get(size - 1);
-		}
-
-		Debugger.log("test target: "+compileTestTarget.getName());
+//		int size = potentialTestTargets.size();
+//		if(size ==0 && this.getCompileSrcTarget()!=null) {
+//			compileTestTarget = this.compileSrcTarget;
+//		}
+//		else if(size == 1) {
+//			compileTestTarget = potentialTestTargets.get(0);
+//		}
+//		else if(size > 1) {
+//			compileTestTarget = potentialTestTargets.get(size - 1);
+//		}
+//
+//		Debugger.log("test target: "+compileTestTarget.getName());
 
 		return compileTestTarget.getName();
 	}

@@ -22,6 +22,7 @@ public class Driver {
 		PropertyWriter pw = new PropertyWriter("ant", buildFile, outputFile);
         
         AntBuildAnalyzer aba = new AntBuildAnalyzer(buildFile);
+        System.out.println("compiled classes: " +aba.getCompileSrcTarget());
         System.out.println("compiled classes: " +aba.getCompDir());
         System.out.println("test source: "+aba.getTestDir());
         System.out.println("source dir: "+aba.getSrcDir());
