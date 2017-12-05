@@ -3,9 +3,7 @@ import java.util.*;
 import java.util.Hashtable;
 
 import org.apache.tools.ant.*;
-import org.apache.tools.ant.taskdefs.Javac;
-import util.AttributeParser;
-import util.PropertyParser;
+import util.ClassPathParser;
 
 public class Ex_Get_Depend {
 
@@ -53,7 +51,7 @@ public class Ex_Get_Depend {
         project.init();
         File buildFile = project.resolveFile("/Users/Jucong/Downloads/connect-four/build.xml");
         helper.configureProject(project, buildFile);
-        AttributeParser attributeParser = new AttributeParser(project);
+        ClassPathParser classPathParser = new ClassPathParser(project);
         Hashtable<String, Target> target_table = project.getTargets();
         Vector<Target> sorted_target = project.topoSort("all",target_table);
         Enumeration<String > keys = target_table.keys();
@@ -64,7 +62,7 @@ public class Ex_Get_Depend {
             if (target.getName().equals("compile")) {
                 for (Task tsk : tasks) {
                     if (tsk.getTaskType().equals("javac")) {
-                        String[] paths = attributeParser.parseClassPath(tsk.getRuntimeConfigurableWrapper());
+                        String[] paths = classPathParser.parseClassPath(tsk.getRuntimeConfigurableWrapper());
                         if (paths != null) {
                             printPath(paths);
                         } else {

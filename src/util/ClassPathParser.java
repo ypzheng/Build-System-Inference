@@ -7,14 +7,14 @@ import java.util.regex.Pattern;
 import org.apache.tools.ant.types.Path;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
-public class AttributeParser {
+public class ClassPathParser {
 
     private PropertyParser propertyParser;
     private Project myProject;
     private final String regex = "\\$\\{[^\\$]*\\}";
     private final String regex2 = "[$\\{}]";
     private final Pattern pattern = Pattern.compile(regex);
-    public AttributeParser(Project project) {
+    public ClassPathParser(Project project) {
         myProject = project;
         propertyParser = new PropertyParser(project);
     }
@@ -25,7 +25,7 @@ public class AttributeParser {
         return {jarfile:target/commons-lang-2.5-sources.jar}
      */
 
-    public Map<String, String> getAttributeValues(RuntimeConfigurable runtimeConfigurable) {
+    private Map<String, String> getAttributeValues(RuntimeConfigurable runtimeConfigurable) {
         Hashtable<String, Object> cfg_table = runtimeConfigurable.getAttributeMap();
         Enumeration<String> cfgKeys = cfg_table.keys();
         Map<String,String> attrMap = new HashMap<>();
