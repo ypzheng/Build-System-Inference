@@ -15,7 +15,7 @@ import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.util.FileUtils;
 import util.PathParser;
 import util.Debugger;
-import util.DirectoryHelper;
+import util.TaskHelper;
 
 public class AntBuildAnalyzer implements BuildAnalyzer{
 	private Vector sortedTargets;
@@ -23,7 +23,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	private Target compileSrcTarget, compileTestTarget;
 	
 	private PathParser pp;
-	private DirectoryHelper dirHelper;
+	private TaskHelper taskHelper;
 	
 	
 	public AntBuildAnalyzer(File f) {
@@ -58,7 +58,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	    pp = new PathParser(project);
 	    
 	    //DirectoryHelper
-	    dirHelper = new DirectoryHelper(pp);
+	    taskHelper = new TaskHelper(pp);
 	}
 
 	/**
@@ -158,13 +158,13 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 */
 	@Override
 	public String getCompDir() {
-		return dirHelper.getDirectory("javac", "destdir", compileSrcTarget);
+		return taskHelper.getDirectory("javac", "destdir", compileSrcTarget);
 	}
 
 	@Override
 	public String getTestDir() {
 		// TODO Auto-generated method stub
-		return dirHelper.getDirectory("javac", "srcdir", compileTestTarget);
+		return taskHelper.getDirectory("javac", "srcdir", compileTestTarget);
 	}
 
 	/**
@@ -176,13 +176,13 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 */
 	@Override
 	public String getSrcDir() {
-		return dirHelper.getDirectory("javac", "srcdir", compileSrcTarget);
+		return taskHelper.getDirectory("javac", "srcdir", compileSrcTarget);
 	}
 
 	@Override
 	public String getCompTestDir() {
 		// TODO Auto-generated method stub
-		return dirHelper.getDirectory("javac", "destdir", compileTestTarget);
+		return taskHelper.getDirectory("javac", "destdir", compileTestTarget);
 	}
 
 	@Override

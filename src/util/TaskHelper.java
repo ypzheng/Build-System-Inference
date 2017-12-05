@@ -9,16 +9,41 @@ import org.apache.tools.ant.RuntimeConfigurable;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 
-public class DirectoryHelper {
+public class TaskHelper {
 	private PathParser pp;
 	
-	public DirectoryHelper(PathParser pp) {
+	public TaskHelper(PathParser pp) {
 		this.pp = pp;
+	}
+	
+	public List<Task> getTasks(String taskType, Target target) {
+		Task[] tasks = target.getTasks();
+		List<Task> tasksOfInterest = new ArrayList<Task>();
+		if(taskType == "") {
+			Debugger.log("taskType is empty, please input valid taskType");
+		}
+		for(Task t : tasks) {
+			if(t.getTaskName().equals(taskType)) {
+				tasksOfInterest.add(t);
+			}
+		}
+		if(tasksOfInterest.size() == 0)
+			Debugger.log("No task: "+taskType+" found under "+target.getName()+", returning null");
+		return tasksOfInterest;
+	}
+	
+	public Hashtable getAttributes(Task t){
+		RuntimeConfigurable rt =t.getRuntimeConfigurableWrapper();
+		Hashtable att_map = rt.getAttributeMap();
+		return att_map;
+	}
+	
+	public String getAttr(Task t, String attrOfInterest){
+		return (String)this.getAttributes(t).get(attrOfInterest);
 	}
 	
 	public String getDirectory(String taskType, String dirType, Target target) {
 		//Compile Target is not found yet
-				Task[] tasks = target.getTasks();
 				List<String> javacTasks = new ArrayList<String>();
 				List<String> noDupList;
 				String ret = "";
@@ -28,12 +53,9 @@ public class DirectoryHelper {
 				 * Find taskType Task
 				 * Looks for dirType attribute
 				 */
-				for(Task t : tasks) {
+				for(Task t : this.getTasks(taskType, target)) {
 					if(t.getTaskType().equals(taskType)) {
-						RuntimeConfigurable rt =t.getRuntimeConfigurableWrapper();
-						Hashtable att_map = rt.getAttributeMap();
-
-						String srcDirectory = (String) att_map.get(dirType);
+						String srcDirectory = (String)this.getAttr(t, dirType);
 						if(srcDirectory == null) {
 							Debugger.log("no "+dirType+" exists in "+target.getName());
 						}else {
