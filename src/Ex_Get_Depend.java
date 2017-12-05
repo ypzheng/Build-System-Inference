@@ -1,74 +1,71 @@
 import java.io.File;
 import java.util.*;
+import java.util.Hashtable;
 
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.ProjectHelper;
-import org.apache.tools.ant.Target;
-import org.apache.tools.ant.taskdefs.Tar;
+import org.apache.tools.ant.*;
+import org.apache.tools.ant.taskdefs.Javac;
+import util.AttributeParser;
+import util.PropertyParser;
 
 public class Ex_Get_Depend {
-    private Project project;
-    private ProjectHelper helper;
-    private File buildFile;
-    private String COMPILE = "compile";
-    private String TEST = "test";
 
-    public Ex_Get_Depend() {
-        project = new Project();
+    public static void printMap(Map<String, String> map) {
+        Set<String> keys = map.keySet();
+        for (String key:keys) {
+            System.out.println("Key: " + key +" Value: " +map.get(key));
+        }
+        System.out.println("==========");
+    }
+
+    public static void printPath(String[] paths) {
+        for (String path: paths) {
+            System.out.println(path);
+            Stack<File> folders = new Stack<File>();
+            folders.add(new File(path));
+            while (!folders.isEmpty()) {
+                File folder = folders.pop();
+                File[] listOfFiles = folder.listFiles();
+                for (int i = 0; i < listOfFiles.length; i++) {
+                    if (listOfFiles[i].isFile()) {
+                        String fileName = listOfFiles[i].getName();
+                        if (fileName.endsWith(".class")) {
+                            System.out.println("File " + listOfFiles[i].getName());
+                        }
+                    } else if (listOfFiles[i].isDirectory()) {
+                        String absPath = listOfFiles[i].getAbsolutePath();
+                        File newFolder = new File(absPath);
+                        folders.add(newFolder);
+                    }
+                }
+            }
+        }
+    }
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+        Project project = new Project();
+        ProjectHelper helper = new ProjectHelper();
         project.init();
-        helper = new ProjectHelper();
-        buildFile = project.resolveFile("src/build.xml");
+        File buildFile = project.resolveFile("test/TestBuildFile3.xml");
         helper.configureProject(project, buildFile);
-    }
+        AttributeParser attributeParser = new AttributeParser(project);
+        Hashtable<String, Target> target_table = project.getTargets();
+        Vector<Target> sorted_target = project.topoSort("all",target_table);
+        Enumeration<String > keys = target_table.keys();
 
-    private Stack<Target> getCompileTarget(String type) {
-        Stack<Target> return_targets = new Stack<>();
-        Hashtable<String, Target> targets_table = project.getTargets();
-        Enumeration<Target> targets = targets_table.elements();
-        while (targets.hasMoreElements()) {
-            Target target = targets.nextElement();
-            String t_name = target.getName();
-            if (type.equals(COMPILE)) {
-                if (t_name.contains(COMPILE) && !t_name.contains(TEST)) {
-                    return_targets.add(target);
+        for (Target target:sorted_target) {
+            Task[] tasks = target.getTasks();
+//            target.execute();
+            if (target.getName().equals("compile")) {
+                for (Task tsk : tasks) {
+                    System.out.println(tsk.getTaskType());
+                    if (tsk.getTaskType().equals("javac")) {
+                        String[] paths = attributeParser.parseClassPath(tsk.getRuntimeConfigurableWrapper());
+//                        printPath(paths);
+                    }
                 }
-            } else {
-                if (t_name.contains(TEST)) {
-                    return_targets.add(target);
-                }
+                break;
             }
         }
-        return return_targets;
     }
 
-    private Target getTarget(String name) {
-        Hashtable<String, Target> targets_table = project.getTargets();
-        Enumeration<Target> targets = targets_table.elements();
-        while (targets.hasMoreElements()) {
-            Target target = targets.nextElement();
-            String t_name = target.getName();
-            if (t_name.equals(name)) {
-                return target;
-            }
-        }
-        return null;
-    }
-
-    public Map<String, ArrayList<String>> getDependencies() {
-        Stack<Target> targets = getCompileTarget(TEST);
-        Map<String,ArrayList<String>> dependencies = new HashMap<>();
-        while (!targets.isEmpty()) {
-            Target t = targets.pop();
-            Enumeration<String> targetDependencies = t.getDependencies();
-            ArrayList<String> temp = new ArrayList<>();
-            while (targetDependencies.hasMoreElements()) {
-                String tname = targetDependencies.nextElement();
-                temp.add(tname);
-                Target newTarget = getTarget(tname);
-                targets.add(newTarget);
-            }
-            dependencies.put(t.getName(), temp);
-        }
-        return dependencies;
-    }
 }

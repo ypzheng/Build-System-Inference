@@ -4,14 +4,18 @@ import org.apache.tools.ant.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.tools.ant.types.Path;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 public class AttributeParser {
 
-    PropertyParser propertyParser;
+    private PropertyParser propertyParser;
+    private Project myProject;
     private final String regex = "\\$\\{[^\\$]*\\}";
     private final String regex2 = "[$\\{}]";
     private final Pattern pattern = Pattern.compile(regex);
     public AttributeParser(Project project) {
+        myProject = project;
         propertyParser = new PropertyParser(project);
     }
 
@@ -21,13 +25,13 @@ public class AttributeParser {
         return {jarfile:target/commons-lang-2.5-sources.jar}
      */
 
-    public Map<String, String> getAttributeValues(Task task) {
-        RuntimeConfigurable runtimeConfigurable = task.getRuntimeConfigurableWrapper();
+    public Map<String, String> getAttributeValues(RuntimeConfigurable runtimeConfigurable) {
         Hashtable<String, Object> cfg_table = runtimeConfigurable.getAttributeMap();
         Enumeration<String> cfgKeys = cfg_table.keys();
         Map<String,String> attrMap = new HashMap<>();
         while (cfgKeys.hasMoreElements()) {
             String cfgKey = cfgKeys.nextElement();
+            System.out.println(cfgKey);
             String parsedValue = parseAttributeValue(cfg_table.get(cfgKey).toString());
             attrMap.put(cfgKey,parsedValue);
         }
@@ -48,6 +52,25 @@ public class AttributeParser {
             }
         }
         return new_value;
+    }
+
+    public String[] parseClassPath(RuntimeConfigurable cfg) {
+        Enumeration<RuntimeConfigurable> children = cfg.getChildren();
+        while (children.hasMoreElements()) {
+            RuntimeConfigurable child = children.nextElement();
+            System.out.println(child.getElementTag());
+            if (child.getElementTag().equals("classpath")) {
+                System.out.println("Found classpath");
+                if (!child.getAttributeMap().contains("refid")) {
+                    System.out.println("Can't find classpath with refid");
+                } else {
+                    String ref = child.getAttributeMap().get("refid").toString();
+                    Path path =  myProject.getReference(ref);
+                    return path.list();
+                }
+            }
+        }
+        return new String[1];
     }
 
 }
