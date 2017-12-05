@@ -201,7 +201,11 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	@Override
 	public String getTestList() {
 		// TODO Auto-generated method stub
-		return null;
+		DirectoryScanner ds = new DirectoryScanner();
+		String[] list = getTests(ds.getIncludedFiles(),ds.getExcludedFiles(), ds.getBasedir().getName());
+		StringBuilder testList = new StringBuilder();
+		for(String tests : list) testList.append(tests);
+		return new String(testList);
 	}
 	
 	private String[] getTests(String[] includes, String[] excludes, String baseDir) {
