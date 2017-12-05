@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
+import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.RuntimeConfigurable;
@@ -201,5 +202,15 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	public String getTestList() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	private String[] getTests(String[] includes, String[] excludes, String baseDir) {
+		DirectoryScanner ds = new DirectoryScanner();
+		ds.setIncludes(includes);
+		ds.setExcludes(excludes);
+		ds.setBasedir(baseDir);
+		ds.setCaseSensitive(true);
+		ds.scan();
+		return ds.getIncludedFiles();
 	}
 }
