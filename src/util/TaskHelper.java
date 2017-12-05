@@ -9,10 +9,10 @@ import org.apache.tools.ant.RuntimeConfigurable;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 
-public class DirectoryHelper {
+public class TaskHelper {
 	private PathParser pp;
 	
-	public DirectoryHelper(PathParser pp) {
+	public TaskHelper(PathParser pp) {
 		this.pp = pp;
 	}
 	
