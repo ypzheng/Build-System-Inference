@@ -1,9 +1,5 @@
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.tools.ant.DirectoryScanner;
@@ -14,6 +10,7 @@ import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.util.FileUtils;
+import util.ClassPathParser;
 import util.PathParser;
 import util.Debugger;
 import util.TaskHelper;
@@ -25,17 +22,15 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	
 	private PathParser pp;
 	private TaskHelper taskHelper;
-	
-	
-	public AntBuildAnalyzer(File f) {
+    private ClassPathParser classPathParser;
+
+    public AntBuildAnalyzer(File f) {
 		//Initialize Variables
 		compileSrcTarget = null;
 		compileTestTarget = null;
 		potentialSrcTargets = new ArrayList<Target>();
 		potentialTestTargets = new ArrayList<Target>();
-		
-		
-		
+
 		//Enable Console printing
 		//Debugger.enable();
 		
@@ -60,7 +55,8 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	    
 	    //DirectoryHelper
 	    taskHelper = new TaskHelper(pp);
-	}
+	    classPathParser = new ClassPathParser(project);
+    }
 
 	/**
 	 * If a target contains javac: check if the target name contains "test",
@@ -189,6 +185,17 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	@Override
 	public String getSrcDep() {
 		// TODO Auto-generated method stub
+		Task[] tasks = compileSrcTarget.getTasks();
+        for (Task tsk : tasks) {
+            if (tsk.getTaskType().equals("javac")) {
+                String[] paths = classPathParser.parseClassPath(tsk.getRuntimeConfigurableWrapper());
+                if (paths != null) {
+                    printPath(paths);
+                } else {
+                    System.out.println("Can't find class path in Javac abort");
+                }
+            }
+        }
 		return null;
 	}
 
@@ -217,4 +224,37 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		ds.scan();
 		return ds.getIncludedFiles();
 	}
+
+    /*
+    Perform a DFS recursively find all the file in the given root folder
+ */
+    private void printPath(String[] paths) {
+        for (String path: paths) {
+            Stack<File> folders = new Stack<>();
+            folders.add(new File(path));
+            while (!folders.isEmpty()) {
+                File folder = folders.pop();
+                if (folder.isFile()) {
+                    System.out.println(folder.getName());
+                } else {
+                    File[] listOfFiles = folder.listFiles();
+                    if (listOfFiles != null){
+                        for (int i = 0; i < listOfFiles.length; i++) {
+                            if (listOfFiles[i].isFile()) {
+                                String fileName = listOfFiles[i].getName();
+                                if (fileName.endsWith(".class")) {
+                                    System.out.println("File " + listOfFiles[i].getName());
+                                }
+                            } else if (listOfFiles[i].isDirectory()) {
+                                String absPath = listOfFiles[i].getAbsolutePath();
+                                File newFolder = new File(absPath);
+                                folders.add(newFolder);
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+    }
 }
