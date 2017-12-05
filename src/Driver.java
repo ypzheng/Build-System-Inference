@@ -17,7 +17,7 @@ public class Driver {
 //            }
 //            System.out.println();
 //        }
-		File buildFile = new File("/Users/juconghe/Downloads/commons-lang-LANG_2_5/build.xml");
+		File buildFile = new File("src/build.xml");
 		File outputFile = new File("build.properties");
 		PropertyWriter pw = new PropertyWriter("ant", buildFile, outputFile);
 

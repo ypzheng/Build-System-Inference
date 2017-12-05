@@ -17,7 +17,7 @@ import util.TaskHelper;
 
 public class AntBuildAnalyzer implements BuildAnalyzer{
 	private Vector sortedTargets;
-	private ArrayList<Target> potentialSrcTargets, potentialTestTargets;
+	private ArrayList<Target> potentialSrcTargets, potentialTestTargets, junitTargets;
 	private Target compileSrcTarget, compileTestTarget;
 
 	private PathParser pp;
@@ -30,6 +30,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		compileTestTarget = null;
 		potentialSrcTargets = new ArrayList<Target>();
 		potentialTestTargets = new ArrayList<Target>();
+		junitTargets = new ArrayList<Target>();
 
 		//Enable Console printing
 		//Debugger.enable();
@@ -69,7 +70,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		Enumeration vEnum = sortedTargets.elements();
 		while(vEnum.hasMoreElements()) {
 			Target t = (Target) vEnum.nextElement();
-			if(containsJavac(t.getTasks())) {
+			if(taskHelper.containsTask(t.getTasks(),"javac")) {
 				if(t.getName().contains("test")) {
 					potentialTestTargets.add(t);
 					Debugger.log("test: "+t.getName());
@@ -79,9 +80,10 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 					Debugger.log("src: "+t.getName());
 				}
 			}
+			else if(taskHelper.containsTask(t.getTasks(), "junit")) {
+				junitTargets.add(t);
+			}
 		}
-//		getCompileSrcTarget();
-//		getCompileTestTarget();
 		enhanceSrcTargetFinding();
 		enhanceTestTargetFinding();
 	}
@@ -93,12 +95,10 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		else{
 			this.compileSrcTarget = potentialSrcTargets.get(potentialSrcTargets.size()-1);
 		}
-
-		// if no target name that contains "test" and there is exactly one compile source target,
-		// check if the compile source target contains multiple javac.  If true, test.compile = src.compile
-
 	}
 	private void enhanceTestTargetFinding() {
+		// if no target name that contains "test" and there is exactly one compile source target,
+		// check if the compile source target contains multiple javac.  If true, test.compile = src.compile
 		if(potentialTestTargets.size() == 0 && potentialSrcTargets.size() == 1) {
 			Target target = potentialSrcTargets.get(0);
 			if(taskHelper.getTasks("javac", target).size()>1) {
@@ -110,19 +110,6 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		}
 
 	}
-	/**
-	 * Helpter method that checks if a task contains javac.
-	 * @param tasks
-	 * @return
-	 */
-	private boolean containsJavac(Task[] tasks) {
-		for(Task t : tasks) {
-			if(t.getTaskType().equals("javac")) {
-				return true;
-			}
-		}
-		return false;
-	}
 
 	/**
 	 * Get compile-source target from the potential targets array.
@@ -133,18 +120,6 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 * @return
 	 */
 	public String getCompileSrcTarget() {
-//		int size = potentialSrcTargets.size();
-//		if(size == 0) {
-//			Debugger.log("Cannot find target that compiles source");
-//			return "";
-//		}
-//		else if(size == 1) {
-//			compileSrcTarget = potentialSrcTargets.get(0);
-//		}
-//		else if(size > 1) {
-//			compileSrcTarget = potentialSrcTargets.get(size - 1);
-//		}
-
 		return compileSrcTarget.getName();
 	}
 
@@ -156,19 +131,6 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 * @return
 	 */
 	public String getCompileTestTarget() {
-//		int size = potentialTestTargets.size();
-//		if(size ==0 && this.getCompileSrcTarget()!=null) {
-//			compileTestTarget = this.compileSrcTarget;
-//		}
-//		else if(size == 1) {
-//			compileTestTarget = potentialTestTargets.get(0);
-//		}
-//		else if(size > 1) {
-//			compileTestTarget = potentialTestTargets.get(size - 1);
-//		}
-//
-//		Debugger.log("test target: "+compileTestTarget.getName());
-
 		return compileTestTarget.getName();
 	}
 
@@ -247,6 +209,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		return new String(testList);
 	}
 
+ 
 	private String[] getTests(String[] includes, String[] excludes, String baseDir) {
 		DirectoryScanner ds = new DirectoryScanner();
 		ds.setIncludes(includes);
