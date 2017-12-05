@@ -17,26 +17,32 @@ public class Ex_Get_Depend {
         System.out.println("==========");
     }
 
-    public static void printPath(String[] paths) {
+    private static void printPath(String[] paths) {
         for (String path: paths) {
-            System.out.println(path);
-            Stack<File> folders = new Stack<File>();
+            Stack<File> folders = new Stack<>();
             folders.add(new File(path));
             while (!folders.isEmpty()) {
                 File folder = folders.pop();
-                File[] listOfFiles = folder.listFiles();
-                for (int i = 0; i < listOfFiles.length; i++) {
-                    if (listOfFiles[i].isFile()) {
-                        String fileName = listOfFiles[i].getName();
-                        if (fileName.endsWith(".class")) {
-                            System.out.println("File " + listOfFiles[i].getName());
+                if (folder.isFile()) {
+                    System.out.println(folder.getName());
+                } else {
+                    File[] listOfFiles = folder.listFiles();
+                    if (listOfFiles != null){
+                        for (int i = 0; i < listOfFiles.length; i++) {
+                            if (listOfFiles[i].isFile()) {
+                                String fileName = listOfFiles[i].getName();
+                                if (fileName.endsWith(".class")) {
+                                    System.out.println("File " + listOfFiles[i].getName());
+                                }
+                            } else if (listOfFiles[i].isDirectory()) {
+                                String absPath = listOfFiles[i].getAbsolutePath();
+                                File newFolder = new File(absPath);
+                                folders.add(newFolder);
+                            }
                         }
-                    } else if (listOfFiles[i].isDirectory()) {
-                        String absPath = listOfFiles[i].getAbsolutePath();
-                        File newFolder = new File(absPath);
-                        folders.add(newFolder);
-                    }
                 }
+                }
+
             }
         }
     }
@@ -45,7 +51,7 @@ public class Ex_Get_Depend {
         Project project = new Project();
         ProjectHelper helper = new ProjectHelper();
         project.init();
-        File buildFile = project.resolveFile("test/TestBuildFile3.xml");
+        File buildFile = project.resolveFile("/Users/Jucong/Downloads/connect-four/build.xml");
         helper.configureProject(project, buildFile);
         AttributeParser attributeParser = new AttributeParser(project);
         Hashtable<String, Target> target_table = project.getTargets();
@@ -54,16 +60,18 @@ public class Ex_Get_Depend {
 
         for (Target target:sorted_target) {
             Task[] tasks = target.getTasks();
-//            target.execute();
+            target.execute();
             if (target.getName().equals("compile")) {
                 for (Task tsk : tasks) {
-                    System.out.println(tsk.getTaskType());
                     if (tsk.getTaskType().equals("javac")) {
                         String[] paths = attributeParser.parseClassPath(tsk.getRuntimeConfigurableWrapper());
-//                        printPath(paths);
+                        if (paths != null) {
+                            printPath(paths);
+                        } else {
+                            System.out.println("Can't find class path in Javac abort");
+                        }
                     }
                 }
-                break;
             }
         }
     }

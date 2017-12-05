@@ -31,7 +31,6 @@ public class AttributeParser {
         Map<String,String> attrMap = new HashMap<>();
         while (cfgKeys.hasMoreElements()) {
             String cfgKey = cfgKeys.nextElement();
-            System.out.println(cfgKey);
             String parsedValue = parseAttributeValue(cfg_table.get(cfgKey).toString());
             attrMap.put(cfgKey,parsedValue);
         }
@@ -58,11 +57,10 @@ public class AttributeParser {
         Enumeration<RuntimeConfigurable> children = cfg.getChildren();
         while (children.hasMoreElements()) {
             RuntimeConfigurable child = children.nextElement();
-            System.out.println(child.getElementTag());
             if (child.getElementTag().equals("classpath")) {
-                System.out.println("Found classpath");
                 if (!child.getAttributeMap().contains("refid")) {
-                    System.out.println("Can't find classpath with refid");
+                    ArrayList<String> paths = classPathHelper(child);
+                    return arrayList2Array(paths);
                 } else {
                     String ref = child.getAttributeMap().get("refid").toString();
                     Path path =  myProject.getReference(ref);
@@ -70,7 +68,29 @@ public class AttributeParser {
                 }
             }
         }
-        return new String[1];
+        return null;
+    }
+
+    private ArrayList<String> classPathHelper(RuntimeConfigurable cfg) {
+        String baseDir = myProject.getBaseDir().getAbsolutePath();
+        ArrayList<String> paths = new ArrayList<>();
+        Enumeration<RuntimeConfigurable> classpaths = cfg.getChildren();
+        while (classpaths.hasMoreElements()) {
+            RuntimeConfigurable child = classpaths.nextElement();
+            if (child.getElementTag().equals("pathelement")) {
+                String path = baseDir +"/"+getAttributeValues(child).get("location");
+                paths.add(path);
+            }
+        }
+        return paths;
+    }
+
+    private String[] arrayList2Array(ArrayList<String> al) {
+        String[] array = new String[al.size()];
+        for (int i = 0; i < al.size(); i ++) {
+            array[i] = al.get(i);
+        }
+        return array;
     }
 
 }
