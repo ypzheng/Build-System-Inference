@@ -26,7 +26,7 @@ public class Driver {
 //        System.out.println("test source: "+aba.getTestDir());
 //        System.out.println("source dir: "+aba.getSrcDir());
 //        System.out.println("compiled test classes: "+aba.getCompTestDir());
-        aba.getSrcDep();
+        System.out.println(aba.getSrcDep());
         
 	}
 

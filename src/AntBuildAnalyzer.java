@@ -1,19 +1,18 @@
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
-import org.apache.tools.ant.RuntimeConfigurable;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
-import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.util.FileUtils;
 import util.ClassPathParser;
 import util.PathParser;
 import util.Debugger;
 import util.TaskHelper;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AntBuildAnalyzer implements BuildAnalyzer{
 	private Vector sortedTargets;
@@ -186,7 +185,12 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	public String getSrcDep() {
 		// TODO Auto-generated method stub
 		Task[] tasks = compileSrcTarget.getTasks();
-        findClassPath(tasks);
+		String[] paths = findClassPath(tasks);
+        if (paths != null) {
+            return convert2String(getDependFile(paths));
+        } else {
+            System.out.println("Can't find class path in Javac abort");
+        }
         return null;
 	}
 
@@ -194,21 +198,31 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	public String getTestDep() {
 		// TODO Auto-generated method stub
         Task[] tasks = compileTestTarget.getTasks();
-        findClassPath(tasks);
+        String[] paths = findClassPath(tasks);
+        if (paths != null) {
+            return convert2String(getDependFile(paths));
+        } else {
+            System.out.println("Can't find class path in Javac abort");
+        }
         return null;
 	}
 
-    private void findClassPath(Task[] tasks) {
+    private String[] findClassPath(Task[] tasks) {
         for (Task tsk : tasks) {
             if (tsk.getTaskType().equals("javac")) {
                 String[] paths = classPathParser.parseClassPath(tsk.getRuntimeConfigurableWrapper());
-                if (paths != null) {
-                    printPath(paths);
-                } else {
-                    System.out.println("Can't find class path in Javac abort");
-                }
+                return paths;
             }
         }
+        return null;
+    }
+
+    private String convert2String(ArrayList<String> al) {
+	    String temp = "";
+	    for (String w: al) {
+	        temp += w+", ";
+        }
+        return temp;
     }
 
     @Override
@@ -217,7 +231,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		return null;
 	}
 	
-	private String[] getTests(String[] includes, String[] excludes, String baseDir) {
+	private String[] resolvedWildCardFiles(String[] includes, String[] excludes, String baseDir) {
 		DirectoryScanner ds = new DirectoryScanner();
 		ds.setIncludes(includes);
 		ds.setExcludes(excludes);
@@ -230,33 +244,46 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     /*
     Perform a DFS recursively find all the file in the given root folder
  */
-    private void printPath(String[] paths) {
-        for (String path: paths) {
-            Stack<File> folders = new Stack<>();
-            folders.add(new File(path));
-            while (!folders.isEmpty()) {
-                File folder = folders.pop();
-                if (folder.isFile()) {
-                    System.out.println(folder.getName());
+    private ArrayList<String> getDependFile(String[] paths) {
+        ArrayList<String> files = new ArrayList<>();
+        String[] excludes = new String[]{""};
+        for (String path:paths) {
+            System.out.println(path);
+            String[] wildcard = new String[]{isWildCard(path)};
+            if (!wildcard[0].equals("")) {
+                System.out.println("It's a wild card");
+                String baseDir = path.replace(wildcard[0],"");
+                String[] resolvedFiles = resolvedWildCardFiles(wildcard,excludes,baseDir);
+                files.addAll(Arrays.asList(resolvedFiles));
+            } else {
+                System.out.println("It's not a wild card");
+                File potentialFile = new File(path);
+                if (potentialFile.isFile()) {
+                    files.add(potentialFile.getName());
                 } else {
-                    File[] listOfFiles = folder.listFiles();
-                    if (listOfFiles != null){
-                        for (int i = 0; i < listOfFiles.length; i++) {
-                            if (listOfFiles[i].isFile()) {
-                                String fileName = listOfFiles[i].getName();
-                                if (fileName.endsWith(".class")) {
-                                    System.out.println("File " + listOfFiles[i].getName());
-                                }
-                            } else if (listOfFiles[i].isDirectory()) {
-                                String absPath = listOfFiles[i].getAbsolutePath();
-                                File newFolder = new File(absPath);
-                                folders.add(newFolder);
-                            }
-                        }
+                    String [] includes = new String[]{"*.class"};
+                    String [] resolvedFiles = resolvedWildCardFiles(includes,excludes,path);
+                    for (String f:resolvedFiles) {
+                        System.out.println(f);
                     }
+                    files.addAll(Arrays.asList(resolvedFiles));
                 }
-
             }
         }
+        return files;
+    }
+
+    private String isWildCard(String path) {
+        String regex = "\\*\\w*\\.\\w*";
+
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(path);
+
+        if (matcher.find()) {
+            return matcher.group();
+        }else {
+            return "";
+        }
+
     }
 }
