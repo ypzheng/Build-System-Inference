@@ -58,10 +58,12 @@ public class ClassPathParser {
         while (children.hasMoreElements()) {
             RuntimeConfigurable child = children.nextElement();
             if (child.getElementTag().equals("classpath")) {
-                if (!child.getAttributeMap().contains("refid")) {
+                Set<String> keys = child.getAttributeMap().keySet();
+                if (!keys.contains("refid")){
                     ArrayList<String> paths = classPathHelper(child);
                     return arrayList2Array(paths);
                 } else {
+                    System.out.println("Found classpath");
                     String ref = child.getAttributeMap().get("refid").toString();
                     Path path =  myProject.getReference(ref);
                     return path.list();

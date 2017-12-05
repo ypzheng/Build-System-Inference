@@ -49,11 +49,11 @@ public class Ex_Get_Depend {
         Project project = new Project();
         ProjectHelper helper = new ProjectHelper();
         project.init();
-        File buildFile = project.resolveFile("/Users/Jucong/Downloads/connect-four/build.xml");
+        File buildFile = project.resolveFile("/Users/Jucong/Downloads/commons-lang-LANG_2_5/build.xml");
         helper.configureProject(project, buildFile);
         ClassPathParser classPathParser = new ClassPathParser(project);
         Hashtable<String, Target> target_table = project.getTargets();
-        Vector<Target> sorted_target = project.topoSort("all",target_table);
+        Vector<Target> sorted_target = project.topoSort("init",target_table);
         Enumeration<String > keys = target_table.keys();
 
         for (Target target:sorted_target) {
