@@ -186,6 +186,19 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	public String getSrcDep() {
 		// TODO Auto-generated method stub
 		Task[] tasks = compileSrcTarget.getTasks();
+        findClassPath(tasks);
+        return null;
+	}
+
+	@Override
+	public String getTestDep() {
+		// TODO Auto-generated method stub
+        Task[] tasks = compileTestTarget.getTasks();
+        findClassPath(tasks);
+        return null;
+	}
+
+    private void findClassPath(Task[] tasks) {
         for (Task tsk : tasks) {
             if (tsk.getTaskType().equals("javac")) {
                 String[] paths = classPathParser.parseClassPath(tsk.getRuntimeConfigurableWrapper());
@@ -196,16 +209,9 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
                 }
             }
         }
-		return null;
-	}
+    }
 
-	@Override
-	public String getTestDep() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
+    @Override
 	public String getTestList() {
 		// TODO Auto-generated method stub
 		DirectoryScanner ds = new DirectoryScanner();
