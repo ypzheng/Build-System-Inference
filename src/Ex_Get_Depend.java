@@ -15,6 +15,9 @@ public class Ex_Get_Depend {
         System.out.println("==========");
     }
 
+    /*
+        Perform a DFS recursively find all the file in the given root folder
+     */
     private static void printPath(String[] paths) {
         for (String path: paths) {
             Stack<File> folders = new Stack<>();
@@ -49,17 +52,18 @@ public class Ex_Get_Depend {
         Project project = new Project();
         ProjectHelper helper = new ProjectHelper();
         project.init();
-        File buildFile = project.resolveFile("/Users/Jucong/Downloads/commons-lang-LANG_2_5/build.xml");
+        File buildFile = project.resolveFile("/Users/Jucong/Downloads/connect-four/build.xml");
         helper.configureProject(project, buildFile);
         ClassPathParser classPathParser = new ClassPathParser(project);
         Hashtable<String, Target> target_table = project.getTargets();
-        Vector<Target> sorted_target = project.topoSort("init",target_table);
+        Vector<Target> sorted_target = project.topoSort("all",target_table);
         Enumeration<String > keys = target_table.keys();
 
         for (Target target:sorted_target) {
             Task[] tasks = target.getTasks();
-            target.execute();
-            if (target.getName().equals("compile")) {
+            System.out.println(target.getName());
+//            target.execute();
+            if (target.getName().equals("test")) {
                 for (Task tsk : tasks) {
                     if (tsk.getTaskType().equals("javac")) {
                         String[] paths = classPathParser.parseClassPath(tsk.getRuntimeConfigurableWrapper());
