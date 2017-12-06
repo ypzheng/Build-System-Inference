@@ -1,4 +1,13 @@
 import java.io.File;
+import java.io.FilenameFilter;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.soap.Node;
+import javax.annotation.Resource;
+import javax.lang.model.element.Element;
+import javax.xml.parsers.DocumentBuilder;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -9,7 +18,11 @@ import org.apache.tools.ant.RuntimeConfigurable;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.resources.FileResource;
+
+import java.util.Iterator;
 import org.apache.tools.ant.util.FileUtils;
+import org.apache.tools.ant.types.FileSet; 
 import util.ClassPathParser;
 import util.PathParser;
 import util.Debugger;
@@ -23,6 +36,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	private PathParser pp;
 	private TaskHelper taskHelper;
     private ClassPathParser classPathParser;
+    private Project project;
 
     public AntBuildAnalyzer(File f) {
 		//Initialize Variables
@@ -35,7 +49,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		//Debugger.enable();
 		
 		//Load in build.xml file
-		Project project = new Project();
+		project = new Project();
 		project.init();
 		ProjectHelper helper = new ProjectHelper();
 		helper.configureProject(project, f);
@@ -214,11 +228,24 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     @Override
 	public String getTestList() {
 		// TODO Auto-generated method stub
-		DirectoryScanner ds = new DirectoryScanner();
+    	Hashtable<String,Object>hash = project.getReferences();
+//    	System.out.println(hash.get("test.classpath"));
+    	
+        FileSet fs = new FileSet();
+    	fs.setDir(new File(project.getProperty("test.home")));
+    	DirectoryScanner ds = fs.getDirectoryScanner(project);
+    	ds.setBasedir(new File(project.getProperty("test.home")));
+		ds.scan();
 		String[] list = getTests(ds.getIncludedFiles(),ds.getExcludedFiles(), ds.getBasedir().getName());
-		StringBuilder testList = new StringBuilder();
-		for(String tests : list) testList.append(tests);
-		return new String(testList);
+		
+		for(String tests : list) System.out.println(tests);
+//		StringBuilder testList = new StringBuilder();
+//		for(String tests : list) testList.append(tests + ", ");
+//		return new String(testList);
+		
+    	
+    	
+		return null;
 	}
 	
 	private String[] getTests(String[] includes, String[] excludes, String baseDir) {
@@ -230,6 +257,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		ds.scan();
 		return ds.getIncludedFiles();
 	}
+	
 
     /*
     Perform a DFS recursively find all the file in the given root folder

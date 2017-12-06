@@ -17,7 +17,8 @@ public class Driver {
 //            }
 //            System.out.println();
 //        }
-		File buildFile = new File("/Users/juconghe/Downloads/commons-lang-LANG_2_5/build.xml");
+		//("/Users/juconghe/Downloads/commons-lang-LANG_2_5/build.xml"
+		File buildFile = new File("src/build.xml");
 		File outputFile = new File("build.properties");
 		PropertyWriter pw = new PropertyWriter("ant", buildFile, outputFile);
         
@@ -26,7 +27,8 @@ public class Driver {
 //        System.out.println("test source: "+aba.getTestDir());
 //        System.out.println("source dir: "+aba.getSrcDir());
 //        System.out.println("compiled test classes: "+aba.getCompTestDir());
-        aba.getSrcDep();
+          System.out.println("testList: " + aba.getTestList());
+//        aba.getSrcDep();
         
 	}
 
