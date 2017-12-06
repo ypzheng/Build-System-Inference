@@ -24,7 +24,7 @@ public class Utility {
 	 * @return
 	 * A list of files that match the criteria
 	 */
-	public static String[] lsDirectory(String path, String rex) {
+	public static String[] lsDirectoryRS(String path, String rex) {
 		
 		Path dir = Paths.get(path);
 		ArrayList<String> files = new ArrayList<String>();
@@ -52,6 +52,39 @@ public class Utility {
 	      
 	        
 		}
+        return (String[]) files.toArray(new String[files.size()]);
+	}
+	
+	/**
+	 * find all files that match the regular expression "rex"
+	 * Under "path" directory
+	 * 
+	 * @param path
+	 * Path of Directory to Search
+	 * @param rex
+	 * Regular Expression of filename
+	 * 
+	 * @return
+	 * A list of files that match the criteria
+	 */
+	public static String[] lsDirectory(String path, String rex) {
+		
+		Path dir = Paths.get(path);
+		ArrayList<String> files = new ArrayList<String>();
+				
+        try(DirectoryStream<Path> stream = Files.newDirectoryStream(dir, rex)){
+        	for(Path entry:stream) {
+        		if(!Files.isDirectory(entry)) {
+        			files.add(entry.getFileName().toString());
+        			
+        		}
+        	}
+        } catch(IOException e) {
+        	e.printStackTrace();
+        }
+        	
+        
+		
         return (String[]) files.toArray(new String[files.size()]);
 	}
 	
