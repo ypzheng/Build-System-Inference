@@ -19,7 +19,7 @@ public class Driver {
 //        }
 
 		//"/Users/juconghe/Downloads/commons-lang-LANG_2_5/build.xml"
-		File buildFile = new File("src/TestBuildFile1.xml");
+		File buildFile = new File("closure-compiler-build.xml");
 		File outputFile = new File("build.properties");
 		PropertyWriter pw = new PropertyWriter("ant", buildFile, outputFile);
 

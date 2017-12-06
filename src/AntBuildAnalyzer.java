@@ -249,7 +249,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 				RuntimeConfigurable fileset = filesets.nextElement();
 				Hashtable att_map_fs = ((RuntimeConfigurable) fileset).getAttributeMap();
 				if(att_map_fs.containsKey("dir")) {
-					ret.put("dir", (String) att_map_fs.get("dir"));
+					ret.put("dir", pp.parse((String) att_map_fs.get("dir")));
 				}
 				if(att_map_fs.containsKey("includes")) {
 					ret.put("includes", (String) att_map_fs.get("includes"));
