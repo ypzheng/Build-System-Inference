@@ -9,11 +9,14 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class Utility {
 	
 	
 	/**
-	 * Recursively find all files that match the regular expression "rex"
+	 * Recursively find all files that match the regular expression "include" but not match the regular expression "exclude"
 	 * Under "path" directory
 	 * 
 	 * @param path
@@ -24,23 +27,34 @@ public class Utility {
 	 * @return
 	 * A list of files that match the criteria
 	 */
-	public static String[] lsDirectoryRS(String path, String rex) {
+	public static String[] lsDirectoryRS(String path, String include, String exclude) {
 		
 		Path dir = Paths.get(path);
 		ArrayList<String> files = new ArrayList<String>();
 		ArrayList<Path> dirs = new ArrayList<Path>();
 		dirs.add(dir);
 		
-		
-		
+		Pattern include_r = Pattern.compile(include);
+		Pattern exclude_r = Pattern.compile(exclude);
 		while(dirs.size() > 0) {
 			
-	        try(DirectoryStream<Path> stream = Files.newDirectoryStream(dirs.get(0), rex)){
+			//Only return files that 
+	        try(DirectoryStream<Path> stream = Files.newDirectoryStream(dirs.get(0), "*")){
 	        	for(Path entry:stream) {
 	        		if(Files.isDirectory(entry)) {
 	        			dirs.add(entry);
 	        		} else {
-	        			files.add(entry.getFileName().toString());
+	        			String filename = entry.getFileName().toString();
+	        			Matcher include_m = include_r.matcher(filename);
+	        			Matcher exclude_m = exclude_r.matcher(filename);
+	        			
+	        			//Exclude filenames base on rex exclude
+	        			if(exclude_m.matches())
+	        				continue;
+	        			
+	        			//Include filenames base on rex include
+	        			if(include_m.matches())
+	        				files.add(filename);
 	        			
 	        		}
 	        	}
@@ -49,7 +63,6 @@ public class Utility {
 	        }
 	        	
 	        dirs.remove(0);
-	      
 	        
 		}
         return (String[]) files.toArray(new String[files.size()]);

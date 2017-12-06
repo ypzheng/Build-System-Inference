@@ -29,7 +29,7 @@ public class EX_DIR_LS {
 //        } catch(IOException e) {
 //        	e.printStackTrace();
 //        }
-        String[] result = Utility.lsDirectory(project.getBaseDir().toString(), "*");
+        String[] result = Utility.lsDirectoryRS(project.getBaseDir().toString(), "(.*)[.java]","");
         for(String name : result)
         	System.out.println(name);
 	}
