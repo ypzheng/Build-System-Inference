@@ -14,6 +14,7 @@ import util.ClassPathParser;
 import util.PathParser;
 import util.Debugger;
 import util.TaskHelper;
+import util.Utility;
 
 public class AntBuildAnalyzer implements BuildAnalyzer{
 	private Vector sortedTargets;
@@ -191,7 +192,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
             if (tsk.getTaskType().equals("javac")) {
                 String[] paths = classPathParser.parseClassPath(tsk.getRuntimeConfigurableWrapper());
                 if (paths != null) {
-                    printPath(paths);
+                    Utility.printPath(paths);
                 } else {
                     System.out.println("Can't find class path in Javac abort");
                 }
@@ -220,36 +221,6 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		return ds.getIncludedFiles();
 	}
 
-    /*
-    Perform a DFS recursively find all the file in the given root folder
- */
-    private void printPath(String[] paths) {
-        for (String path: paths) {
-            Stack<File> folders = new Stack<>();
-            folders.add(new File(path));
-            while (!folders.isEmpty()) {
-                File folder = folders.pop();
-                if (folder.isFile()) {
-                    System.out.println(folder.getName());
-                } else {
-                    File[] listOfFiles = folder.listFiles();
-                    if (listOfFiles != null){
-                        for (int i = 0; i < listOfFiles.length; i++) {
-                            if (listOfFiles[i].isFile()) {
-                                String fileName = listOfFiles[i].getName();
-                                if (fileName.endsWith(".class")) {
-                                    System.out.println("File " + listOfFiles[i].getName());
-                                }
-                            } else if (listOfFiles[i].isDirectory()) {
-                                String absPath = listOfFiles[i].getAbsolutePath();
-                                File newFolder = new File(absPath);
-                                folders.add(newFolder);
-                            }
-                        }
-                    }
-                }
 
-            }
-        }
-    }
+    
 }
