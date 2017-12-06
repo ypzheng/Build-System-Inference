@@ -27,12 +27,13 @@ import util.ClassPathParser;
 import util.PathParser;
 import util.Debugger;
 import util.TaskHelper;
+import util.Utility;
 
 public class AntBuildAnalyzer implements BuildAnalyzer{
 	private Vector sortedTargets;
-	private ArrayList<Target> potentialSrcTargets, potentialTestTargets;
+	private ArrayList<Target> potentialSrcTargets, potentialTestTargets, junitTargets;
 	private Target compileSrcTarget, compileTestTarget;
-	
+
 	private PathParser pp;
 	private TaskHelper taskHelper;
     private ClassPathParser classPathParser;
@@ -44,31 +45,32 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		compileTestTarget = null;
 		potentialSrcTargets = new ArrayList<Target>();
 		potentialTestTargets = new ArrayList<Target>();
+		junitTargets = new ArrayList<Target>();
 
 		//Enable Console printing
 		//Debugger.enable();
-		
+
 		//Load in build.xml file
 		project = new Project();
 		project.init();
 		ProjectHelper helper = new ProjectHelper();
 		helper.configureProject(project, f);
 		sortedTargets = project.topoSort(project.getDefaultTarget(), project.getTargets());
-		
+
 		//Print out all targets in execution order
 		Enumeration vEnum = sortedTargets.elements();
-		
+
 		Debugger.log("Targets sorted in order of execution:");
-		
+
 	    while(vEnum.hasMoreElements())
 	    		Debugger.log(vEnum.nextElement() + "\n");
-	    this.getPotentialCompileTargets();
-	    
+
 	    //Path Parser
 	    pp = new PathParser(project);
-	    
-	    //DirectoryHelper
+
+	    //taskHelper
 	    taskHelper = new TaskHelper(pp);
+	    this.getPotentialCompileTargets();
 	    classPathParser = new ClassPathParser(project);
     }
 
@@ -77,13 +79,13 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 * add it to the list that contains potential compile-test targets; if it does
 	 * not contain "test", add it to the list that contains potential compile-source
 	 * target.
-	 * 
+	 *
 	 */
 	private void getPotentialCompileTargets() {
 		Enumeration vEnum = sortedTargets.elements();
 		while(vEnum.hasMoreElements()) {
 			Target t = (Target) vEnum.nextElement();
-			if(containsJavac(t.getTasks())) {
+			if(taskHelper.containsTask(t.getTasks(),"javac")) {
 				if(t.getName().contains("test")) {
 					potentialTestTargets.add(t);
 					Debugger.log("test: "+t.getName());
@@ -93,25 +95,37 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 					Debugger.log("src: "+t.getName());
 				}
 			}
-		}
-		getCompileSrcTarget();
-		getCompileTestTarget();
-	}
-	
-	/**
-	 * Helpter method that checks if a task contains javac.
-	 * @param tasks
-	 * @return
-	 */
-	private boolean containsJavac(Task[] tasks) {
-		for(Task t : tasks) {
-			if(t.getTaskType().equals("javac")) {
-				return true;
+			else if(taskHelper.containsTask(t.getTasks(), "junit")) {
+				junitTargets.add(t);
 			}
 		}
-		return false;
+		enhanceSrcTargetFinding();
+		enhanceTestTargetFinding();
 	}
-	
+
+	private void enhanceSrcTargetFinding() {
+		if(potentialSrcTargets.size() == 0) {
+			Debugger.log("Cannot find target that compiles source.");
+		}
+		else{
+			this.compileSrcTarget = potentialSrcTargets.get(potentialSrcTargets.size()-1);
+		}
+	}
+	private void enhanceTestTargetFinding() {
+		// if no target name that contains "test" and there is exactly one compile source target,
+		// check if the compile source target contains multiple javac.  If true, test.compile = src.compile
+		if(potentialTestTargets.size() == 0 && potentialSrcTargets.size() == 1) {
+			Target target = potentialSrcTargets.get(0);
+			if(taskHelper.getTasks("javac", target).size()>1) {
+				this.compileTestTarget = target;
+			}
+		}
+		else{
+			this.compileTestTarget = potentialTestTargets.get(potentialTestTargets.size()-1);
+		}
+
+	}
+
 	/**
 	 * Get compile-source target from the potential targets array.
 	 * TODO: If the array is empty, we should check if the buid file is valid.
@@ -121,50 +135,25 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 * @return
 	 */
 	public String getCompileSrcTarget() {
-		int size = potentialSrcTargets.size();
-		if(size == 0) {
-			Debugger.log("Cannot find target that compiles source");
-			return "";
-		}
-		else if(size == 1) {
-			compileSrcTarget = potentialSrcTargets.get(0);
-		}
-		else if(size > 1) {
-			compileSrcTarget = potentialSrcTargets.get(size - 1);
-		}
-		
 		return compileSrcTarget.getName();
 	}
-	
+
 	/**
 	 * Similar to the method above.
 	 * TODO: Need to consider the case when the compile-test target doesn't contain
-	 * the key word "test".  For example, TestBuildFile1 compiles test and source 
+	 * the key word "test".  For example, TestBuildFile1 compiles test and source
 	 * together in the target "compile".s
 	 * @return
 	 */
 	public String getCompileTestTarget() {
-		int size = potentialTestTargets.size();
-		if(size ==0 && this.getCompileSrcTarget()!=null) {
-			compileTestTarget = this.compileSrcTarget;
-		}
-		else if(size == 1) {
-			compileTestTarget = potentialTestTargets.get(0);
-		}
-		else if(size > 1) {
-			compileTestTarget = potentialTestTargets.get(size - 1);
-		}
-
-		Debugger.log("test target: "+compileTestTarget.getName());
-
 		return compileTestTarget.getName();
 	}
 
 	/**
 	 * Find directory of compiled classes
-	 * 
+	 *
 	 * IF directory is not found return an empty String
-	 * 
+	 *
 	 * @return String
 	 */
 	@Override
@@ -180,9 +169,9 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 
 	/**
 	 * Find source directory of compilation
-	 * 
+	 *
 	 * IF directory is not found return an empty String
-	 * 
+	 *
 	 * @return String
 	 */
 	@Override
@@ -217,7 +206,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
             if (tsk.getTaskType().equals("javac")) {
                 String[] paths = classPathParser.parseClassPath(tsk.getRuntimeConfigurableWrapper());
                 if (paths != null) {
-                    printPath(paths);
+                    Utility.printPath(paths);
                 } else {
                     System.out.println("Can't find class path in Javac abort");
                 }
@@ -247,7 +236,8 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     	
 		return null;
 	}
-	
+
+ 
 	private String[] getTests(String[] includes, String[] excludes, String baseDir) {
 		DirectoryScanner ds = new DirectoryScanner();
 		ds.setIncludes(includes);
@@ -259,36 +249,6 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	}
 	
 
-    /*
-    Perform a DFS recursively find all the file in the given root folder
- */
-    private void printPath(String[] paths) {
-        for (String path: paths) {
-            Stack<File> folders = new Stack<>();
-            folders.add(new File(path));
-            while (!folders.isEmpty()) {
-                File folder = folders.pop();
-                if (folder.isFile()) {
-                    System.out.println(folder.getName());
-                } else {
-                    File[] listOfFiles = folder.listFiles();
-                    if (listOfFiles != null){
-                        for (int i = 0; i < listOfFiles.length; i++) {
-                            if (listOfFiles[i].isFile()) {
-                                String fileName = listOfFiles[i].getName();
-                                if (fileName.endsWith(".class")) {
-                                    System.out.println("File " + listOfFiles[i].getName());
-                                }
-                            } else if (listOfFiles[i].isDirectory()) {
-                                String absPath = listOfFiles[i].getAbsolutePath();
-                                File newFolder = new File(absPath);
-                                folders.add(newFolder);
-                            }
-                        }
-                    }
-                }
 
-            }
-        }
-    }
+    
 }

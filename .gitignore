@@ -2,3 +2,4 @@
 .class
 .idea/*
 bin/*.class
+.properties
