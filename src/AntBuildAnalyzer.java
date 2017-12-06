@@ -225,7 +225,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     			Enumeration<RuntimeConfigurable> enumeration= rt.getChildren();
     			while(enumeration.hasMoreElements()) {
     				RuntimeConfigurable temp = enumeration.nextElement();
-    				if(temp.getElementTag().contains("batchtest")) {
+    				if(temp.getElementTag().equals("batchtest")) {
     					keyVal = batchtestHelper(temp);
     				}
         		}
@@ -233,6 +233,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 
     		//TODO: Given a map of key values, for example {includes=**/*Test.class, dir=target/test-classes},
     		// 		use DirectoryScanner or Andy/Jucong's method to find test set.
+    		//TODO: I REALIZED WE CAN JUST RUN THE COMPILE.TEST TARGET AND GET ALL TESTS FROM THE DIRECTORY. HMMMMMMMMMM.....
     		System.out.println(keyVal);
     		return "";
 	}
