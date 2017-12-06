@@ -237,7 +237,10 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     		return "";
 	}
 
-    
+    //TODO: If no batchtest found, we should return all available tests under specified test directory
+    //TODO: If "test" instead of "batchtest" found, parse the path and list all tests
+    //TODO: If neither "test" nor "batchtest" found, list all available tests under test.dir
+    //TODO:
     private Map<String, String> batchtestHelper(RuntimeConfigurable rt) {
     		Enumeration<RuntimeConfigurable> filesets = rt.getChildren();
     		Map<String, String> ret = new HashMap<>();
