@@ -5,9 +5,9 @@ public class BuildFileAnalyzerAdapter implements BuildAnalyzer{
 	BuildAnalyzer analyzer;
 	//Other kinds of build files can be added here.
 	
-	public BuildFileAnalyzerAdapter(String buildFileType, File buildFile) {
+	public BuildFileAnalyzerAdapter(String buildFileType, File buildFile, String projectName) {
 		if(buildFileType.equalsIgnoreCase("ant")) {
-			analyzer = new AntBuildAnalyzer(buildFile);
+			analyzer = new AntBuildAnalyzer(buildFile, projectName);
 		}
 		//Add another kind of build file here
 	}

@@ -33,19 +33,21 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	private Vector sortedTargets;
 	private ArrayList<Target> potentialSrcTargets, potentialTestTargets, junitTargets;
 	private Target compileSrcTarget, compileTestTarget;
+	private String projectName;
 
 	private PathParser pp;
 	private TaskHelper taskHelper;
     private ClassPathParser classPathParser;
     private Project project;
 
-    public AntBuildAnalyzer(File f) {
+    public AntBuildAnalyzer(File f, String projectName) {
 		//Initialize Variables
 		compileSrcTarget = null;
 		compileTestTarget = null;
 		potentialSrcTargets = new ArrayList<Target>();
 		potentialTestTargets = new ArrayList<Target>();
 		junitTargets = new ArrayList<Target>();
+		this.projectName = projectName;
 
 		//Enable Console printing
 		//Debugger.enable();
@@ -219,6 +221,10 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	public String getTestList() {
 		// TODO Auto-generated method stub
     		Map<String, String> keyVal = new HashMap<String, String>();
+    		if(junitTargets.size() == 0) {
+    			Debugger.log("No junit tasks, make sure this project contains unit tests.");
+    			return "";
+    		}
     		List<Task> tasks = taskHelper.getTasks("junit", junitTargets.get(junitTargets.size()-1));
     		for(int i=0; i<tasks.size(); i++) {
     			RuntimeConfigurable rt = tasks.get(i).getRuntimeConfigurableWrapper();
@@ -235,6 +241,13 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     		// 		use DirectoryScanner or Andy/Jucong's method to find test set.
     		//TODO: I REALIZED WE CAN JUST RUN THE COMPILE.TEST TARGET AND GET ALL TESTS FROM THE DIRECTORY. HMMMMMMMMMM.....
     		System.out.println(keyVal);
+    		
+    		String[] includes = keyVal.get("include").split(";");
+    		String[] excludes = keyVal.get("exclude").split(";");
+    		String[] str = this.getTests(includes, excludes, project.getBaseDir().getParent().toString()+"/"+projectName+"/"+keyVal.get("dir"));
+    		for(int i = 0; i < str.length; i++) {
+    			System.out.println(str[i]);
+    		}
     		return "";
 	}
 
@@ -265,10 +278,10 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 
 					RuntimeConfigurable temp = fileNamePattern.nextElement();
 					if(temp.getElementTag() == "include") {
-						include = include+temp.getAttributeMap().get("name")+", ";
+						include = include+pp.parse((String)temp.getAttributeMap().get("name"))+"; ";
 					}
 					if(temp.getElementTag() == "exclude") {
-						exclude = exclude+temp.getAttributeMap().get("name")+", ";
+						exclude = exclude+pp.parse((String)temp.getAttributeMap().get("name"))+"; ";
 					}
 					ret.put("include", include);
 					ret.put("exclude", exclude);

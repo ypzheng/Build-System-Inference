@@ -29,7 +29,8 @@ public class EX_DIR_LS {
 //        } catch(IOException e) {
 //        	e.printStackTrace();
 //        }
-        String[] result = Utility.lsDirectoryRS(project.getBaseDir().toString(), "(.*)[.java]","");
+        System.out.println(project.getBaseDir().toString());
+        String[] result = Utility.lsDirectoryRS("/Users/caitlynzheng/eclipse-workspace/commons-math/src/test/java", "(.*)[.java]","");
         for(String name : result)
         	System.out.println(name);
 	}
