@@ -22,7 +22,7 @@ import org.apache.tools.ant.types.resources.FileResource;
 
 import java.util.Iterator;
 import org.apache.tools.ant.util.FileUtils;
-import org.apache.tools.ant.types.FileSet; 
+import org.apache.tools.ant.types.FileSet;
 import util.ClassPathParser;
 import util.PathParser;
 import util.Debugger;
@@ -95,7 +95,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 					Debugger.log("src: "+t.getName());
 				}
 			}
-			else if(taskHelper.containsTask(t.getTasks(), "junit")) {
+			if(taskHelper.containsTask(t.getTasks(), "junit")) {
 				junitTargets.add(t);
 			}
 		}
@@ -125,6 +125,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		}
 
 	}
+
 
 	/**
 	 * Get compile-source target from the potential targets array.
@@ -217,27 +218,61 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     @Override
 	public String getTestList() {
 		// TODO Auto-generated method stub
-    	Hashtable<String,Object>hash = project.getReferences();
-//    	System.out.println(hash.get("test.classpath"));
-    	
-        FileSet fs = new FileSet();
-    	fs.setDir(new File(project.getProperty("test.home")));
-    	DirectoryScanner ds = fs.getDirectoryScanner(project);
-    	ds.setBasedir(new File(project.getProperty("test.home")));
-		ds.scan();
-		String[] list = getTests(ds.getIncludedFiles(),ds.getExcludedFiles(), ds.getBasedir().getName());
-		
-		for(String tests : list) System.out.println(tests);
-//		StringBuilder testList = new StringBuilder();
-//		for(String tests : list) testList.append(tests + ", ");
-//		return new String(testList);
-		
-    	
-    	
-		return null;
+    		Map<String, String> keyVal = new HashMap<String, String>();
+    		List<Task> tasks = taskHelper.getTasks("junit", junitTargets.get(junitTargets.size()-1));
+    		for(int i=0; i<tasks.size(); i++) {
+    			RuntimeConfigurable rt = tasks.get(i).getRuntimeConfigurableWrapper();
+    			Enumeration<RuntimeConfigurable> enumeration= rt.getChildren();
+    			while(enumeration.hasMoreElements()) {
+    				RuntimeConfigurable temp = enumeration.nextElement();
+    				if(temp.getElementTag().contains("batchtest")) {
+    					keyVal = batchtestHelper(temp);
+    				}
+        		}
+    		}
+
+    		//TODO: Given a map of key values, for example {includes=**/*Test.class, dir=target/test-classes},
+    		// 		use DirectoryScanner or Andy/Jucong's method to find test set.
+    		System.out.println(keyVal);
+    		return "";
 	}
 
- 
+    
+    private Map<String, String> batchtestHelper(RuntimeConfigurable rt) {
+    		Enumeration<RuntimeConfigurable> filesets = rt.getChildren();
+    		Map<String, String> ret = new HashMap<>();
+			while(filesets.hasMoreElements()) {
+				RuntimeConfigurable fileset = filesets.nextElement();
+				Hashtable att_map_fs = ((RuntimeConfigurable) fileset).getAttributeMap();
+				if(att_map_fs.containsKey("dir")) {
+					ret.put("dir", (String) att_map_fs.get("dir"));
+				}
+				if(att_map_fs.containsKey("includes")) {
+					ret.put("includes", (String) att_map_fs.get("includes"));
+				}
+				if(att_map_fs.containsKey("excludes")) {
+					ret.put("excludes", (String) att_map_fs.get("excludes"));
+				}
+
+				Enumeration<RuntimeConfigurable> fileNamePattern = fileset.getChildren();
+				String include = "";
+				String exclude = "";
+				while(fileNamePattern.hasMoreElements()) {
+
+					RuntimeConfigurable temp = fileNamePattern.nextElement();
+					if(temp.getElementTag() == "include") {
+						include = include+temp.getAttributeMap().get("name")+", ";
+					}
+					if(temp.getElementTag() == "exclude") {
+						exclude = exclude+temp.getAttributeMap().get("name")+", ";
+					}
+					ret.put("include", include);
+					ret.put("exclude", exclude);
+				}
+			}
+		return ret;
+    }
+
 	private String[] getTests(String[] includes, String[] excludes, String baseDir) {
 		DirectoryScanner ds = new DirectoryScanner();
 		ds.setIncludes(includes);
@@ -247,8 +282,8 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		ds.scan();
 		return ds.getIncludedFiles();
 	}
-	
 
 
-    
+
+
 }
