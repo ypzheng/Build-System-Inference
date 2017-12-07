@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.RuntimeConfigurable;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.util.StringUtils;
 
 public class PathParser {
 	
@@ -103,6 +105,24 @@ public class PathParser {
 	private String getProperty(String key) {
 		
 		String resolved = null;
+		
+		//Since project.getProject("basedir") will return an absolute path
+		
+		
+		if(key.equals("basedir")) {
+			//Absolute path of build file
+			Path build_file_location = Paths.get(this.project.getBaseDir().toString());
+			
+			//Absolute path of basedir key
+			Path basedir = Paths.get(this.project.getProperty("basedir"));
+			
+			resolved = build_file_location.relativize(basedir).toString();
+			System.out.println(resolved);
+			if(resolved!=null)
+				return resolved;
+		}
+			
+		
 		//Look for property value using project.getProperty
 		if(this.project != null) {
 			resolved = this.project.getProperty(key);

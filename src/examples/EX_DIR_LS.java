@@ -9,6 +9,8 @@ import java.nio.file.Paths;
 
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
+
+import util.PathParser;
 import util.Utility;
 public class EX_DIR_LS {
 	
@@ -29,7 +31,8 @@ public class EX_DIR_LS {
 //        } catch(IOException e) {
 //        	e.printStackTrace();
 //        }
-
+        PathParser pp = new PathParser(project);
+        System.out.println(pp.parse("${basedir}/test"));
         String[] result = Utility.lsDirectoryRS(project.getBaseDir().toString(), "(.*)[.java]","[Ant](.*)");
 
         for(String name : result)
