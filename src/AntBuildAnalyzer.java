@@ -300,13 +300,18 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		return ret;
     }
 
-	private String[] getTests(String[] includes, String[] excludes, String baseDir) {
+    private String[] getTests(String[] includes, String[] excludes, String baseDir) {
 		DirectoryScanner ds = new DirectoryScanner();
 		ds.setIncludes(includes);
 		ds.setExcludes(excludes);
 		ds.setBasedir(baseDir);
 		ds.setCaseSensitive(true);
-		ds.scan();
+		try {
+			ds.scan();
+		}catch(IllegalStateException e){
+			Debugger.log("Illegal State Exception found, basedir does not exist");
+			System.out.println("Please try to compile the project:"+projectName+" first in order to get a test list");
+		}
 		return ds.getIncludedFiles();
 	}
 
