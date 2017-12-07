@@ -111,7 +111,17 @@ public class FileUtility {
 	 * A relative path version of "path" in relation to "absolute" 
 	 */
 	public static String absoluteToRelative(String absolute, String path) {
-	
+		
+		
+		/**
+		 * Since MAC don't have Drive likes Windows
+		 * getRoot or isAsolute can't distinguish relative path from absolute
+		 * 
+		 */
+		
+		if(!path.contains(absolute))
+			return path;
+		
 		//Initialize "path" and "absolute" as Path object to take advantage of the library
 		Path original_path = Paths.get(path);
 		Path absolute_path = Paths.get(absolute);
@@ -120,10 +130,7 @@ public class FileUtility {
 		 * Check if original_path is a in absolute path form 
 		 * and has the same type/root as absolute_path
 		 */
-		
-		if(original_path.getRoot()==null)
-			return path;
-		if(!original_path.getRoot().equals(absolute_path.getRoot()))
+		if(!original_path.isAbsolute())
 			return path;
 		
 		//Find the relative path from absolute_path to original_path 
@@ -138,7 +145,7 @@ public class FileUtility {
 		return path;
 			
 	}
-	
+
 	
     /*
     Perform a DFS recursively find all the file in the given root folder
