@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Stack;
-
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -147,7 +147,25 @@ public class FileUtility {
 			
 	}
 
+	public static String[] filterPath(String[] paths, boolean include, String rex) {
+		
+		Vector<String> result_paths = new Vector(0,1);
+		for(String path : paths) {
+			if(rex != null) {
+				if(rex.length()>0) {
+					Pattern include_r = Pattern.compile(rex);
+					Matcher include_m = include_r.matcher(path);
+					if(include_m.matches() && include)
+						result_paths.addElement(path);
+				}
+			}
+		}
+		
+		
+		return result_paths.toArray(new String[result_paths.size()]);
+		
 	
+	}
     /*
     Perform a DFS recursively find all the file in the given root folder
      */

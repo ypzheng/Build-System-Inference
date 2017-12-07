@@ -1,8 +1,11 @@
 package util;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 import java.util.stream.Collectors;
 
 import org.apache.tools.ant.RuntimeConfigurable;
@@ -86,5 +89,26 @@ public class TaskHelper {
 				Debugger.log(ret);
 				
 				return ret;
+	}
+	
+	public String[] getSubTaskAttr(Task[] tasks, String subTaskOfInterest,String attrOfInterest) {
+		
+		Vector<String> result_attrs = new Vector(0,1);
+		for(Task t : tasks) {
+			RuntimeConfigurable rc = t.getRuntimeConfigurableWrapper();
+			
+			Enumeration<RuntimeConfigurable> sub_rc = rc.getChildren();
+			while(sub_rc.hasMoreElements()) {
+				RuntimeConfigurable curr_sub_rc = sub_rc.nextElement();
+				if(curr_sub_rc.getElementTag().equals(subTaskOfInterest)) {
+					Hashtable<String, Object> attr_map = curr_sub_rc.getAttributeMap();
+					if(attr_map.containsKey(attrOfInterest)) {
+						result_attrs.addElement(attr_map.get(attrOfInterest).toString());
+					}
+				}
+			}
+		}
+		
+		return result_attrs.toArray(new String[result_attrs.size()]);
 	}
 }
