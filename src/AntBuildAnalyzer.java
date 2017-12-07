@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FilenameFilter;
+
 import java.nio.file.Paths;
 
 import org.w3c.dom.Document;
@@ -17,9 +18,12 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.types.Path;
+
 import util.ClassPathParser;
 import util.PathParser;
 import util.Debugger;
+import util.FileUtility;
 import util.TaskHelper;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -199,27 +203,55 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	@Override
 	public String getSrcDep() {
 		// TODO Auto-generated method stub
-		Task[] tasks = compileSrcTarget.getTasks();
+		/*Task[] tasks = compileSrcTarget.getTasks();
 		String[] paths = findClassPath(tasks);
         if (paths != null) {
             return convert2String(getDependFile(paths));
         } else {
             System.out.println("Can't find class path in Javac abort");
         }
-        return null;
+        return null;*/
+		
+		String deps = "";
+		int counter = 0;
+		List<Task> javac_tasks = taskHelper.getTasks("javac",this.compileSrcTarget);
+		
+		String[] classpath_refid_list = taskHelper.getSubTaskAttr(javac_tasks.toArray(new Task[javac_tasks.size()]), "classpath", "refid");
+		
+		Vector<String> references = new Vector(0,1);
+		for(String s : classpath_refid_list) {
+			Path p = this.project.getReference(s);
+			String[] filtered_deps = FileUtility.filterPath(p.list(), true,"(.*)[.jar]");
+			
+			for(String filtered_dep : filtered_deps) {
+				deps += pp.parse(filtered_dep) +",";
+			}
+		}
+		
+		return deps;
 	}
 
 	@Override
 	public String getTestDep() {
 		// TODO Auto-generated method stub
-        Task[] tasks = compileTestTarget.getTasks();
-        String[] paths = findClassPath(tasks);
-        if (paths != null) {
-            return convert2String(getDependFile(paths));
-        } else {
-            System.out.println("Can't find class path in Javac abort");
-        }
-        return null;
+		System.out.println(this.project.getProperties());
+               
+        String deps = "";
+		List<Task> javac_tasks = taskHelper.getTasks("javac",this.compileTestTarget);
+		String[] classpath_refid_list = taskHelper.getSubTaskAttr(javac_tasks.toArray(new Task[javac_tasks.size()]), "classpath", "refid");
+		Vector<String> references = new Vector(0,1);
+		for(String s : classpath_refid_list) {
+			Path p = this.project.getReference(s);
+			
+			String[] filtered_deps = FileUtility.filterPath(p.list(), true,"(.*)[jar]");
+			
+			for(String filtered_dep : filtered_deps) {
+				deps += pp.parse(filtered_dep) +",";
+				
+			}
+		}
+		
+		return deps;
 	}
 
     private String[] findClassPath(Task[] tasks) {

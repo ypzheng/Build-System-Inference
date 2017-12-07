@@ -101,4 +101,10 @@ public class TestSuite1 {
 		assertEquals(Paths.get("build/classes").toString(), aba4.getCompTestDir());
 	}
 	
+	@Test
+	public void getDep() {
+		assertEquals("",aba0.getTestDep());
+		
+	}
+	
 }
