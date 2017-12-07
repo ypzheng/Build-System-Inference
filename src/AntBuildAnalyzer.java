@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.FilenameFilter;
+import java.nio.file.Paths;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -254,7 +256,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     		
     		String[] includes = keyVal.get("include").split(";");
     		String[] excludes = keyVal.get("exclude").split(";");
-    		String[] str = this.getTests(includes, excludes, project.getBaseDir().getParent().toString()+"/"+projectName+"/"+keyVal.get("dir"));
+    		String[] str = this.getTests(includes, excludes, project.getBaseDir().getParent().toString()+Paths.get("/")+projectName+Paths.get("/")+keyVal.get("dir"));
     		for(int i = 0; i < str.length; i++) {
     			System.out.println(str[i]);
     		}
