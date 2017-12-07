@@ -120,6 +120,9 @@ public class FileUtility {
 		 * Check if original_path is a in absolute path form 
 		 * and has the same type/root as absolute_path
 		 */
+		
+		if(original_path.getRoot()==null)
+			return path;
 		if(!original_path.getRoot().equals(absolute_path.getRoot()))
 			return path;
 		
