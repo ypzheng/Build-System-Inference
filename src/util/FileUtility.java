@@ -120,7 +120,8 @@ public class FileUtility {
 		 */
 		
 		if(!path.contains(absolute))
-			return path;
+			if(!absolute.contains(path))
+				return path;
 		
 		//Initialize "path" and "absolute" as Path object to take advantage of the library
 		Path original_path = Paths.get(path);

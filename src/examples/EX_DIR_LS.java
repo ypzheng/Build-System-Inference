@@ -31,11 +31,11 @@ public class EX_DIR_LS {
 //        } catch(IOException e) {
 //        	e.printStackTrace();
 //        }
-        System.out.println(new PathParser(project).parse("${build.dir}/test"));
-        /*String[] result = FileUtility.lsDirectoryRS(project.getBaseDir().toString(), "(.*)[.java]","[Ant](.*)");
+        //System.out.println(new PathParser(project).parse("${build.dir}/test"));
+        String[] result = FileUtility.lsDirectoryRS(project.getBaseDir().toString(), "(.*)[.java]","[Ant](.*)");
 
         for(String name : result)
-        	System.out.println(name);*/
+        	System.out.println(name);
 	}
 
 }
