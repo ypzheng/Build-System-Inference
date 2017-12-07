@@ -104,6 +104,7 @@ public class TestSuite1 {
 	@Test
 	public void getDep() {
 		assertEquals("",aba0.getTestDep());
+		
 	}
 	
 }

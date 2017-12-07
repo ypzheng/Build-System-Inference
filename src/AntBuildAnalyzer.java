@@ -223,7 +223,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 			String[] filtered_deps = FileUtility.filterPath(p.list(), true,"(.*)[.jar]");
 			
 			for(String filtered_dep : filtered_deps) {
-				deps += filtered_dep +",";
+				deps += pp.parse(filtered_dep) +",";
 			}
 		}
 		
@@ -233,7 +233,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	@Override
 	public String getTestDep() {
 		// TODO Auto-generated method stub
-
+		System.out.println(this.project.getProperties());
                
         String deps = "";
 		List<Task> javac_tasks = taskHelper.getTasks("javac",this.compileTestTarget);
@@ -245,7 +245,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 			String[] filtered_deps = FileUtility.filterPath(p.list(), true,"(.*)[jar]");
 			
 			for(String filtered_dep : filtered_deps) {
-				deps += filtered_dep +",";
+				deps += pp.parse(filtered_dep) +",";
 				
 			}
 		}
