@@ -108,10 +108,11 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		}
 		else{
 			for(Target t : potentialSrcTargets) {
-				if(t.getName().contains("compile") && potentialSrcTargets.size() == 1)
+				if(t.getName().contains("compile") && potentialSrcTargets.size() == 1) {
 					this.compileSrcTarget = t;
+				}
 				else if(t.getName().contains("compile") && potentialSrcTargets.size() > 1) {
-					Debugger.log("Special case, may require manual inference.");
+					System.out.println("Special case, may require manual inference.");
 					if(t.getName().equals("compile"))
 						this.compileSrcTarget = t;
 				}
@@ -238,6 +239,15 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
         }
         return temp;
     }
+    
+    private Target getTopLevelTestTarget(List<Target> targets) {
+    		for(Target t: targets) {
+    			if(t.dependsOn(this.compileTestTarget.getName())) {
+    				return t;
+    			}
+    		}
+    		return null;
+    }
 
     @Override
 	public String getTestList() {
@@ -247,7 +257,8 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     			Debugger.log("No junit tasks, make sure this project contains unit tests.");
     			return "";
     		}
-    		List<Task> tasks = taskHelper.getTasks("junit", junitTargets.get(junitTargets.size()-1));
+    		
+    		List<Task> tasks = taskHelper.getTasks("junit", this.getTopLevelTestTarget(junitTargets));
     		for(int i=0; i<tasks.size(); i++) {
     			RuntimeConfigurable rt = tasks.get(i).getRuntimeConfigurableWrapper();
     			Enumeration<RuntimeConfigurable> enumeration= rt.getChildren();
@@ -255,6 +266,9 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     				RuntimeConfigurable temp = enumeration.nextElement();
     				if(temp.getElementTag().equals("batchtest")) {
     					keyVal = batchtestHelper(temp);
+    				}
+    				if(temp.getElementTag().equals("classpath")) {
+    					System.out.println(this.compileTestTarget.getName()+ " pathelement exists");
     				}
         		}
     		}
