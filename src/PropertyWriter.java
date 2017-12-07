@@ -10,9 +10,9 @@ public class PropertyWriter {
 	private static File file;
 	private Properties propertyFile;
 
-	public PropertyWriter(String type, File buildFile, File outputFile) throws IOException {
+	public PropertyWriter(String type, File buildFile, File outputFile, String projectName) throws IOException {
 
-		adapter = new BuildFileAnalyzerAdapter(type, buildFile);
+		adapter = new BuildFileAnalyzerAdapter(type, buildFile, projectName);
 		file = outputFile;
 		propertyFile = new Properties();
 		this.setProperties();

@@ -42,6 +42,15 @@ public class TaskHelper {
 		return (String)this.getAttributes(t).get(attrOfInterest);
 	}
 	
+	public boolean containsTask(Task[] tasks, String taskName) {
+		for(Task t : tasks) {
+			if(t.getTaskType().equals(taskName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public String getDirectory(String taskType, String dirType, Target target) {
 		//Compile Target is not found yet
 				List<String> javacTasks = new ArrayList<String>();

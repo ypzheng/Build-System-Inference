@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.RuntimeConfigurable;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.util.StringUtils;
 
 public class PathParser {
 	
@@ -41,6 +43,7 @@ public class PathParser {
 		//Load in the build.xml
 		this.project = project;
 		this.loadPropertiesFromTarget();
+		
 		
 	}
 	
@@ -95,7 +98,9 @@ public class PathParser {
 		}
 		
 		//Attach rest of the path that doesn't need parsing
-		return Paths.get(result + temp).toString();
+		String preprocess_path = Paths.get(result + temp).toString();
+		
+		return FileUtility.absoluteToRelative(this.project.getBaseDir().toString(), preprocess_path);
 	
 	}
 	
@@ -103,6 +108,10 @@ public class PathParser {
 	private String getProperty(String key) {
 		
 		String resolved = null;
+		
+	
+			
+		
 		//Look for property value using project.getProperty
 		if(this.project != null) {
 			resolved = this.project.getProperty(key);

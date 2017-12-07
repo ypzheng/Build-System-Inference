@@ -17,17 +17,21 @@ public class Driver {
 //            }
 //            System.out.println();
 //        }
-		File buildFile = new File("/Users/juconghe/Downloads/commons-lang-LANG_2_5/build.xml");
+
+		//"/Users/juconghe/Downloads/commons-lang-LANG_2_5/build.xml"
+		File buildFile = new File("commons-math-build.xml");
 		File outputFile = new File("build.properties");
-		PropertyWriter pw = new PropertyWriter("ant", buildFile, outputFile);
-        
-        AntBuildAnalyzer aba = new AntBuildAnalyzer(buildFile);
-//        System.out.println("compiled classes: " +aba.getCompDir());
-//        System.out.println("test source: "+aba.getTestDir());
-//        System.out.println("source dir: "+aba.getSrcDir());
-//        System.out.println("compiled test classes: "+aba.getCompTestDir());
-        System.out.println(aba.getSrcDep());
-        
+		PropertyWriter pw = new PropertyWriter("ant", buildFile, outputFile, "commons-math");
+
+        AntBuildAnalyzer aba = new AntBuildAnalyzer(buildFile, "commons-math");
+        System.out.println("compile target: " +aba.getCompileSrcTarget());
+        System.out.println("compile test target: " +aba.getCompileTestTarget());
+        System.out.println("test source: "+aba.getTestDir());
+        System.out.println("source dir: "+aba.getSrcDir());
+        System.out.println("compiled test classes: "+aba.getCompTestDir());
+        System.out.println("compiled source classes: "+aba.getCompDir());
+        System.out.println(aba.getTestList());
+
 	}
 
 }
