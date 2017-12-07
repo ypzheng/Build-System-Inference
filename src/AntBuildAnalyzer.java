@@ -262,14 +262,17 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     		//TODO: Given a map of key values, for example {includes=**/*Test.class, dir=target/test-classes},
     		// 		use DirectoryScanner or Andy/Jucong's method to find test set.
     		//TODO: I REALIZED WE CAN JUST RUN THE COMPILE.TEST TARGET AND GET ALL TESTS FROM THE DIRECTORY. HMMMMMMMMMM.....
-    		System.out.println(keyVal);
-
-    		String[] includes = keyVal.get("include").split(";");
-    		String[] excludes = keyVal.get("exclude").split(";");
-    		String[] str = this.resolvedWildCardFiles(includes, excludes, project.getBaseDir().getParent().toString()+Paths.get("/")+projectName+Paths.get("/")+keyVal.get("dir"));
-    		for(int i = 0; i < str.length; i++) {
-    			System.out.println(str[i]);
+    		System.out.println("keyval: "+keyVal);
+    		
+    		if(keyVal.size() != 0) {
+    			String[] includes = keyVal.get("include").split(";");
+            	String[] excludes = keyVal.get("exclude").split(";");
+            	String[] str = this.resolvedWildCardFiles(includes, excludes, project.getBaseDir().getParent().toString()+Paths.get("/")+projectName+Paths.get("/")+keyVal.get("dir"));
+            	for(int i = 0; i < str.length; i++) {
+            		System.out.println(str[i]);
+            	}
     		}
+    		
     		return "";
 	}
 
@@ -280,6 +283,10 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     private Map<String, String> batchtestHelper(RuntimeConfigurable rt) {
     		Enumeration<RuntimeConfigurable> filesets = rt.getChildren();
     		Map<String, String> ret = new HashMap<>();
+
+    		ret.put("include", "");
+    		ret.put("exclude", "");
+    		ret.put("dir", "");
 			while(filesets.hasMoreElements()) {
 				RuntimeConfigurable fileset = filesets.nextElement();
 				Hashtable att_map_fs = ((RuntimeConfigurable) fileset).getAttributeMap();
@@ -287,10 +294,10 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 					ret.put("dir", pp.parse((String) att_map_fs.get("dir")));
 				}
 				if(att_map_fs.containsKey("includes")) {
-					ret.put("includes", (String) att_map_fs.get("includes"));
+					ret.put("include", (String) att_map_fs.get("includes"));
 				}
 				if(att_map_fs.containsKey("excludes")) {
-					ret.put("excludes", (String) att_map_fs.get("excludes"));
+					ret.put("exclude", (String) att_map_fs.get("excludes"));
 				}
 
 				Enumeration<RuntimeConfigurable> fileNamePattern = fileset.getChildren();
@@ -305,8 +312,8 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 					if(temp.getElementTag().equals("exclude")){
 						exclude = exclude+pp.parse((String)temp.getAttributeMap().get("name"))+"; ";
 					}
-					ret.put("include", include);
-					ret.put("exclude", exclude);
+					ret.replace("include", include);
+					ret.replace("exclude", exclude);
 				}
 			}
 		return ret;
@@ -322,7 +329,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 			ds.scan();
 		}catch(IllegalStateException e){
 			Debugger.log("Illegal State Exception found, basedir does not exist");
-			System.out.println("Please try to compile the project:"+projectName+" first in order to get a test list");
+			System.out.println("Directory that contains tests cannot be found. \nPlease try to compile the project: "+projectName+" first in order to get a test list");
 		}
 		return ds.getIncludedFiles();
 	}
