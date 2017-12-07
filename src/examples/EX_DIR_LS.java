@@ -11,7 +11,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 
 import util.PathParser;
-import util.Utility;
+import util.FileUtility;
 public class EX_DIR_LS {
 	
 	//equivalent to ls command
@@ -19,7 +19,7 @@ public class EX_DIR_LS {
 		Project project = new Project();
         ProjectHelper helper = new ProjectHelper();
         project.init();
-        File buildFile = project.resolveFile("src/build.xml");
+        File buildFile = project.resolveFile("closure-compiler-build.xml");
         helper.configureProject(project, buildFile);
 		// TODO Auto-generated method stub
 //		Path dir = Paths.get(project.getBaseDir().toString());
@@ -31,9 +31,8 @@ public class EX_DIR_LS {
 //        } catch(IOException e) {
 //        	e.printStackTrace();
 //        }
-        PathParser pp = new PathParser(project);
-        System.out.println(pp.parse("${basedir}/test"));
-        String[] result = Utility.lsDirectoryRS(project.getBaseDir().toString(), "(.*)[.java]","[Ant](.*)");
+        
+        String[] result = FileUtility.lsDirectoryRS(project.getBaseDir().toString(), "(.*)[.java]","[Ant](.*)");
 
         for(String name : result)
         	System.out.println(name);

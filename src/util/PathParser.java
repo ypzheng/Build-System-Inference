@@ -44,6 +44,7 @@ public class PathParser {
 		this.project = project;
 		this.loadPropertiesFromTarget();
 		
+		
 	}
 	
 	
@@ -97,7 +98,9 @@ public class PathParser {
 		}
 		
 		//Attach rest of the path that doesn't need parsing
-		return Paths.get(result + temp).toString();
+		String preprocess_path = Paths.get(result + temp).toString();
+		
+		return FileUtility.absoluteToRelative(this.project.getBaseDir().toString(), preprocess_path);
 	
 	}
 	
@@ -106,21 +109,7 @@ public class PathParser {
 		
 		String resolved = null;
 		
-		//Since project.getProject("basedir") will return an absolute path
-		
-		
-		if(key.equals("basedir")) {
-			//Absolute path of build file
-			Path build_file_location = Paths.get(this.project.getBaseDir().toString());
-			
-			//Absolute path of basedir key
-			Path basedir = Paths.get(this.project.getProperty("basedir"));
-			
-			resolved = build_file_location.relativize(basedir).toString();
-			System.out.println(resolved);
-			if(resolved!=null)
-				return resolved;
-		}
+	
 			
 		
 		//Look for property value using project.getProperty

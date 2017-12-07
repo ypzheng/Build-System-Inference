@@ -27,7 +27,7 @@ import util.ClassPathParser;
 import util.PathParser;
 import util.Debugger;
 import util.TaskHelper;
-import util.Utility;
+import util.FileUtility;
 
 public class AntBuildAnalyzer implements BuildAnalyzer{
 	private Vector sortedTargets;
@@ -209,7 +209,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
             if (tsk.getTaskType().equals("javac")) {
                 String[] paths = classPathParser.parseClassPath(tsk.getRuntimeConfigurableWrapper());
                 if (paths != null) {
-                    Utility.printPath(paths);
+                    FileUtility.printPath(paths);
                 } else {
                     System.out.println("Can't find class path in Javac abort");
                 }
