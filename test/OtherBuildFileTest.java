@@ -5,7 +5,7 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
-public class TestSuite1 {
+public class OtherBuildFileTest {
 	
 	AntBuildAnalyzer aba0 = new AntBuildAnalyzer(new File("test/TestBuildFile0.xml"),"");
 	AntBuildAnalyzer aba1 = new AntBuildAnalyzer(new File("test/TestBuildFile1.xml"),"");
@@ -103,7 +103,7 @@ public class TestSuite1 {
 	
 	@Test
 	public void getDep() {
-		assertEquals("",aba0.getTestDep());
+		assertEquals("",aba0.getSrcDep());
 		
 	}
 	
