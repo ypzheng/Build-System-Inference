@@ -19,7 +19,7 @@ public class Driver {
 //        }
 
 		//"/Users/juconghe/Downloads/commons-lang-LANG_2_5/build.xml"
-		File buildFile = new File("joda-time-build.xml");
+		File buildFile = new File("commons-math-build.xml");
 		File outputFile = new File("build.properties");
 		PropertyWriter pw = new PropertyWriter("ant", buildFile, outputFile, "commons-math");
 
@@ -30,6 +30,8 @@ public class Driver {
         System.out.println("source dir: "+aba.getSrcDir());
         System.out.println("compiled test classes: "+aba.getCompTestDir());
         System.out.println("compiled source classes: "+aba.getCompDir());
+        System.out.println("comp src dep: "+aba.getSrcDep());
+        System.out.println("comp test dep: "+aba.getTestDep());
         System.out.println(aba.getTestList());
 
 	}

@@ -51,7 +51,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		this.projectName = projectName;
 
 		//Enable Console printing
-		//Debugger.enable();
+//		Debugger.enable();
 
 		//Load in build.xml file
 		project = new Project();
@@ -81,7 +81,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 * If a target contains javac: check if the target name contains "test",
 	 * add it to the list that contains potential compile-test targets; if it does
 	 * not contain "test", add it to the list that contains potential compile-source
-	 * target.
+	 * target.  This reduces returning false positives of special naming on targets.
 	 *
 	 */
 	private void getPotentialCompileTargets() {
@@ -106,17 +106,20 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		enhanceTestTargetFinding();
 	}
 
+	/**
+	 * Helper method to find compile target
+	 */
 	private void enhanceSrcTargetFinding() {
 		if(potentialSrcTargets.size() == 0) {
 			Debugger.log("Cannot find target that compiles source.");
 		}
 		else{
 			for(Target t : potentialSrcTargets) {
-				if(t.getName().contains("compile") && potentialSrcTargets.size() == 1) {
+				if(potentialSrcTargets.size() == 1) {
 					this.compileSrcTarget = t;
 				}
 				else if(t.getName().contains("compile") && potentialSrcTargets.size() > 1) {
-					System.out.println("Special case, may require manual inference.");
+					System.out.println("Special case, there might be a top-level compile target.  Requires manual inference.");
 					if(t.getName().equals("compile"))
 						this.compileSrcTarget = t;
 				}
@@ -125,6 +128,10 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 				this.compileSrcTarget = potentialSrcTargets.get(potentialSrcTargets.size()-1);
 		}
 	}
+	
+	/**
+	 * Helper method to find test target
+	 */
 	private void enhanceTestTargetFinding() {
 		// if no target name that contains "test" and there is exactly one compile source target,
 		// check if the compile source target contains multiple javac.  If true, test.compile = src.compile
@@ -142,11 +149,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 
 
 	/**
-	 * Get compile-source target from the potential targets array.
-	 * TODO: If the array is empty, we should check if the buid file is valid.
-	 * If the array contains exactly one element, it is the target we are looking for.
-	 * If the array contains more than one element, we can find compile-source target
-	 * at the end of the list, since the list is sorted in execution order.
+	 * Get compile-source target
 	 * @return
 	 */
 	public String getCompileSrcTarget() {
@@ -154,10 +157,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	}
 
 	/**
-	 * Similar to the method above.
-	 * TODO: Need to consider the case when the compile-test target doesn't contain
-	 * the key word "test".  For example, TestBuildFile1 compiles test and source
-	 * together in the target "compile".s
+	 * Get compile-test target
 	 * @return
 	 */
 	public String getCompileTestTarget() {
@@ -194,53 +194,58 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		return taskHelper.getDirectory("javac", "srcdir", compileSrcTarget);
 	}
 
+	/**
+	 * Find compiled test directory
+	 */
 	@Override
 	public String getCompTestDir() {
 		// TODO Auto-generated method stub
 		return taskHelper.getDirectory("javac", "destdir", compileTestTarget);
 	}
 
+	/**
+	 * Get dependencies that are required to compile source files
+	 */
 	@Override
 	public String getSrcDep() {
 		// TODO Auto-generated method stub
 	
-		//Output String
-		String deps = "";
-		
-		//Get all tasks that contains javac task under compileSrcTarget
-		List<Task> javac_tasks = taskHelper.getTasks("javac",this.compileSrcTarget);
-		
-		//Get all classpath tasks' refid values in an array of String
-		String[] classpath_refid_list = taskHelper.getSubTaskAttr(javac_tasks.toArray(new Task[javac_tasks.size()]), "classpath", "refid");
-		
-		
-		for(String s : classpath_refid_list) {
-			Path p = this.project.getReference(s);
-			
-			//Since we are only insterested in .jar files, filter them out and append to output string
-			String[] filtered_deps = FileUtility.filterPath(p.list(), true,"(.*)[.jar]");
-			
-			for(String filtered_dep : filtered_deps) {
-				deps += pp.parse(filtered_dep) +",";
-			}
-		}
+//		//Output String
+//		String deps = "";
+//		
+//		//Get all tasks that contains javac task under compileSrcTarget
+//		List<Task> javac_tasks = taskHelper.getTasks("javac",this.compileSrcTarget);
+//		
+//		//Get all classpath tasks' refid values in an array of String
+//		String[] classpath_refid_list = taskHelper.getSubTaskAttr(javac_tasks.toArray(new Task[javac_tasks.size()]), "classpath", "refid");
+//		
+//		
+//		for(String s : classpath_refid_list) {
+//			Path p = this.project.getReference(s);
+//			
+//			//Since we are only insterested in .jar files, filter them out and append to output string
+//			String[] filtered_deps = FileUtility.filterPath(p.list(), true,"(.*)[.jar]");
+//			
+//			for(String filtered_dep : filtered_deps) {
+//				deps += pp.parse(filtered_dep) +",";
+//			}
+//		}
 		
 		// TODO Handle fileset tasks
 		
 		//Formating output string, remove last ","
-		if(deps.substring(deps.length()-1).equals(","))
-			deps = deps.substring(0, deps.length()-1);
+//		if(deps.substring(deps.length()-1).equals(","))
+//			deps = deps.substring(0, deps.length()-1);
 		
-		return deps;
+//		return deps;
+		return this.dependencyHelper(this.compileSrcTarget);
 	}
 
-	@Override
-	public String getTestDep() {
-               
-        String deps = "";
+	private String dependencyHelper(Target t) {
+		String deps = "";
         
         //Get all tasks that contains javac task under compileSrcTarget
-		List<Task> javac_tasks = taskHelper.getTasks("javac",this.compileTestTarget);
+		List<Task> javac_tasks = taskHelper.getTasks("javac",t);
 		//Get all classpath tasks' refid values in an array of String
 		String[] classpath_refid_list = taskHelper.getSubTaskAttr(javac_tasks.toArray(new Task[javac_tasks.size()]), "classpath", "refid");
 		
@@ -262,24 +267,56 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 			deps = deps.substring(0, deps.length()-1);
 		return deps;
 	}
+	/**
+	 *  Get dependencies required to compile test files
+	 */
+	@Override
+	public String getTestDep() {
+               
+//        String deps = "";
+//        
+//        //Get all tasks that contains javac task under compileSrcTarget
+//		List<Task> javac_tasks = taskHelper.getTasks("javac",this.compileTestTarget);
+//		//Get all classpath tasks' refid values in an array of String
+//		String[] classpath_refid_list = taskHelper.getSubTaskAttr(javac_tasks.toArray(new Task[javac_tasks.size()]), "classpath", "refid");
+//		
+//		for(String s : classpath_refid_list) {
+//			Path p = this.project.getReference(s);
+//			//Since we are only insterested in .jar files, filter them out and append to output string
+//			String[] filtered_deps = FileUtility.filterPath(p.list(), true,"(.*)[jar]");
+//			
+//			for(String filtered_dep : filtered_deps) {
+//				deps += pp.parse(filtered_dep) +",";
+//				
+//			}
+//		}
+//		
+//		// TODO Handle fileset tasks
+//		
+//		//Formating output string, remove last ","
+//		if(deps.substring(deps.length()-1).equals(","))
+//			deps = deps.substring(0, deps.length()-1);
+//		return deps;
+		return this.dependencyHelper(this.compileTestTarget);
+	}
 
-    private String[] findClassPath(Task[] tasks) {
-        for (Task tsk : tasks) {
-            if (tsk.getTaskType().equals("javac")) {
-                String[] paths = classPathParser.parseClassPath(tsk.getRuntimeConfigurableWrapper());
-                return paths;
-            }
-        }
-        return null;
-    }
-
-    private String convert2String(ArrayList<String> al) {
-	    String temp = "";
-	    for (String w: al) {
-	        temp += w+", ";
-        }
-        return temp;
-    }
+//    private String[] findClassPath(Task[] tasks) {
+//        for (Task tsk : tasks) {
+//            if (tsk.getTaskType().equals("javac")) {
+//                String[] paths = classPathParser.parseClassPath(tsk.getRuntimeConfigurableWrapper());
+//                return paths;
+//            }
+//        }
+//        return null;
+//    }
+//
+//    private String convert2String(ArrayList<String> al) {
+//	    String temp = "";
+//	    for (String w: al) {
+//	        temp += w+", ";
+//        }
+//        return temp;
+//    }
     
     private Target getTopLevelTestTarget(List<Target> targets) {
     		for(Target t: targets) {
@@ -314,15 +351,13 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
         		}
     		}
 
-    		//TODO: Given a map of key values, for example {includes=**/*Test.class, dir=target/test-classes},
-    		// 		use DirectoryScanner or Andy/Jucong's method to find test set.
-    		//TODO: I REALIZED WE CAN JUST RUN THE COMPILE.TEST TARGET AND GET ALL TESTS FROM THE DIRECTORY. HMMMMMMMMMM.....
+    		
     		System.out.println("keyval: "+keyVal);
     		
     		if(keyVal.size() != 0) {
     			String[] includes = keyVal.get("include").split(";");
             	String[] excludes = keyVal.get("exclude").split(";");
-            	String[] str = this.resolvedWildCardFiles(includes, excludes, project.getBaseDir().getParent().toString()+Paths.get("/")+projectName+Paths.get("/")+keyVal.get("dir"));
+            	String[] str = this.resolveWildCard(includes, excludes, project.getBaseDir().getParent().toString()+Paths.get("/")+projectName+Paths.get("/")+keyVal.get("dir"));
             	for(int i = 0; i < str.length; i++) {
             		System.out.println(str[i]);
             	}
@@ -332,7 +367,6 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	}
 
     //TODO: If no batchtest found, we should return all available tests under specified test directory
-    //TODO: If "test" instead of "batchtest" found, parse the path and list all tests
     //TODO: If neither "test" nor "batchtest" found, list all available tests under test.dir
     //TODO:
     private Map<String, String> batchtestHelper(RuntimeConfigurable rt) {
@@ -374,7 +408,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		return ret;
     }
 
-	private String[] resolvedWildCardFiles(String[] includes, String[] excludes, String baseDir) {
+	private String[] resolveWildCard(String[] includes, String[] excludes, String baseDir) {
 		DirectoryScanner ds = new DirectoryScanner();
 		ds.setIncludes(includes);
 		ds.setExcludes(excludes);
@@ -391,46 +425,51 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     /*
     Perform a DFS recursively find all the file in the given root folder
  */
-    private ArrayList<String> getDependFile(String[] paths) {
-        ArrayList<String> files = new ArrayList<>();
-        String[] excludes = new String[]{""};
-        for (String path:paths) {
-            System.out.println(path);
-            String[] wildcard = new String[]{isWildCard(path)};
-            if (!wildcard[0].equals("")) {
-                System.out.println("It's a wild card");
-                String baseDir = path.replace(wildcard[0],"");
-                String[] resolvedFiles = resolvedWildCardFiles(wildcard,excludes,baseDir);
-                files.addAll(Arrays.asList(resolvedFiles));
-            } else {
-                System.out.println("It's not a wild card");
-                File potentialFile = new File(path);
-                if (potentialFile.isFile()) {
-                    files.add(potentialFile.getName());
-                } else {
-                    String [] includes = new String[]{"*.class"};
-                    String [] resolvedFiles = resolvedWildCardFiles(includes,excludes,path);
-                    for (String f:resolvedFiles) {
-                        System.out.println(f);
-                    }
-                    files.addAll(Arrays.asList(resolvedFiles));
-                }
-            }
-        }
-        return files;
-    }
+//    private ArrayList<String> getDependFile(String[] paths) {
+//        ArrayList<String> files = new ArrayList<>();
+//        String[] excludes = new String[]{""};
+//        for (String path:paths) {
+//            System.out.println(path);
+//            String[] wildcard = new String[]{isWildCard(path)};
+//            if (!wildcard[0].equals("")) {
+//                System.out.println("It's a wild card");
+//                String baseDir = path.replace(wildcard[0],"");
+//                String[] resolvedFiles = resolvedWildCardFiles(wildcard,excludes,baseDir);
+//                files.addAll(Arrays.asList(resolvedFiles));
+//            } else {
+//                System.out.println("It's not a wild card");
+//                File potentialFile = new File(path);
+//                if (potentialFile.isFile()) {
+//                    files.add(potentialFile.getName());
+//                } else {
+//                    String [] includes = new String[]{"*.class"};
+//                    String [] resolvedFiles = resolvedWildCardFiles(includes,excludes,path);
+//                    for (String f:resolvedFiles) {
+//                        System.out.println(f);
+//                    }
+//                    files.addAll(Arrays.asList(resolvedFiles));
+//                }
+//            }
+//        }
+//        return files;
+//    }
 
-    private String isWildCard(String path) {
-        String regex = "\\*\\w*\\.\\w*";
-
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(path);
-
-        if (matcher.find()) {
-            return matcher.group();
-        }else {
-            return "";
-        }
-
-    }
+    /**
+     * This method is not used atm, but will be used in the future for enhancement
+     * @param path
+     * @return
+     */
+//    private String isWildCard(String path) {
+//        String regex = "\\*\\w*\\.\\w*";
+//
+//        Pattern pattern = Pattern.compile(regex);
+//        Matcher matcher = pattern.matcher(path);
+//
+//        if (matcher.find()) {
+//            return matcher.group();
+//        }else {
+//            return "";
+//        }
+//
+//    }
 }
