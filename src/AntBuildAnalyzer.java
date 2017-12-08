@@ -263,7 +263,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		// TODO Handle fileset tasks
 		
 		//Formating output string, remove last ","
-		if(deps.substring(deps.length()-1).equals(","))
+		if(deps.length()>0 && deps.substring(deps.length()-1).equals(","))
 			deps = deps.substring(0, deps.length()-1);
 		return deps;
 	}
