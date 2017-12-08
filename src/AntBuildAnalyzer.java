@@ -203,24 +203,21 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	@Override
 	public String getSrcDep() {
 		// TODO Auto-generated method stub
-		/*Task[] tasks = compileSrcTarget.getTasks();
-		String[] paths = findClassPath(tasks);
-        if (paths != null) {
-            return convert2String(getDependFile(paths));
-        } else {
-            System.out.println("Can't find class path in Javac abort");
-        }
-        return null;*/
-		
+	
+		//Output String
 		String deps = "";
-		int counter = 0;
+		
+		//Get all tasks that contains javac task under compileSrcTarget
 		List<Task> javac_tasks = taskHelper.getTasks("javac",this.compileSrcTarget);
 		
+		//Get all classpath tasks' refid values in an array of String
 		String[] classpath_refid_list = taskHelper.getSubTaskAttr(javac_tasks.toArray(new Task[javac_tasks.size()]), "classpath", "refid");
 		
-		Vector<String> references = new Vector(0,1);
+		
 		for(String s : classpath_refid_list) {
 			Path p = this.project.getReference(s);
+			
+			//Since we are only insterested in .jar files, filter them out and append to output string
 			String[] filtered_deps = FileUtility.filterPath(p.list(), true,"(.*)[.jar]");
 			
 			for(String filtered_dep : filtered_deps) {
@@ -228,21 +225,28 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 			}
 		}
 		
+		// TODO Handle fileset tasks
+		
+		//Formating output string, remove last ","
+		if(deps.substring(deps.length()-1).equals(","))
+			deps = deps.substring(0, deps.length()-1);
+		
 		return deps;
 	}
 
 	@Override
 	public String getTestDep() {
-		// TODO Auto-generated method stub
-		System.out.println(this.project.getProperties());
                
         String deps = "";
+        
+        //Get all tasks that contains javac task under compileSrcTarget
 		List<Task> javac_tasks = taskHelper.getTasks("javac",this.compileTestTarget);
+		//Get all classpath tasks' refid values in an array of String
 		String[] classpath_refid_list = taskHelper.getSubTaskAttr(javac_tasks.toArray(new Task[javac_tasks.size()]), "classpath", "refid");
-		Vector<String> references = new Vector(0,1);
+		
 		for(String s : classpath_refid_list) {
 			Path p = this.project.getReference(s);
-			
+			//Since we are only insterested in .jar files, filter them out and append to output string
 			String[] filtered_deps = FileUtility.filterPath(p.list(), true,"(.*)[jar]");
 			
 			for(String filtered_dep : filtered_deps) {
@@ -251,6 +255,11 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 			}
 		}
 		
+		// TODO Handle fileset tasks
+		
+		//Formating output string, remove last ","
+		if(deps.substring(deps.length()-1).equals(","))
+			deps = deps.substring(0, deps.length()-1);
 		return deps;
 	}
 

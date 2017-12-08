@@ -146,7 +146,22 @@ public class FileUtility {
 		return path;
 			
 	}
-
+	
+	/**
+	 * List of paths in "paths"
+	 * 
+	 * Filter with "rex" as regular expression
+	 * 
+	 * Boolean "include" define whether to keep or discard that matches "rex"
+	 * In other words, whether "rex" is include or exclude
+	 * 
+	 * @param paths
+	 * @param include
+	 * @param rex
+	 * @return
+	 * 
+	 * a list of filtered path
+	 */
 	public static String[] filterPath(String[] paths, boolean include, String rex) {
 		
 		Vector<String> result_paths = new Vector(0,1);

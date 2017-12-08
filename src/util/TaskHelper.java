@@ -56,39 +56,39 @@ public class TaskHelper {
 	
 	public String getDirectory(String taskType, String dirType, Target target) {
 		//Compile Target is not found yet
-				List<String> javacTasks = new ArrayList<String>();
-				List<String> noDupList;
-				String ret = "";
-				
-				//Infer Src Directory from Compile Target
-				/**
-				 * Find taskType Task
-				 * Looks for dirType attribute
-				 */
-				for(Task t : this.getTasks(taskType, target)) {
-					if(t.getTaskType().equals(taskType)) {
-						String srcDirectory = (String)this.getAttr(t, dirType);
-						if(srcDirectory == null) {
-							Debugger.log("no "+dirType+" exists in "+target.getName());
-						}else {
-							javacTasks.add(srcDirectory);
-						}
-					}
+		List<String> javacTasks = new ArrayList<String>();
+		List<String> noDupList;
+		String ret = "";
+		
+		//Infer Src Directory from Compile Target
+		/**
+		 * Find taskType Task
+		 * Looks for dirType attribute
+		 */
+		for(Task t : this.getTasks(taskType, target)) {
+			if(t.getTaskType().equals(taskType)) {
+				String srcDirectory = (String)this.getAttr(t, dirType);
+				if(srcDirectory == null) {
+					Debugger.log("no "+dirType+" exists in "+target.getName());
+				}else {
+					javacTasks.add(srcDirectory);
 				}
-				noDupList = javacTasks.stream().distinct().collect(Collectors.toList());
-				
-				Debugger.log("Show Directory list Before Parsing");
-				Debugger.log(noDupList.toString());
-				
-				for(int i=0; i<noDupList.size()-1; i++) {
-						ret+=pp.parse(noDupList.get(i)) + ", ";
-				}
-				ret+=pp.parse(noDupList.get(noDupList.size()-1));
-				
-				Debugger.log("Show Directory list After Parsing");
-				Debugger.log(ret);
-				
-				return ret;
+			}
+		}
+		noDupList = javacTasks.stream().distinct().collect(Collectors.toList());
+		
+		Debugger.log("Show Directory list Before Parsing");
+		Debugger.log(noDupList.toString());
+		
+		for(int i=0; i<noDupList.size()-1; i++) {
+				ret+=pp.parse(noDupList.get(i)) + ", ";
+		}
+		ret+=pp.parse(noDupList.get(noDupList.size()-1));
+		
+		Debugger.log("Show Directory list After Parsing");
+		Debugger.log(ret);
+		
+		return ret;
 	}
 	
 	public String[] getSubTaskAttr(Task[] tasks, String subTaskOfInterest,String attrOfInterest) {
