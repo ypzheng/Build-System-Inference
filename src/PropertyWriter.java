@@ -27,6 +27,9 @@ public class PropertyWriter {
 		propertyFile.setProperty("src.comp.dir", adapter.getCompDir());
 		propertyFile.setProperty("test.dir", adapter.getTestDir());
 		propertyFile.setProperty("test.comp.dir", adapter.getCompTestDir());
+		propertyFile.setProperty("src.compile.dependency", adapter.getSrcDep());
+		propertyFile.setProperty("test.compile.dependency", adapter.getTestDep());
+		propertyFile.setProperty("tests.all", adapter.getTestList());
 		saveProperties(propertyFile);
 		//	loadProperties(propertyFile);
 	

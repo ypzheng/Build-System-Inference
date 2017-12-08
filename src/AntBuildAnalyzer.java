@@ -178,7 +178,6 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 
 	@Override
 	public String getTestDir() {
-		// TODO Auto-generated method stub
 		return taskHelper.getDirectory("javac", "srcdir", compileTestTarget);
 	}
 
@@ -199,7 +198,6 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 */
 	@Override
 	public String getCompTestDir() {
-		// TODO Auto-generated method stub
 		return taskHelper.getDirectory("javac", "destdir", compileTestTarget);
 	}
 
@@ -208,39 +206,17 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 */
 	@Override
 	public String getSrcDep() {
-		// TODO Auto-generated method stub
-	
-//		//Output String
-//		String deps = "";
-//		
-//		//Get all tasks that contains javac task under compileSrcTarget
-//		List<Task> javac_tasks = taskHelper.getTasks("javac",this.compileSrcTarget);
-//		
-//		//Get all classpath tasks' refid values in an array of String
-//		String[] classpath_refid_list = taskHelper.getSubTaskAttr(javac_tasks.toArray(new Task[javac_tasks.size()]), "classpath", "refid");
-//		
-//		
-//		for(String s : classpath_refid_list) {
-//			Path p = this.project.getReference(s);
-//			
-//			//Since we are only insterested in .jar files, filter them out and append to output string
-//			String[] filtered_deps = FileUtility.filterPath(p.list(), true,"(.*)[.jar]");
-//			
-//			for(String filtered_dep : filtered_deps) {
-//				deps += pp.parse(filtered_dep) +",";
-//			}
-//		}
-		
-		// TODO Handle fileset tasks
-		
-		//Formating output string, remove last ","
-//		if(deps.substring(deps.length()-1).equals(","))
-//			deps = deps.substring(0, deps.length()-1);
-		
-//		return deps;
 		return this.dependencyHelper(this.compileSrcTarget);
 	}
 
+	/**
+	 *  Get dependencies required to compile test files
+	 */
+	@Override
+	public String getTestDep() {
+		return this.dependencyHelper(this.compileTestTarget);
+	}
+	
 	private String dependencyHelper(Target t) {
 		String deps = "";
         
@@ -266,38 +242,6 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		if(deps.length()>0 && deps.substring(deps.length()-1).equals(","))
 			deps = deps.substring(0, deps.length()-1);
 		return deps;
-	}
-	/**
-	 *  Get dependencies required to compile test files
-	 */
-	@Override
-	public String getTestDep() {
-               
-//        String deps = "";
-//        
-//        //Get all tasks that contains javac task under compileSrcTarget
-//		List<Task> javac_tasks = taskHelper.getTasks("javac",this.compileTestTarget);
-//		//Get all classpath tasks' refid values in an array of String
-//		String[] classpath_refid_list = taskHelper.getSubTaskAttr(javac_tasks.toArray(new Task[javac_tasks.size()]), "classpath", "refid");
-//		
-//		for(String s : classpath_refid_list) {
-//			Path p = this.project.getReference(s);
-//			//Since we are only insterested in .jar files, filter them out and append to output string
-//			String[] filtered_deps = FileUtility.filterPath(p.list(), true,"(.*)[jar]");
-//			
-//			for(String filtered_dep : filtered_deps) {
-//				deps += pp.parse(filtered_dep) +",";
-//				
-//			}
-//		}
-//		
-//		// TODO Handle fileset tasks
-//		
-//		//Formating output string, remove last ","
-//		if(deps.substring(deps.length()-1).equals(","))
-//			deps = deps.substring(0, deps.length()-1);
-//		return deps;
-		return this.dependencyHelper(this.compileTestTarget);
 	}
 
 //    private String[] findClassPath(Task[] tasks) {
@@ -329,8 +273,8 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 
     @Override
 	public String getTestList() {
-		// TODO Auto-generated method stub
     		Map<String, String> keyVal = new HashMap<String, String>();
+    		String ret = "";
     		if(junitTargets.size() == 0) {
     			Debugger.log("No junit tasks, make sure this project contains unit tests.");
     			return "";
@@ -359,11 +303,11 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
             	String[] excludes = keyVal.get("exclude").split(";");
             	String[] str = this.resolveWildCard(includes, excludes, project.getBaseDir().getParent().toString()+Paths.get("/")+projectName+Paths.get("/")+keyVal.get("dir"));
             	for(int i = 0; i < str.length; i++) {
-            		System.out.println(str[i]);
+            		ret = ret + str[i]+", ";
             	}
     		}
     		
-    		return "";
+    		return ret;
 	}
 
     //TODO: If no batchtest found, we should return all available tests under specified test directory
@@ -418,7 +362,9 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 			ds.scan();
 		}catch(IllegalStateException e){
 			Debugger.log("Illegal State Exception found, basedir does not exist");
-			System.out.println("Directory that contains tests cannot be found. \nPlease try to compile the project: "+projectName+" first in order to get a test list");
+			System.out.println("Directory that contains tests cannot be found. "
+					+ "\nPlease try to compile the project: "
+			+ projectName+" first in order to get a test list");
 		}
 		return ds.getIncludedFiles();
 	}
