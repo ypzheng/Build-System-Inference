@@ -265,7 +265,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     
     private Target getTopLevelTestTarget(List<Target> targets) {
     		for(Target t: targets) {
-    			if(t.dependsOn(this.compileTestTarget.getName())||(t.getDescription().contains("test") && t.getDescription().contains("all"))) {
+    			if(t.dependsOn(this.compileTestTarget.getName())||(t.getDescription().equals("test") )) {
     				return t;
     			}
     		}
@@ -281,21 +281,25 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     			return "";
     		}
     		System.out.println(this.getTopLevelTestTarget(junitTargets).getName());
-    		List<Task> tasks = taskHelper.getTasks("junit", this.getTopLevelTestTarget(junitTargets));
-    		for(int i=0; i<tasks.size(); i++) {
-    			RuntimeConfigurable rt = tasks.get(i).getRuntimeConfigurableWrapper();
-    			Enumeration<RuntimeConfigurable> enumeration= rt.getChildren();
-    			while(enumeration.hasMoreElements()) {
-    				RuntimeConfigurable temp = enumeration.nextElement();
-//    				System.out.println("element: "+temp.getElementTag());
-    				if(temp.getElementTag().equals("batchtest")) {
-//    					System.out.println("contains batchtest");
-    					keyVal = batchtestHelper(temp);
-    				}
-    				if(temp.getElementTag().equals("classpath")) {
-//    					System.out.println(this.getTopLevelTestTarget(junitTargets)+ " pathelement exists");
-    				}
-        		}
+//    		List<Task> tasks = taskHelper.getTasks("junit", this.getTopLevelTestTarget(junitTargets));
+    		for(int i=0; i< junitTargets.size(); i++) {
+    			List<Task> tasks = taskHelper.getTasks("junit", junitTargets.get(i));
+	    		for(int j=0; j<tasks.size(); j++) {
+	    			RuntimeConfigurable rt = tasks.get(j).getRuntimeConfigurableWrapper();
+	    			Enumeration<RuntimeConfigurable> enumeration= rt.getChildren();
+	    			while(enumeration.hasMoreElements()) {
+	    				RuntimeConfigurable temp = enumeration.nextElement();
+	    				if(temp.getElementTag().equals("batchtest")) {
+	    					keyVal.putAll(batchtestHelper(temp));
+	    				}
+	    				if(temp.getElementTag().equals("classpath")) {
+	    					System.out.println(this.junitTargets.get(j).getName()+ " pathelement exists");
+	    				}
+	    				if(temp.getElementTag().equals("test")) {
+	    					    					System.out.println(junitTargets.get(j).getName()+ " test exists");
+	    				}
+	        		}
+	    		}
     		}
 
     		
@@ -305,6 +309,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     			String[] includes = keyVal.get("include").split(";");
             	String[] excludes = keyVal.get("exclude").split(";");
             	String[] str = WildCardResolver.resolveWildCard(includes, excludes, projectPath+Paths.get("/")+keyVal.get("dir"));
+            	System.out.println(projectPath+Paths.get("/")+keyVal.get("dir"));
             	for(int i = 0; i < str.length; i++) {
             		ret = ret + str[i]+", ";
             	}
@@ -352,26 +357,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 					ret.replace("exclude", exclude);
 				}
 			}
-//		System.out.println("is called: " +ret);
 		return ret;
     }
 
-    /**
-     * This method is not used atm, but will be used in the future for enhancement
-     * @param path
-     * @return
-     */
-//    private String isWildCard(String path) {
-//        String regex = "\\*\\w*\\.\\w*";
-//
-//        Pattern pattern = Pattern.compile(regex);
-//        Matcher matcher = pattern.matcher(path);
-//
-//        if (matcher.find()) {
-//            return matcher.group();
-//        }else {
-//            return "";
-//        }
-//
-//    }
 }
