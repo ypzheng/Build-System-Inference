@@ -1,0 +1,27 @@
+
+
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.tools.ant.DirectoryScanner;
+
+import util.Debugger;
+
+public class WildCardResolver {
+	private static DirectoryScanner ds;
+	
+	public static String[] resolveWildCard(String[] includes, String[] excludes, String baseDir) {
+		ds = new DirectoryScanner();
+		ds.setIncludes(includes);
+		ds.setExcludes(excludes);
+		ds.setBasedir(baseDir);
+		ds.setCaseSensitive(true);
+		try {
+			ds.scan();
+		}catch(IllegalStateException e){
+			System.out.println("Illegal State Exception found resolving wild cards, basedir does not exist");
+		}
+		return ds.getIncludedFiles();
+	
+	}
+}

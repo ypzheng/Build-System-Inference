@@ -34,21 +34,21 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	private Vector sortedTargets;
 	private ArrayList<Target> potentialSrcTargets, potentialTestTargets, junitTargets;
 	private Target compileSrcTarget, compileTestTarget;
-	private String projectName;
+	private String projectPath;
 
 	private PathParser pp;
 	private TaskHelper taskHelper;
     private ClassPathParser classPathParser;
     private Project project;
 
-    public AntBuildAnalyzer(File f, String projectName) {
+    public AntBuildAnalyzer(File f, String projectPath) {
 		//Initialize Variables
 		compileSrcTarget = null;
 		compileTestTarget = null;
 		potentialSrcTargets = new ArrayList<Target>();
 		potentialTestTargets = new ArrayList<Target>();
 		junitTargets = new ArrayList<Target>();
-		this.projectName = projectName;
+		this.projectPath = projectPath;
 
 		//Enable Console printing
 //		Debugger.enable();
@@ -110,6 +110,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 * Helper method to find compile target
 	 */
 	private void enhanceSrcTargetFinding() {
+		Map<String, Target> targets = new HashMap<String, Target>();
 		if(potentialSrcTargets.size() == 0) {
 			Debugger.log("Cannot find target that compiles source.");
 		}
@@ -120,7 +121,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 				}
 				else if(t.getName().contains("compile") && potentialSrcTargets.size() > 1) {
 					System.out.println("Special case, there might be a top-level compile target.  Requires manual inference.");
-					if(t.getName().equals("compile"))
+					if(t.getName().equals("compile") || t.getName().contains("all"))
 						this.compileSrcTarget = t;
 				}
 			}
@@ -264,7 +265,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     
     private Target getTopLevelTestTarget(List<Target> targets) {
     		for(Target t: targets) {
-    			if(t.dependsOn(this.compileTestTarget.getName())) {
+    			if(t.dependsOn(this.compileTestTarget.getName())||(t.getDescription().contains("test") && t.getDescription().contains("all"))) {
     				return t;
     			}
     		}
@@ -276,21 +277,23 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     		Map<String, String> keyVal = new HashMap<String, String>();
     		String ret = "";
     		if(junitTargets.size() == 0) {
-    			Debugger.log("No junit tasks, make sure this project contains unit tests.");
+    			System.out.println("No junit tasks, make sure this project contains unit tests.");
     			return "";
     		}
-    		
+    		System.out.println(this.getTopLevelTestTarget(junitTargets).getName());
     		List<Task> tasks = taskHelper.getTasks("junit", this.getTopLevelTestTarget(junitTargets));
     		for(int i=0; i<tasks.size(); i++) {
     			RuntimeConfigurable rt = tasks.get(i).getRuntimeConfigurableWrapper();
     			Enumeration<RuntimeConfigurable> enumeration= rt.getChildren();
     			while(enumeration.hasMoreElements()) {
     				RuntimeConfigurable temp = enumeration.nextElement();
+//    				System.out.println("element: "+temp.getElementTag());
     				if(temp.getElementTag().equals("batchtest")) {
+//    					System.out.println("contains batchtest");
     					keyVal = batchtestHelper(temp);
     				}
     				if(temp.getElementTag().equals("classpath")) {
-    					System.out.println(this.compileTestTarget.getName()+ " pathelement exists");
+//    					System.out.println(this.getTopLevelTestTarget(junitTargets)+ " pathelement exists");
     				}
         		}
     		}
@@ -301,7 +304,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     		if(keyVal.size() != 0) {
     			String[] includes = keyVal.get("include").split(";");
             	String[] excludes = keyVal.get("exclude").split(";");
-            	String[] str = this.resolveWildCard(includes, excludes, project.getBaseDir().getParent().toString()+Paths.get("/")+projectName+Paths.get("/")+keyVal.get("dir"));
+            	String[] str = WildCardResolver.resolveWildCard(includes, excludes, projectPath+Paths.get("/")+keyVal.get("dir"));
             	for(int i = 0; i < str.length; i++) {
             		ret = ret + str[i]+", ";
             	}
@@ -349,56 +352,9 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 					ret.replace("exclude", exclude);
 				}
 			}
+//		System.out.println("is called: " +ret);
 		return ret;
     }
-
-	private String[] resolveWildCard(String[] includes, String[] excludes, String baseDir) {
-		DirectoryScanner ds = new DirectoryScanner();
-		ds.setIncludes(includes);
-		ds.setExcludes(excludes);
-		ds.setBasedir(baseDir);
-		ds.setCaseSensitive(true);
-		try {
-			ds.scan();
-		}catch(IllegalStateException e){
-			Debugger.log("Illegal State Exception found, basedir does not exist");
-			System.out.println("Directory that contains tests cannot be found. "
-					+ "\nPlease try to compile the project: "
-			+ projectName+" first in order to get a test list");
-		}
-		return ds.getIncludedFiles();
-	}
-    /*
-    Perform a DFS recursively find all the file in the given root folder
- */
-//    private ArrayList<String> getDependFile(String[] paths) {
-//        ArrayList<String> files = new ArrayList<>();
-//        String[] excludes = new String[]{""};
-//        for (String path:paths) {
-//            System.out.println(path);
-//            String[] wildcard = new String[]{isWildCard(path)};
-//            if (!wildcard[0].equals("")) {
-//                System.out.println("It's a wild card");
-//                String baseDir = path.replace(wildcard[0],"");
-//                String[] resolvedFiles = resolvedWildCardFiles(wildcard,excludes,baseDir);
-//                files.addAll(Arrays.asList(resolvedFiles));
-//            } else {
-//                System.out.println("It's not a wild card");
-//                File potentialFile = new File(path);
-//                if (potentialFile.isFile()) {
-//                    files.add(potentialFile.getName());
-//                } else {
-//                    String [] includes = new String[]{"*.class"};
-//                    String [] resolvedFiles = resolvedWildCardFiles(includes,excludes,path);
-//                    for (String f:resolvedFiles) {
-//                        System.out.println(f);
-//                    }
-//                    files.addAll(Arrays.asList(resolvedFiles));
-//                }
-//            }
-//        }
-//        return files;
-//    }
 
     /**
      * This method is not used atm, but will be used in the future for enhancement

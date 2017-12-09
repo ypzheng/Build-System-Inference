@@ -20,6 +20,10 @@ public class TaskHelper {
 	}
 	
 	public List<Task> getTasks(String taskType, Target target) {
+		if(target == null) {
+			System.out.println("target is null when trying to get task.");
+			return null;
+		}
 		Task[] tasks = target.getTasks();
 		List<Task> tasksOfInterest = new ArrayList<Task>();
 		if(taskType == "") {

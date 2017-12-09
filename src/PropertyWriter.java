@@ -10,16 +10,15 @@ public class PropertyWriter {
 	private static File file;
 	private Properties propertyFile;
 
-	public PropertyWriter(String type, File buildFile, File outputFile, String projectName) throws IOException {
+	public PropertyWriter(String type, File buildFile, File outputFile, String projectPath) throws IOException {
 
-		adapter = new BuildFileAnalyzerAdapter(type, buildFile, projectName);
+		adapter = new BuildFileAnalyzerAdapter(type, buildFile, projectPath);
 		file = outputFile;
 		propertyFile = new Properties();
-		this.setProperties();
 	}
 	
 	
-	private void setProperties() throws IOException {
+	public void setProperties() throws IOException {
 
 		propertyFile.setProperty("src.compile", adapter.getCompileSrcTarget());
 		propertyFile.setProperty("test.compile", adapter.getCompileTestTarget());
@@ -29,9 +28,19 @@ public class PropertyWriter {
 		propertyFile.setProperty("test.comp.dir", adapter.getCompTestDir());
 		propertyFile.setProperty("src.compile.dependency", adapter.getSrcDep());
 		propertyFile.setProperty("test.compile.dependency", adapter.getTestDep());
-		propertyFile.setProperty("tests.all", adapter.getTestList());
+//		propertyFile.setProperty("tests.all", adapter.getTestList());
+//		
+//		propertyFile.setProperty("src.compile", "");
+//		propertyFile.setProperty("test.compile", "");
+//		propertyFile.setProperty("src.dir", "");
+//		propertyFile.setProperty("src.comp.dir", "");
+//		propertyFile.setProperty("test.dir", "");
+//		propertyFile.setProperty("test.comp.dir", "");
+//		propertyFile.setProperty("src.compile.dependency","");
+//		propertyFile.setProperty("test.compile.dependency", "");
+//		propertyFile.setProperty("tests.all", "");
+		
 		saveProperties(propertyFile);
-		//	loadProperties(propertyFile);
 	
 	}
 	
