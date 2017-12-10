@@ -207,7 +207,15 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 */
 	@Override
 	public String getSrcDep() {
-		return this.dependencyHelper(this.compileSrcTarget);
+		String ret = "";
+		try {
+			ret = this.dependencyHelper(this.compileSrcTarget);
+		} catch (Exception e) {
+			System.out.println("Cannot find the exact dependency files\n "
+					+ "Possible cause: 1) Only build file is passed in or "
+					+ "2) Cannot find jar file locally");
+		}
+		return ret;
 	}
 
 	/**
@@ -215,7 +223,15 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 */
 	@Override
 	public String getTestDep() {
-		return this.dependencyHelper(this.compileTestTarget);
+		String ret = "";
+		try {
+			ret = this.dependencyHelper(this.compileTestTarget);
+		} catch (Exception e) {
+			System.out.println("Cannot find the exact dependency files\n "
+					+ "Possible cause: 1) Only build file is passed in or "
+					+ "2) Cannot find jar file locally");
+		}
+		return ret;
 	}
 	
 	private String dependencyHelper(Target t) {
@@ -245,32 +261,6 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		return deps;
 	}
 
-//    private String[] findClassPath(Task[] tasks) {
-//        for (Task tsk : tasks) {
-//            if (tsk.getTaskType().equals("javac")) {
-//                String[] paths = classPathParser.parseClassPath(tsk.getRuntimeConfigurableWrapper());
-//                return paths;
-//            }
-//        }
-//        return null;
-//    }
-//
-//    private String convert2String(ArrayList<String> al) {
-//	    String temp = "";
-//	    for (String w: al) {
-//	        temp += w+", ";
-//        }
-//        return temp;
-//    }
-    
-    private Target getTopLevelTestTarget(List<Target> targets) {
-    		for(Target t: targets) {
-    			if(t.dependsOn(this.compileTestTarget.getName())||(t.getDescription().equals("test") )) {
-    				return t;
-    			}
-    		}
-    		return null;
-    }
 
     @Override
 	public String getTestList() {
@@ -280,8 +270,6 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     			System.out.println("No junit tasks, make sure this project contains unit tests.");
     			return "";
     		}
-    		System.out.println(this.getTopLevelTestTarget(junitTargets).getName());
-//    		List<Task> tasks = taskHelper.getTasks("junit", this.getTopLevelTestTarget(junitTargets));
     		for(int i=0; i< junitTargets.size(); i++) {
     			List<Task> tasks = taskHelper.getTasks("junit", junitTargets.get(i));
 	    		for(int j=0; j<tasks.size(); j++) {
@@ -293,28 +281,37 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	    					keyVal.putAll(batchtestHelper(temp));
 	    				}
 	    				if(temp.getElementTag().equals("classpath")) {
-	    					System.out.println(this.junitTargets.get(j).getName()+ " pathelement exists");
+	    					
+//	    					System.out.println("cp: "+this.junitTargets.get(j).getName()+ " pathelement exists");
 	    				}
-	    				if(temp.getElementTag().equals("test")) {
-	    					    					System.out.println(junitTargets.get(j).getName()+ " test exists");
+	    				if(temp.getElementTag().equals("test") && temp.getAttributeMap().containsKey("name")) {
+	    					keyVal.replace("include", keyVal.get("include")+", "+temp.getAttributeMap().get("name"));
+//	    					System.out.println("zzz: "+temp.getAttributeMap().get("name"));
 	    				}
 	        		}
 	    		}
     		}
 
     		
-    		System.out.println("keyval: "+keyVal);
+//    		System.out.println("keyval: "+keyVal);
     		
     		if(keyVal.size() != 0) {
     			String[] includes = keyVal.get("include").split(";");
             	String[] excludes = keyVal.get("exclude").split(";");
             	String[] str = WildCardResolver.resolveWildCard(includes, excludes, projectPath+Paths.get("/")+keyVal.get("dir"));
-            	System.out.println(projectPath+Paths.get("/")+keyVal.get("dir"));
-            	for(int i = 0; i < str.length; i++) {
-            		ret = ret + str[i]+", ";
+//            	System.out.println(projectPath+Paths.get("/")+keyVal.get("dir"));
+            	//no test dir found
+            	if(str.length == 0) {
+            		ret = ret + keyVal.toString();
             	}
+            	else {
+	            	for(int i = 0; i < str.length; i++) {
+	            		ret = ret + str[i];
+	            	}
+            	}
+            	
     		}
-    		
+//    		System.out.println("ret: "+ret);
     		return ret;
 	}
 
@@ -348,10 +345,10 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 
 					RuntimeConfigurable temp = fileNamePattern.nextElement();
 					if(temp.getElementTag().equals("include")){
-						include = include+pp.parse((String)temp.getAttributeMap().get("name"))+"; ";
+						include = include+pp.parse((String)temp.getAttributeMap().get("name"))+";";
 					}
 					if(temp.getElementTag().equals("exclude")){
-						exclude = exclude+pp.parse((String)temp.getAttributeMap().get("name"))+"; ";
+						exclude = exclude+pp.parse((String)temp.getAttributeMap().get("name"))+";";
 					}
 					ret.replace("include", include);
 					ret.replace("exclude", exclude);

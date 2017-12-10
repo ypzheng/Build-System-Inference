@@ -19,7 +19,8 @@ public class WildCardResolver {
 		try {
 			ds.scan();
 		}catch(IllegalStateException e){
-			System.out.println("Illegal State Exception found resolving wild cards, basedir does not exist");
+			System.out.println("Illegal State Exception found resolving wild cards, basedir does not exist.\n"
+					+ "Instead, a list of wildcards that matches test file pattern is written to property file.");
 		}
 		return ds.getIncludedFiles();
 	

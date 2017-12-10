@@ -10,32 +10,38 @@ import java.nio.file.Paths;
 public class Driver {
 
 	public static void main(String[] args) throws IOException {
-		String path = "/Users/caitlynzheng/eclipse-workspace/commons-lang";
+//		String path = "/Users/caitlynzheng/eclipse-workspace/commons-lang";
+		String path = "/Users/caitlynzheng/eclipse-workspace/BSI/test/";
 		File buildFile;
 		
 		System.out.println("Please input your project path: ");
 		Scanner scanner = new Scanner(System.in);
 //		path = scanner.nextLine();
 		
-		String[] includes = {"*build.xml"};
+		String[] includes = {"*build**.xml"};
 		String[] excludes = {};
 		String str[] = WildCardResolver.resolveWildCard(includes, excludes, path);
-		if(str.length == 0) {
+		if(str.length == 1) {
+			buildFile = new File(str[0]);
+		}
+		else if(str.length == 0) {
 			System.out.println("No build file found, please manually input your build file name: ");
-			buildFile = new File(Paths.get(path) + scanner.nextLine());
+			int index = path.lastIndexOf('/');
+			buildFile = new File(Paths.get(path.substring(0,index+1)) + "/" + scanner.nextLine());
 			
 		}
-		else if(str.length > 1) {
+		else{
 			System.out.println("More than 1 *build.xml files found, please manually input your build file name:");
-			buildFile = new File(Paths.get(path) + scanner.nextLine());
+			int index = path.lastIndexOf('/');
+			buildFile = new File(Paths.get(path.substring(0,index+1)) + "/" + scanner.nextLine());
 		}
-		
-			buildFile = new File(str[0]);
+			
 			File outputFile = new File("build.properties");
 			PropertyWriter pw = new PropertyWriter("ant", buildFile, outputFile, Paths.get(path).toString());
 			pw.setProperties();
-
-	        AntBuildAnalyzer aba = new AntBuildAnalyzer(buildFile, Paths.get(path).toString());
+			
+//			File buildFile1 = new File("test/TestBuildFile2.xml");
+//	        AntBuildAnalyzer aba = new AntBuildAnalyzer(buildFile1, "/Users/caitlynzheng/eclipse-workspace/");
 //	        System.out.println("compile target: " +aba.getCompileSrcTarget());
 //	        System.out.println("compile test target: " +aba.getCompileTestTarget());
 //	        System.out.println("test source: "+aba.getTestDir());
@@ -44,7 +50,7 @@ public class Driver {
 //	        System.out.println("compiled source classes: "+aba.getCompDir());
 //	        System.out.println("comp src dep: "+aba.getSrcDep());
 //	        System.out.println("comp test dep: "+aba.getTestDep());
-	        System.out.println(aba.getTestList());
+//	        System.out.println(aba.getTestList());
 	}
 
 }
