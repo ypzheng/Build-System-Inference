@@ -25,6 +25,7 @@ import util.PathParser;
 import util.Debugger;
 import util.FileUtility;
 import util.TaskHelper;
+import util.TestListHelper;
 import util.WildCardResolver;
 
 import java.util.regex.Matcher;
@@ -40,7 +41,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 
 	private PathParser pp;
 	private TaskHelper taskHelper;
-    private ClassPathParser classPathParser;
+    private TestListHelper testHelper;
     private Project project;
 
     public AntBuildAnalyzer(File f, String projectPath) {
@@ -75,8 +76,11 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 
 	    //taskHelper
 	    taskHelper = new TaskHelper(pp);
+	    
+	    testHelper = new TestListHelper(pp, taskHelper);
 	    this.getPotentialCompileTargets();
-	    classPathParser = new ClassPathParser(project);
+	    
+	    
     }
 
 	/**
@@ -112,9 +116,8 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 * Helper method to find compile target
 	 */
 	private void enhanceSrcTargetFinding() {
-		Map<String, Target> targets = new HashMap<String, Target>();
 		if(potentialSrcTargets.size() == 0) {
-			Debugger.log("Cannot find target that compiles source.");
+			System.out.println("Cannot find target that compiles source.");
 		}
 		else{
 			for(Target t : potentialSrcTargets) {
@@ -272,91 +275,22 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     			System.out.println("No junit tasks, make sure this project contains unit tests.");
     			return "";
     		}
-    		for(int i=0; i< junitTargets.size(); i++) {
-    			List<Task> tasks = taskHelper.getTasks("junit", junitTargets.get(i));
-	    		for(int j=0; j<tasks.size(); j++) {
-	    			RuntimeConfigurable rt = tasks.get(j).getRuntimeConfigurableWrapper();
-	    			Enumeration<RuntimeConfigurable> enumeration= rt.getChildren();
-	    			while(enumeration.hasMoreElements()) {
-	    				RuntimeConfigurable temp = enumeration.nextElement();
-	    				if(temp.getElementTag().equals("batchtest")) {
-	    					keyVal.putAll(batchtestHelper(temp));
-	    				}
-	    				if(temp.getElementTag().equals("classpath")) {
-	    					
-//	    					System.out.println("cp: "+this.junitTargets.get(j).getName()+ " pathelement exists");
-	    				}
-	    				if(temp.getElementTag().equals("test") && temp.getAttributeMap().containsKey("name")) {
-	    					keyVal.replace("include", keyVal.get("include")+", "+temp.getAttributeMap().get("name"));
-//	    					System.out.println("zzz: "+temp.getAttributeMap().get("name"));
-	    				}
-	        		}
-	    		}
-    		}
-
-    		
-//    		System.out.println("keyval: "+keyVal);
+    		keyVal = testHelper.getTestList(junitTargets);
     		
     		if(keyVal.size() != 0) {
     			String[] includes = keyVal.get("include").split(";");
             	String[] excludes = keyVal.get("exclude").split(";");
             	String[] str = WildCardResolver.resolveWildCard(includes, excludes, projectPath+Paths.get("/")+keyVal.get("dir"));
-//            	System.out.println(projectPath+Paths.get("/")+keyVal.get("dir"));
             	//no test dir found
             	if(str.length == 0) {
-            		ret = ret + keyVal.toString();
+            		ret = ret + keyVal.toString()+";";
             	}
             	else {
 	            	for(int i = 0; i < str.length; i++) {
-	            		ret = ret + str[i];
+	            		ret = ret + str[i]+";";
 	            	}
             	}
-            	
     		}
-//    		System.out.println("ret: "+ret);
     		return ret;
 	}
-
-    //TODO: If no batchtest found, we should return all available tests under specified test directory
-    //TODO: If neither "test" nor "batchtest" found, list all available tests under test.dir
-    //TODO:
-    private Map<String, String> batchtestHelper(RuntimeConfigurable rt) {
-    		Enumeration<RuntimeConfigurable> filesets = rt.getChildren();
-    		Map<String, String> ret = new HashMap<>();
-
-    		ret.put("include", "");
-    		ret.put("exclude", "");
-    		ret.put("dir", "");
-			while(filesets.hasMoreElements()) {
-				RuntimeConfigurable fileset = filesets.nextElement();
-				Hashtable att_map_fs = ((RuntimeConfigurable) fileset).getAttributeMap();
-				if(att_map_fs.containsKey("dir")) {
-					ret.put("dir", pp.parse((String) att_map_fs.get("dir")));
-				}
-				if(att_map_fs.containsKey("includes")) {
-					ret.put("include", (String) att_map_fs.get("includes"));
-				}
-				if(att_map_fs.containsKey("excludes")) {
-					ret.put("exclude", (String) att_map_fs.get("excludes"));
-				}
-
-				Enumeration<RuntimeConfigurable> fileNamePattern = fileset.getChildren();
-				String include = "";
-				String exclude = "";
-				while(fileNamePattern.hasMoreElements()) {
-
-					RuntimeConfigurable temp = fileNamePattern.nextElement();
-					if(temp.getElementTag().equals("include")){
-						include = include+pp.parse((String)temp.getAttributeMap().get("name"))+";";
-					}
-					if(temp.getElementTag().equals("exclude")){
-						exclude = exclude+pp.parse((String)temp.getAttributeMap().get("name"))+";";
-					}
-					ret.replace("include", include);
-					ret.replace("exclude", exclude);
-				}
-			}
-		return ret;
-    }
-
 }
