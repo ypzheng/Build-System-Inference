@@ -26,14 +26,14 @@ public class Driver {
 		}
 		else if(str.length == 0) {
 			System.out.println("No build file found, please manually input your build file name: ");
-			int index = path.lastIndexOf('/');
-			buildFile = new File(Paths.get(path.substring(0,index+1)) + "/" + scanner.nextLine());
+			int index = path.lastIndexOf(Paths.get("/").toString());
+			buildFile = new File(Paths.get(path.substring(0,index+1)) + Paths.get("/").toString() + scanner.nextLine());
 			
 		}
 		else{
 			System.out.println("More than 1 *build.xml files found, please manually input your build file name:");
-			int index = path.lastIndexOf('/');
-			buildFile = new File(Paths.get(path.substring(0,index+1)) + "/" + scanner.nextLine());
+			int index = path.lastIndexOf(Paths.get("/").toString());
+			buildFile = new File(Paths.get(path.substring(0,index+1)) + Paths.get("/").toString() + scanner.nextLine());
 		}
 			
 			File outputFile = new File("build.properties");
