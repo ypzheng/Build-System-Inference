@@ -25,6 +25,8 @@ import util.PathParser;
 import util.Debugger;
 import util.FileUtility;
 import util.TaskHelper;
+import util.WildCardResolver;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.tools.ant.RuntimeConfigurable;

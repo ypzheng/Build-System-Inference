@@ -1,11 +1,10 @@
+package util;
 
 
 import java.io.File;
 import java.io.IOException;
 
 import org.apache.tools.ant.DirectoryScanner;
-
-import util.Debugger;
 
 public class WildCardResolver {
 	private static DirectoryScanner ds;

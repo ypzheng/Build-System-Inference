@@ -5,13 +5,16 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Scanner;
+
+import util.WildCardResolver;
+
 import java.nio.file.Paths;
 
 public class Driver {
 
 	public static void main(String[] args) throws IOException {
-//		String path = "/Users/caitlynzheng/eclipse-workspace/commons-lang";
-		String path = "/Users/caitlynzheng/eclipse-workspace/BSI/test/";
+		String path = "/Users/caitlynzheng/eclipse-workspace/joda-time";
+//		String path = "/Users/caitlynzheng/eclipse-workspace/BSI/test/";
 		File buildFile;
 		
 		System.out.println("Please input your project path: ");
@@ -36,9 +39,9 @@ public class Driver {
 			buildFile = new File(Paths.get(path.substring(0,index+1)) + Paths.get("/").toString() + scanner.nextLine());
 		}
 			
-			File outputFile = new File("build.properties");
-			PropertyWriter pw = new PropertyWriter("ant", buildFile, outputFile, Paths.get(path).toString());
-			pw.setProperties();
+		File outputFile = new File("build.properties");
+		PropertyWriter pw = new PropertyWriter("ant", buildFile, outputFile, Paths.get(path).toString());
+		pw.setProperties();
 			
 //			File buildFile1 = new File("test/TestBuildFile2.xml");
 //	        AntBuildAnalyzer aba = new AntBuildAnalyzer(buildFile1, "/Users/caitlynzheng/eclipse-workspace/");

@@ -1,3 +1,4 @@
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -29,16 +30,6 @@ public class PropertyWriter {
 		propertyFile.setProperty("src.compile.dependency", adapter.getSrcDep());
 		propertyFile.setProperty("test.compile.dependency", adapter.getTestDep());
 		propertyFile.setProperty("tests.all", adapter.getTestList());
-//		
-//		propertyFile.setProperty("src.compile", "");
-//		propertyFile.setProperty("test.compile", "");
-//		propertyFile.setProperty("src.dir", "");
-//		propertyFile.setProperty("src.comp.dir", "");
-//		propertyFile.setProperty("test.dir", "");
-//		propertyFile.setProperty("test.comp.dir", "");
-//		propertyFile.setProperty("src.compile.dependency","");
-//		propertyFile.setProperty("test.compile.dependency", "");
-//		propertyFile.setProperty("tests.all", "");
 		
 		saveProperties(propertyFile);
 	
