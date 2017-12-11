@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Enumeration;
@@ -57,7 +58,8 @@ public class PathParser {
 		String result = "";
 		//String temp stores the unparsed/worked section of String path
 		
-		String temp = Paths.get(path).toString();
+		String temp = path;
+		//Paths.get(path).toString();
 		
 		/**
 		 * Try to find the first key in result
@@ -97,9 +99,13 @@ public class PathParser {
 			
 		}
 		
+		String preprocess_path="";
 		//Attach rest of the path that doesn't need parsing
-		String preprocess_path = Paths.get(result + temp).toString();
-		
+		try{
+			preprocess_path = Paths.get(result + temp).toString();
+		}catch(InvalidPathException e) {
+			preprocess_path = result+temp;
+		}
 		return FileUtility.absoluteToRelative(this.project.getBaseDir().toString(), preprocess_path);
 	
 	}
