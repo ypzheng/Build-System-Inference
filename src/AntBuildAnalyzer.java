@@ -119,20 +119,22 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		if(potentialSrcTargets.size() == 0) {
 			System.out.println("Cannot find target that compiles source.");
 		}
-		else{
+		else if(potentialSrcTargets.size() > 1) {
+			System.out.println("Special case, there might be a top-level compile target.  Requires manual inference.");
 			for(Target t : potentialSrcTargets) {
-				if(potentialSrcTargets.size() == 1) {
-					this.compileSrcTarget = t;
-				}
-				else if(t.getName().contains("compile") && potentialSrcTargets.size() > 1) {
-					System.out.println("Special case, there might be a top-level compile target.  Requires manual inference.");
+				if(t.getName().contains("compile")) {
 					if(t.getName().equals("compile") || t.getName().contains("all"))
 						this.compileSrcTarget = t;
 				}
 			}
-			if(this.compileSrcTarget == null)
-				this.compileSrcTarget = potentialSrcTargets.get(potentialSrcTargets.size()-1);
 		}
+		else {
+			this.compileSrcTarget = potentialSrcTargets.get(0);
+		}
+		
+		if(this.compileSrcTarget == null)
+			this.compileSrcTarget = potentialSrcTargets.get(potentialSrcTargets.size()-1);
+		
 	}
 	
 	/**
