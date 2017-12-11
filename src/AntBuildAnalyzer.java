@@ -216,7 +216,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		try {
 			ret = this.dependencyHelper(this.compileSrcTarget);
 		} catch (Exception e) {
-			System.out.println("Cannot find the exact dependency files\n "
+			System.out.println("Cannot find the exact source dependency files\n "
 					+ "Possible cause: 1) Only build file is passed in or "
 					+ "2) Cannot find jar file locally");
 		}
@@ -232,7 +232,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		try {
 			ret = this.dependencyHelper(this.compileTestTarget);
 		} catch (Exception e) {
-			System.out.println("Cannot find the exact dependency files\n "
+			System.out.println("Cannot find the exact test dependency files\n "
 					+ "Possible cause: 1) Only build file is passed in or "
 					+ "2) Cannot find jar file locally");
 		}

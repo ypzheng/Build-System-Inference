@@ -13,14 +13,14 @@ import java.nio.file.Paths;
 public class Driver {
 
 	public static void main(String[] args) throws IOException {
-//		String path = "/Users/caitlynzheng/eclipse-workspace/commons-lang";
+		String path = "/Users/caitlynzheng/eclipse-workspace/closure-compiler";
 //		String path = "/Users/caitlynzheng/eclipse-workspace/BSI/test/";
-		String path = "";
+//		String path = "";
 		File buildFile;
 		
 		System.out.println("Please input your project path: ");
 		Scanner scanner = new Scanner(System.in);
-		path = scanner.nextLine();
+//		path = scanner.nextLine();
 		
 		String[] includes = {"*build**.xml"};
 		String[] excludes = {};
