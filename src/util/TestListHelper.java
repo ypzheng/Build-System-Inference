@@ -21,6 +21,9 @@ public class TestListHelper {
 	
 	public Map<String, String> getTestList(List<Target> junitTargets ){
 		Map<String, String> keyVal = new HashMap<String, String>();
+		keyVal.put("include", "");
+		keyVal.put("exclude", "");
+		keyVal.put("dir", "");
 		for(int i=0; i< junitTargets.size(); i++) {
 			List<Task> tasks = taskHelper.getTasks("junit", junitTargets.get(i));
 	    		for(int j=0; j<tasks.size(); j++) {
@@ -36,8 +39,10 @@ public class TestListHelper {
 	//    					System.out.println("cp: "+this.junitTargets.get(j).getName()+ " pathelement exists");
 	    				}
 	    				if(temp.getElementTag().equals("test") && temp.getAttributeMap().containsKey("name")) {
-	    					keyVal.replace("include", keyVal.get("include")+", "+temp.getAttributeMap().get("name"));
-	//    					System.out.println("zzz: "+temp.getAttributeMap().get("name"));
+	    					if(keyVal.get("include") == null)
+	    						keyVal.put("include", (String)temp.getAttributeMap().get("name")+";");
+	    					else
+	    						keyVal.put("include", keyVal.get("include")+temp.getAttributeMap().get("name")+";");
 	    				}
 	        		}
 	    		}
@@ -50,44 +55,49 @@ public class TestListHelper {
 		Enumeration<RuntimeConfigurable> filesets = rt.getChildren();
 		Map<String, String> ret = new HashMap<>();
 
-		ret.put("include", "");
-		ret.put("exclude", "");
-		ret.put("dir", "");
-		RuntimeConfigurable fileset = filesets.nextElement();
+		
+		while(filesets.hasMoreElements()) {
+			RuntimeConfigurable fileset = filesets.nextElement();
 			
-		ret.put("dir", pp.parse(this.helper(filesets,"", "dir")));
-		ret.put("include", pp.parse(this.helper(filesets, "","includes")));
-		ret.put("exclude", pp.parse(this.helper(filesets, "","excludes")));
-			
-		Enumeration<RuntimeConfigurable> fileNamePattern = fileset.getChildren();
-		String include = "";
-		String exclude = "";
-		include = include+pp.parse(this.helper(fileNamePattern, "include",  "name"));
-		exclude = exclude+pp.parse(this.helper(fileNamePattern,"exclude" ,"name"));
-		ret.replace("include", include);
-		ret.replace("exclude", exclude);
-			
-			
+			ret.put("dir", pp.parse(this.helper(fileset,"", "dir")));
+			ret.put("include", pp.parse(this.helper(fileset, "","includes")));
+			ret.put("exclude", pp.parse(this.helper(fileset, "","excludes")));
+				
+			Enumeration<RuntimeConfigurable> fileNamePattern = fileset.getChildren();
+			String include = "";
+			String exclude = "";
+			while(fileNamePattern.hasMoreElements()) {
+				RuntimeConfigurable fileset2 = fileNamePattern.nextElement();
+				if(!this.helper(fileset2, "include",  "name").equals(""))
+					include = include+pp.parse(this.helper(fileset2, "include",  "name"))+";";
+				if(!this.helper(fileset2, "exclude",  "name").equals(""))
+					exclude = exclude+pp.parse(this.helper(fileset2,"exclude" ,"name"))+";";
+				ret.replace("include", include);
+				ret.replace("exclude", exclude);
+			}
+		}
+		
 		return ret;
 	}
-	private String helper(Enumeration<RuntimeConfigurable> filesets, String elem, String attr) {
-		while(filesets.hasMoreElements()) {
-			RuntimeConfigurable next = filesets.nextElement();
-			Hashtable attr_map = ((RuntimeConfigurable) next).getAttributeMap();
+	
+	private String helper(RuntimeConfigurable filesets, String elem, String attr) {
+	
+			Hashtable attr_map = ((RuntimeConfigurable) filesets).getAttributeMap();
 			if(elem.equals("")) {
 				if(attr_map.containsKey(attr)) {
 					return (String) attr_map.get(attr);
 				}
 			}
 			else {
-				if(next.getElementTag().equals(elem)) {
+				if(filesets.getElementTag().equalsIgnoreCase(elem)) {
 					if(attr_map.containsKey(attr)) {
+//						System.out.println("for here: "+attr_map.get(attr));
 						return (String) attr_map.get(attr);
 					}
 				}
 			}
 			
-		}
+		
 		return "";
 	}
 }

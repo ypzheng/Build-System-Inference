@@ -2,6 +2,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -112,10 +114,40 @@ public class OtherBuildFileTest {
 	
 	@Test
 	public void getTestDep() {
-		assertEquals(Paths.get("${junit.home}\\junit-3.8.1.jar").toString(),aba0.getTestDep());
+		assertEquals(Paths.get("${junit.home}/junit-3.8.1.jar").toString(),aba0.getTestDep());
 		assertEquals("",aba1.getTestDep());
 		assertEquals("",aba2.getTestDep());
 		assertEquals("",aba3.getTestDep());
+		
+	}
+	
+	@Test
+	public void getTestList() {
+		Map<String, String> keyVal0 = new HashMap<String, String>();
+		keyVal0.put("include", "**/*Test.java;");
+		keyVal0.put("exclude", "**/Abstract*Test.java;**/EntitiesPerformanceTest.java;**/RandomUtilsFreqTest.java;");
+		keyVal0.put("dir", "src/test/java");
+		
+		Map<String, String> keyVal1 = new HashMap<String, String>();
+		keyVal1.put("include", "com.sandwich.test.AllTests;");
+		keyVal1.put("exclude", "");
+		keyVal1.put("dir", "");
+		
+		Map<String, String> keyVal3 = new HashMap<String, String>();
+		keyVal3.put("include", "**/*Test.class");
+		keyVal3.put("exclude", "");
+		keyVal3.put("dir", "target/test-classes");
+		
+		Map<String, String> keyVal4 = new HashMap<String, String>();
+		keyVal4.put("include", "${unittests.runclass};");
+		keyVal4.put("exclude", "");
+		keyVal4.put("dir", "");
+		
+		assertEquals(keyVal0.toString(), aba0.getTestList());
+		assertEquals(keyVal1.toString(),aba1.getTestList());
+		assertEquals("",aba2.getTestList());
+		assertEquals(keyVal3.toString(),aba3.getTestList());
+		assertEquals(keyVal4.toString(),aba4.getTestList());
 		
 	}
 }

@@ -283,7 +283,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
             	String[] str = WildCardResolver.resolveWildCard(includes, excludes, this.getBaseDir()+Paths.get("/")+keyVal.get("dir"));
             	//no test dir found
             	if(str.length == 0) {
-            		ret = ret + keyVal.toString()+";";
+            		ret = ret + keyVal.toString();
             	}
             	else {
 	            	for(int i = 0; i < str.length; i++) {
