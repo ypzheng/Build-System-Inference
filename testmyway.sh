@@ -1,5 +1,5 @@
 #/bin/sh
-file="build.properties"
+file="build0.properties"
 
 if [ -f "$file" ]
 then
@@ -10,8 +10,8 @@ then
     key=$(echo $key | tr '.' '_')
     eval "${key}='${value}'"
   done < "$file"
-  
-  echo "src.compile = " ${src_compile} 
+
+  echo "src.compile = " ${src_compile}
 else
-  echo "$file not found"	
+  echo "$file not found"
 fi

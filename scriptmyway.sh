@@ -3,8 +3,9 @@
 
 pattern="./"
 empty=""
+currentDir=$(pwd)
 find . -maxdepth 1 -name "*build*.properties" -print | while read line;
-do 
+do
 file=${line/$pattern/$empty}
 if [ -f "$file" ]
 then
@@ -15,9 +16,11 @@ then
     key=$(echo $key | tr '.' '_')
     eval "${key}='${value}'"
   done < "$file"
-  
-  cd "$base_dir" | ant "$src_compile"
+
+  cd $base_dir && ant $src_compile
+  cd $currentDir
+  pwd
   echo ""
 else
-  echo "$file not found"	
+  echo "$file not found"
 fi; done
