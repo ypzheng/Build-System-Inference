@@ -102,9 +102,20 @@ public class OtherBuildFileTest {
 	}
 	
 	@Test
-	public void getDep() {
+	public void getSrcDep() {
 		assertEquals("",aba0.getSrcDep());
+		assertEquals("",aba1.getSrcDep());
+		assertEquals("",aba2.getSrcDep());
+		assertEquals("",aba3.getSrcDep());
 		
 	}
 	
+	@Test
+	public void getTestDep() {
+		assertEquals(Paths.get("${junit.home}\\junit-3.8.1.jar").toString(),aba0.getTestDep());
+		assertEquals("",aba1.getTestDep());
+		assertEquals("",aba2.getTestDep());
+		assertEquals("",aba3.getTestDep());
+		
+	}
 }
