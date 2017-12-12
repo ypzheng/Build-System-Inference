@@ -53,35 +53,41 @@ public class TestListHelper {
 		ret.put("include", "");
 		ret.put("exclude", "");
 		ret.put("dir", "");
+		RuntimeConfigurable fileset = filesets.nextElement();
+			
+		ret.put("dir", pp.parse(this.helper(filesets,"", "dir")));
+		ret.put("include", pp.parse(this.helper(filesets, "","includes")));
+		ret.put("exclude", pp.parse(this.helper(filesets, "","excludes")));
+			
+		Enumeration<RuntimeConfigurable> fileNamePattern = fileset.getChildren();
+		String include = "";
+		String exclude = "";
+		include = include+pp.parse(this.helper(fileNamePattern, "include",  "name"));
+		exclude = exclude+pp.parse(this.helper(fileNamePattern,"exclude" ,"name"));
+		ret.replace("include", include);
+		ret.replace("exclude", exclude);
+			
+			
+		return ret;
+	}
+	private String helper(Enumeration<RuntimeConfigurable> filesets, String elem, String attr) {
 		while(filesets.hasMoreElements()) {
-			RuntimeConfigurable fileset = filesets.nextElement();
-			Hashtable att_map_fs = ((RuntimeConfigurable) fileset).getAttributeMap();
-			if(att_map_fs.containsKey("dir")) {
-				ret.put("dir", pp.parse((String) att_map_fs.get("dir")));
-			}
-			if(att_map_fs.containsKey("includes")) {
-				ret.put("include", (String) att_map_fs.get("includes"));
-			}
-			if(att_map_fs.containsKey("excludes")) {
-				ret.put("exclude", (String) att_map_fs.get("excludes"));
-			}
-
-			Enumeration<RuntimeConfigurable> fileNamePattern = fileset.getChildren();
-			String include = "";
-			String exclude = "";
-			while(fileNamePattern.hasMoreElements()) {
-
-				RuntimeConfigurable temp = fileNamePattern.nextElement();
-				if(temp.getElementTag().equals("include")){
-					include = include+pp.parse((String)temp.getAttributeMap().get("name"))+";";
+			RuntimeConfigurable next = filesets.nextElement();
+			Hashtable attr_map = ((RuntimeConfigurable) next).getAttributeMap();
+			if(elem.equals("")) {
+				if(attr_map.containsKey(attr)) {
+					return (String) attr_map.get(attr);
 				}
-				if(temp.getElementTag().equals("exclude")){
-					exclude = exclude+pp.parse((String)temp.getAttributeMap().get("name"))+";";
-				}
-				ret.replace("include", include);
-				ret.replace("exclude", exclude);
 			}
+			else {
+				if(next.getElementTag().equals(elem)) {
+					if(attr_map.containsKey(attr)) {
+						return (String) attr_map.get(attr);
+					}
+				}
+			}
+			
 		}
-	return ret;
-}
+		return "";
+	}
 }
