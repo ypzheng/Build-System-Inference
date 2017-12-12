@@ -25,6 +25,7 @@ public class Driver {
 		String[] includes = {"*build*.xml","*Build*.xml"};
 		String[] excludes = {};
 		String str[] = WildCardResolver.resolveWildCard(includes, excludes, path);
+		System.out.println(str.length);
 		if(str.length == 1) {
 			buildFile = new File(Paths.get(path).toString() + Paths.get("/") + str[0]);
 		}
