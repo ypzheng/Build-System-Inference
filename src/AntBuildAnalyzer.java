@@ -37,7 +37,6 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	private Vector sortedTargets;
 	private ArrayList<Target> potentialSrcTargets, potentialTestTargets, junitTargets;
 	private Target compileSrcTarget, compileTestTarget;
-	private String projectPath;
 
 	private PathParser pp;
 	private TaskHelper taskHelper;
@@ -51,7 +50,6 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		potentialSrcTargets = new ArrayList<Target>();
 		potentialTestTargets = new ArrayList<Target>();
 		junitTargets = new ArrayList<Target>();
-		this.projectPath = projectPath;
 
 		//Enable Console printing
 //		Debugger.enable();
@@ -255,7 +253,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 			String[] filtered_deps = FileUtility.filterPath(p.list(), true,"(.*)[jar]");
 			
 			for(String filtered_dep : filtered_deps) {
-				deps += pp.parse(filtered_dep) +",";
+				deps += pp.parse(filtered_dep) +";";
 				
 			}
 		}
@@ -263,7 +261,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		// TODO Handle fileset tasks
 		
 		//Formating output string, remove last ","
-		if(deps.length()>0 && deps.substring(deps.length()-1).equals(","))
+		if(deps.length()>0 && deps.substring(deps.length()-1).equals(";"))
 			deps = deps.substring(0, deps.length()-1);
 		return deps;
 	}
@@ -282,7 +280,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     		if(keyVal.size() != 0) {
     			String[] includes = keyVal.get("include").split(";");
             	String[] excludes = keyVal.get("exclude").split(";");
-            	String[] str = WildCardResolver.resolveWildCard(includes, excludes, projectPath+Paths.get("/")+keyVal.get("dir"));
+            	String[] str = WildCardResolver.resolveWildCard(includes, excludes, this.getBaseDir()+Paths.get("/")+keyVal.get("dir"));
             	//no test dir found
             	if(str.length == 0) {
             		ret = ret + keyVal.toString()+";";
