@@ -62,25 +62,6 @@
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         <antcall target="build"/>
     </target>
-    <target name="EX_DIR_LS">
-        <java classname="examples.EX_DIR_LS" failonerror="true" fork="yes">
-            <classpath refid="BSI.classpath"/>
-        </java>
-    </target>
-    <target name="run">
-        <java classname="Driver" failonerror="true" fork="yes">
-            <classpath refid="BSI.classpath"/>
-        </java>
-    </target>
-    <target name="test">
-        <mkdir dir="${junit.output.dir}"/>
-        <junit fork="yes" printsummary="withOutAndErr">
-            <formatter type="xml"/>
-            <test name="OtherBuildFileTest" todir="${junit.output.dir}"/>
-            <jvmarg line="-ea"/>
-            <classpath refid="BSI.classpath"/>
-        </junit>
-    </target>
     <target name="OtherBuildFileTest">
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr">
@@ -89,6 +70,30 @@
             <jvmarg line="-ea"/>
             <classpath refid="BSI.classpath"/>
         </junit>
+    </target>
+    <target name="EX_DIR_LS">
+        <java classname="examples.EX_DIR_LS" failonerror="true" fork="yes">
+            <classpath refid="BSI.classpath"/>
+        </java>
+    </target>
+    <target name="files">
+        <java classname="Driver" failonerror="true" fork="yes">
+            <classpath refid="BSI.classpath"/>
+        </java>
+    </target>
+    <target name="test">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="TestSuite1" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="BSI.classpath"/>
+        </junit>
+    </target>
+    <target name="projects">
+        <java classname="Driver_2" failonerror="true" fork="yes">
+            <classpath refid="BSI.classpath"/>
+        </java>
     </target>
     <target name="junitreport">
         <junitreport todir="${junit.output.dir}">

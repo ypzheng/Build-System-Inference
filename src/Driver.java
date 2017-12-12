@@ -14,7 +14,7 @@ public class Driver {
 		String projectPath = "";
 		File buildFile;
 		
-		System.out.println("Please input a Dir contain projects: ");
+		System.out.println("Please input a Dir containing build files: ");
 		Scanner scanner = new Scanner(System.in);
 		path = scanner.nextLine();
 		

@@ -28,7 +28,6 @@ public class Driver_2 {
 					String[] includes = {"*build**.xml","*Build**.xml"};
 					String[] excludes = {};
 					String str[] = WildCardResolver.resolveWildCard(includes, excludes, dirs.toString());
-					System.out.println(str.length);
 					if(str.length == 1) {
 						buildFile = new File(dirs.getPath() + Paths.get("/") + str[0]);
 					}
@@ -49,15 +48,6 @@ public class Driver_2 {
 					PropertyWriter pw = new PropertyWriter("ant", buildFile, outputFile, Paths.get(path).toString());
 					pw.setProperties();
 				}
-				
-				else {
-					buildFile = new File(dirs.toString());
-					File outputFile = new File("build-"+count+".properties");
-					count++;
-					PropertyWriter pw = new PropertyWriter("ant", buildFile, outputFile, Paths.get(path).toString());
-					pw.setProperties();
-				}
-				
 			}
 			
 		}
