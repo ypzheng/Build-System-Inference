@@ -295,4 +295,9 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     		}
     		return ret;
 	}
+    
+    @Override
+    public String getBaseDir() {
+    	return this.project.getBaseDir().toString();
+    }
 }

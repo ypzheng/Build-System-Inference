@@ -11,4 +11,5 @@ public interface BuildAnalyzer {
 	public String getSrcDep();
 	public String getTestDep();
 	public String getTestList();
+	public String getBaseDir();
 }

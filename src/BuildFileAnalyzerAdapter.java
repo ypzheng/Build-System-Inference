@@ -56,4 +56,9 @@ public class BuildFileAnalyzerAdapter implements BuildAnalyzer{
 	public String getTestList() {
 		return analyzer.getTestList();
 	}
+	
+	@Override
+	public String getBaseDir() {
+		return analyzer.getBaseDir();
+	}
 }

@@ -30,6 +30,7 @@ public class PropertyWriter {
 		propertyFile.setProperty("src.compile.dependency", adapter.getSrcDep());
 		propertyFile.setProperty("test.compile.dependency", adapter.getTestDep());
 		propertyFile.setProperty("tests.all", adapter.getTestList());
+		propertyFile.setProperty("base.dir", adapter.getBaseDir());
 		
 		saveProperties(propertyFile);
 	
