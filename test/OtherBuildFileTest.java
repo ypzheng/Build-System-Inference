@@ -29,12 +29,13 @@ public class OtherBuildFileTest {
 		assertEquals("compile", aba1.getCompileSrcTarget());
 		assertEquals("build", aba2.getCompileSrcTarget());
 		assertEquals("compile", aba3.getCompileSrcTarget());
-		/*assertEquals("compile", aba4.getCompileSrcTarget());
-		assertEquals("", aba5.getCompileSrcTarget());
-		assertEquals("", aba6.getCompileSrcTarget());
-		assertEquals("", aba7.getCompileSrcTarget());
-		assertEquals("", aba8.getCompileSrcTarget());
-		assertEquals("", aba9.getCompileSrcTarget());*/
+		assertEquals("compile", aba4.getCompileSrcTarget());
+		
+		assertEquals("compile", aba5.getCompileSrcTarget());
+		assertEquals("build", aba6.getCompileSrcTarget());
+		assertEquals("compile", aba7.getCompileSrcTarget());
+		assertEquals("compile", aba8.getCompileSrcTarget());
+		assertEquals("build", aba9.getCompileSrcTarget());
 		
 	}
 	
@@ -45,6 +46,8 @@ public class OtherBuildFileTest {
 		assertEquals("compile-tests", aba2.getCompileTestTarget());
 		assertEquals("test", aba3.getCompileTestTarget());
 		assertEquals("unittests", aba4.getCompileTestTarget());
+		
+		assertEquals("", aba4.getCompileTestTarget());
 	}
 	
 	@Test

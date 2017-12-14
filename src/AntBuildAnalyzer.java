@@ -160,6 +160,10 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 * @return
 	 */
 	public String getCompileSrcTarget() {
+		
+		if(compileSrcTarget == null)
+			return "";
+		
 		return compileSrcTarget.getName();
 	}
 
