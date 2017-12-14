@@ -38,12 +38,12 @@ public class TestListHelper {
 	    					
 	//    					System.out.println("cp: "+this.junitTargets.get(j).getName()+ " pathelement exists");
 	    				}
-	    				if(temp.getElementTag().equals("test") && temp.getAttributeMap().containsKey("name")) {
+	    				if(temp.getElementTag().equals("test") || temp.getAttributeMap().containsKey("name")) {
 	    					if(keyVal.get("include") == null)
 	    						keyVal.put("include", (String)temp.getAttributeMap().get("name")+";");
 	    					else
-	    						keyVal.put("include", keyVal.get("include")+(String)temp.getAttributeMap().get("name")+";");
-//	    						System.out.println("looook: "+keyVal.get("include")+pp.parse((String) temp.getAttributeMap().get("name")));
+	    						keyVal.put("include", keyVal.get("include")+pp.parse((String) temp.getAttributeMap().get("name"))+";");
+	    						System.out.println("looook here why: "+keyVal.get("include")+pp.parse((String) temp.getAttributeMap().get("name")));
 	    				}
 	        		}
 	    		}

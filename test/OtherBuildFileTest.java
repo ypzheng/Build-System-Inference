@@ -14,6 +14,15 @@ public class OtherBuildFileTest {
 	AntBuildAnalyzer aba2 = new AntBuildAnalyzer(new File("test/TestBuildFile2.xml"),"");
 	AntBuildAnalyzer aba3 = new AntBuildAnalyzer(new File("test/TestBuildFile3.xml"),"");
 	AntBuildAnalyzer aba4 = new AntBuildAnalyzer(new File("test/TestBuildFile4.xml"),"");
+	AntBuildAnalyzer aba5 = new AntBuildAnalyzer(new File("test/TestBuildFile5.xml"),"");
+	
+	//Duplicate
+	//AntBuildAnalyzer aba6 = new AntBuildAnalyzer(new File("test/TestBuildFile6.xml"),"");
+	AntBuildAnalyzer aba7 = new AntBuildAnalyzer(new File("test/Consumer2/build.xml"),"");
+	
+	//Duplicate
+	//AntBuildAnalyzer aba8 = new AntBuildAnalyzer(new File("test/TestBuildFile8.xml"),"");
+	AntBuildAnalyzer aba9 = new AntBuildAnalyzer(new File("test/TestBuildFile9.xml"),"");
 	
 	
 	
@@ -26,6 +35,16 @@ public class OtherBuildFileTest {
 		assertEquals("compile", aba3.getCompileSrcTarget());
 		assertEquals("compile", aba4.getCompileSrcTarget());
 		
+		assertEquals("compile", aba5.getCompileSrcTarget());
+		
+		
+		
+		assertEquals("compile", aba7.getCompileSrcTarget());
+		
+		
+		//Failed
+		//assertEquals("build", aba9.getCompileSrcTarget());
+		
 	}
 	
 	@Test
@@ -35,6 +54,15 @@ public class OtherBuildFileTest {
 		assertEquals("compile-tests", aba2.getCompileTestTarget());
 		assertEquals("test", aba3.getCompileTestTarget());
 		assertEquals("unittests", aba4.getCompileTestTarget());
+		
+		assertEquals("test", aba5.getCompileTestTarget());
+		
+		
+		assertEquals("compile", aba7.getCompileTestTarget());
+		
+		
+		//Failed
+		//assertEquals("build", aba9.getCompileTestTarget());
 	}
 	
 	@Test
@@ -59,6 +87,27 @@ public class OtherBuildFileTest {
 		assertEquals(Paths.get("src/main").toString(), aba2.getSrcDir());
 		assertEquals(Paths.get("src").toString(), aba3.getSrcDir());
 		assertEquals(Paths.get("src").toString(), aba4.getSrcDir());
+		
+		assertEquals(Paths.get("src").toString(), aba5.getSrcDir());
+		
+		
+		String aba7_expected=	Paths.get("src\\com\\gurock\\testrail").toString() + ", " +
+								Paths.get("src\\com\\d3\\testrails").toString() + ", " +
+								Paths.get("src\\com\\d3\\utils").toString() + ", " +
+								Paths.get("src\\com\\d3\\login").toString() + ", " +
+								Paths.get("src\\com\\d3\\accounts").toString() + ", " +
+								Paths.get("src\\com\\d3\\help").toString() + ", " +
+								Paths.get("src\\com\\d3\\dashboard").toString() + ", " +
+								Paths.get("src\\com\\d3\\messages").toString() + ", " +
+								Paths.get("src\\com\\d3\\transactions").toString() + ", " +
+								Paths.get("src\\com\\d3\\moneyMovement").toString() + ", " +
+								Paths.get("src\\com\\d3\\planning").toString() + ", " +
+								Paths.get("src\\com\\d3\\settings").toString() + ", " +
+								Paths.get("src\\com\\d3\\endToEnd").toString();
+		
+		assertEquals(aba7_expected, aba7.getSrcDir());
+//		assertEquals(Paths.get("").toString(), aba9.getSrcDir());
+		
 	}
 	
 	@Test

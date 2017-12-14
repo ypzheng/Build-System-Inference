@@ -59,8 +59,14 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		project.init();
 		ProjectHelper helper = new ProjectHelper();
 		helper.configureProject(project, f);
-		sortedTargets = project.topoSort(project.getDefaultTarget(), project.getTargets());
-
+		
+		if(project.getDefaultTarget() != null)
+			sortedTargets = project.topoSort(project.getDefaultTarget(), project.getTargets());
+		else
+			sortedTargets = project.topoSort("", project.getTargets());
+		
+		
+			
 		//Print out all targets in execution order
 		Enumeration vEnum = sortedTargets.elements();
 
@@ -130,7 +136,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 			this.compileSrcTarget = potentialSrcTargets.get(0);
 		}
 		
-		if(this.compileSrcTarget == null)
+		if(this.compileSrcTarget == null && potentialSrcTargets.size()>0)
 			this.compileSrcTarget = potentialSrcTargets.get(potentialSrcTargets.size()-1);
 		
 	}
@@ -148,7 +154,8 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 			}
 		}
 		else{
-			this.compileTestTarget = potentialTestTargets.get(potentialTestTargets.size()-1);
+			if(potentialTestTargets.size()>0)
+				this.compileTestTarget = potentialTestTargets.get(potentialTestTargets.size()-1);
 		}
 
 	}
@@ -159,6 +166,10 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 * @return
 	 */
 	public String getCompileSrcTarget() {
+		
+		if(compileSrcTarget == null)
+			return "";
+		
 		return compileSrcTarget.getName();
 	}
 
@@ -167,6 +178,9 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 * @return
 	 */
 	public String getCompileTestTarget() {
+		if(compileTestTarget == null)
+			return "";
+		
 		return compileTestTarget.getName();
 	}
 
@@ -179,6 +193,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 */
 	@Override
 	public String getCompDir() {
+		
 		return taskHelper.getDirectory("javac", "destdir", compileSrcTarget);
 	}
 
@@ -196,7 +211,31 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 */
 	@Override
 	public String getSrcDir() {
-		return taskHelper.getDirectory("javac", "srcdir", compileSrcTarget);
+		String result="";
+		result += taskHelper.getDirectory("javac", "srcdir", compileSrcTarget);
+		
+		/*
+		 * Handle Edge Case
+		 * <src path> under <javac> 
+		 */
+		List<Task> tasks = taskHelper.getTasks("javac", this.compileSrcTarget);
+		String[] additional_dirs=taskHelper.getSubTaskAttr(tasks.toArray(new Task[tasks.size()]), "src", "path");
+		if(additional_dirs.length > 0 && result.length()>0)
+			result+=";";
+		
+		for(int i = 0; i < additional_dirs.length-1;i++){
+			result+=pp.parse(additional_dirs[i]);
+			result+=", ";
+		}
+		if(additional_dirs.length>0)
+			result+=pp.parse(additional_dirs[additional_dirs.length-1]);
+		/*
+		 * Handle Edge Case
+		 * End
+		 */
+		
+		
+		return result;
 	}
 
 	/**
@@ -205,6 +244,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	@Override
 	public String getCompTestDir() {
 		return taskHelper.getDirectory("javac", "destdir", compileTestTarget);
+		
 	}
 
 	/**

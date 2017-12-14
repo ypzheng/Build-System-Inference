@@ -87,10 +87,13 @@ public class TaskHelper {
 		for(int i=0; i<noDupList.size()-1; i++) {
 				ret+=pp.parse(noDupList.get(i)) + ", ";
 		}
-		ret+=pp.parse(noDupList.get(noDupList.size()-1));
+		
+		if(noDupList.size()>0)
+			ret+=pp.parse(noDupList.get(noDupList.size()-1));
 		
 		Debugger.log("Show Directory list After Parsing");
 		Debugger.log(ret);
+		
 		
 		return ret;
 	}
