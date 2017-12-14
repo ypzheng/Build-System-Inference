@@ -130,7 +130,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 			this.compileSrcTarget = potentialSrcTargets.get(0);
 		}
 		
-		if(this.compileSrcTarget == null)
+		if(this.compileSrcTarget == null && potentialSrcTargets.size()>0)
 			this.compileSrcTarget = potentialSrcTargets.get(potentialSrcTargets.size()-1);
 		
 	}
@@ -148,7 +148,8 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 			}
 		}
 		else{
-			this.compileTestTarget = potentialTestTargets.get(potentialTestTargets.size()-1);
+			if(potentialTestTargets.size()>0)
+				this.compileTestTarget = potentialTestTargets.get(potentialTestTargets.size()-1);
 		}
 
 	}

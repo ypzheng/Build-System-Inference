@@ -14,6 +14,11 @@ public class OtherBuildFileTest {
 	AntBuildAnalyzer aba2 = new AntBuildAnalyzer(new File("test/TestBuildFile2.xml"),"");
 	AntBuildAnalyzer aba3 = new AntBuildAnalyzer(new File("test/TestBuildFile3.xml"),"");
 	AntBuildAnalyzer aba4 = new AntBuildAnalyzer(new File("test/TestBuildFile4.xml"),"");
+	AntBuildAnalyzer aba5 = new AntBuildAnalyzer(new File("test/TestBuildFile5.xml"),"");
+	AntBuildAnalyzer aba6 = new AntBuildAnalyzer(new File("test/TestBuildFile6.xml"),"");
+	AntBuildAnalyzer aba7 = new AntBuildAnalyzer(new File("test/TestBuildFile7.xml"),"");
+	AntBuildAnalyzer aba8 = new AntBuildAnalyzer(new File("test/TestBuildFile8.xml"),"");
+	AntBuildAnalyzer aba9 = new AntBuildAnalyzer(new File("test/TestBuildFile9.xml"),"");
 	
 	
 	
@@ -24,7 +29,12 @@ public class OtherBuildFileTest {
 		assertEquals("compile", aba1.getCompileSrcTarget());
 		assertEquals("build", aba2.getCompileSrcTarget());
 		assertEquals("compile", aba3.getCompileSrcTarget());
-		assertEquals("compile", aba4.getCompileSrcTarget());
+		/*assertEquals("compile", aba4.getCompileSrcTarget());
+		assertEquals("", aba5.getCompileSrcTarget());
+		assertEquals("", aba6.getCompileSrcTarget());
+		assertEquals("", aba7.getCompileSrcTarget());
+		assertEquals("", aba8.getCompileSrcTarget());
+		assertEquals("", aba9.getCompileSrcTarget());*/
 		
 	}
 	
