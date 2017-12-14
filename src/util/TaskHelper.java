@@ -69,16 +69,20 @@ public class TaskHelper {
 		 * Find taskType Task
 		 * Looks for dirType attribute
 		 */
-		for(Task t : this.getTasks(taskType, target)) {
-			if(t.getTaskType().equals(taskType)) {
-				String srcDirectory = (String)this.getAttr(t, dirType);
-				if(srcDirectory == null) {
-					Debugger.log("no "+dirType+" exists in "+target.getName());
-				}else {
-					javacTasks.add(srcDirectory);
+		List<Task> tasks = this.getTasks(taskType, target);
+		if(tasks != null) {
+			for(Task t : tasks) {
+				if(t.getTaskType().equals(taskType)) {
+					String srcDirectory = (String)this.getAttr(t, dirType);
+					if(srcDirectory == null) {
+						Debugger.log("no "+dirType+" exists in "+target.getName());
+					}else {
+						javacTasks.add(srcDirectory);
+					}
 				}
 			}
 		}
+		
 		noDupList = javacTasks.stream().distinct().collect(Collectors.toList());
 		
 		Debugger.log("Show Directory list Before Parsing");
