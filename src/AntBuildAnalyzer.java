@@ -59,8 +59,14 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		project.init();
 		ProjectHelper helper = new ProjectHelper();
 		helper.configureProject(project, f);
-		sortedTargets = project.topoSort(project.getDefaultTarget(), project.getTargets());
-
+		
+		if(project.getDefaultTarget() != null)
+			sortedTargets = project.topoSort(project.getDefaultTarget(), project.getTargets());
+		else
+			sortedTargets = project.topoSort("", project.getTargets());
+		
+		
+			
 		//Print out all targets in execution order
 		Enumeration vEnum = sortedTargets.elements();
 
@@ -172,6 +178,9 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 * @return
 	 */
 	public String getCompileTestTarget() {
+		if(compileTestTarget == null)
+			return "";
+		
 		return compileTestTarget.getName();
 	}
 

@@ -1,0 +1,22 @@
+<suite name="D3 Smoke Tests" verbose="2"><parameter
+		name="WebdriverTimeout" value="30">
+</parameter>
+	<parameter name="baseurl" value="http://fi1-den.dev.d3banking.com/"></parameter>
+	<parameter name="testRailUrl" value="https://d3banking.testrail.com/"></parameter>
+	<parameter name="testRailUserName" value="qaadmin@d3banking.com"></parameter>
+	<parameter name="testRailPassWord" value="D3B@nk!ng"></parameter>
+	<parameter name="userName" value="samueladamsiii"></parameter>
+	<parameter name="passWord" value="password"></parameter>
+	<parameter name="secretQuestion" value="denver"></parameter>
+	<test name="Smoke Tests">
+		<groups>
+			<run>
+				<include name='smoke'/>
+			</run>
+		</groups>
+		<packages>
+			<package name="com.d3.accounts"></package>
+			<package name="com.d3.dashboard"></package>
+			<package name="com.d3.messages"></package>
+			<package name="com.d3.transactions"></package></packages></test>
+</suite>
