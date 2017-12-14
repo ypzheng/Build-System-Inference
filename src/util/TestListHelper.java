@@ -42,12 +42,13 @@ public class TestListHelper {
 	    					if(keyVal.get("include") == null)
 	    						keyVal.put("include", (String)temp.getAttributeMap().get("name")+";");
 	    					else
-	    						keyVal.put("include", keyVal.get("include")+temp.getAttributeMap().get("name")+";");
+	    						keyVal.put("include", keyVal.get("include")+(String)temp.getAttributeMap().get("name")+";");
+//	    						System.out.println("looook: "+keyVal.get("include")+pp.parse((String) temp.getAttributeMap().get("name")));
 	    				}
 	        		}
 	    		}
 		}
-		System.out.println(keyVal);
+		System.out.println("keyval: "+keyVal);
 		return keyVal;
 	}
 	
