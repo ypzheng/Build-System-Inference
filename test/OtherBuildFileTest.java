@@ -23,7 +23,7 @@ public class OtherBuildFileTest {
 	//Duplicate
 	//AntBuildAnalyzer aba8 = new AntBuildAnalyzer(new File("test/TestBuildFile8.xml"),"");
 	AntBuildAnalyzer aba9 = new AntBuildAnalyzer(new File("test/TestBuildFile9.xml"),"");
-	
+	AntBuildAnalyzer aba10 = new AntBuildAnalyzer(new File("test/TestBuildFile10.xml"),"");
 	
 	
 	@Test
@@ -40,7 +40,7 @@ public class OtherBuildFileTest {
 		
 		
 		assertEquals("compile", aba7.getCompileSrcTarget());
-		
+		assertEquals("compile", aba10.getCompileSrcTarget());
 		
 		//Failed
 		//assertEquals("build", aba9.getCompileSrcTarget());
@@ -59,7 +59,7 @@ public class OtherBuildFileTest {
 		assertEquals("compile-tests", aba6.getCompileTestTarget());
 		
 		assertEquals("compile", aba7.getCompileTestTarget());
-		
+		assertEquals("compile-test", aba10.getCompileTestTarget());
 		
 		//Failed
 		//assertEquals("build", aba9.getCompileTestTarget());
@@ -106,6 +106,7 @@ public class OtherBuildFileTest {
 								Paths.get("src\\com\\d3\\endToEnd").toString();
 		
 		assertEquals(aba7_expected, aba7.getSrcDir());
+		assertEquals(Paths.get("src/main/java").toString(), aba10.getSrcDir());
 		
 		//Failed
 		//assertEquals(Paths.get("").toString(), aba9.getSrcDir());
@@ -152,6 +153,7 @@ public class OtherBuildFileTest {
 				Paths.get("src\\com\\d3\\settings").toString() + ", " +
 				Paths.get("src\\com\\d3\\endToEnd").toString();
 		assertEquals(aba7_expected, aba7.getTestDir());
+		assertEquals(Paths.get("src/test/java").toString(), aba10.getTestDir());
 		
 		//Failed
 		//assertEquals(Paths.get("").toString(), aba9.getTestDir());
@@ -168,6 +170,7 @@ public class OtherBuildFileTest {
 		assertEquals(Paths.get("target/classes").toString(), aba5.getCompDir());
 		assertEquals(Paths.get("build/classes").toString(), aba6.getCompDir());
 		assertEquals(Paths.get("build").toString(), aba7.getCompDir());
+		assertEquals(Paths.get("target/classes").toString(), aba10.getCompDir());
 		
 		//Failed
 		//assertEquals(Paths.get("").toString(), aba9.getCompDir());
@@ -184,7 +187,7 @@ public class OtherBuildFileTest {
 		assertEquals(Paths.get("target/test-classes").toString(), aba5.getCompTestDir());
 		assertEquals(Paths.get("build/testcases").toString(), aba6.getCompTestDir());
 		assertEquals(Paths.get("build").toString(), aba7.getCompTestDir());
-		
+		assertEquals(Paths.get("target/test-classes").toString(), aba10.getCompTestDir());
 		//Failed
 		//assertEquals(Paths.get("").toString(), aba9.getCompTestDir());
 	}
@@ -205,6 +208,7 @@ public class OtherBuildFileTest {
 							   Paths.get("libs\\selenium-java-2.44.0.jar").toString() + ";"+
 							   Paths.get("libs\\selenium-server-standalone-2.44.0.jar").toString();
 		assertEquals(aba7_expected,aba7.getSrcDep());
+		assertEquals("",aba10.getSrcDep());
 		
 		//Failed
 		//assertEquals("",aba9.getSrcDep());
@@ -227,6 +231,7 @@ public class OtherBuildFileTest {
 							   Paths.get("libs\\selenium-java-2.44.0.jar").toString() + ";"+
 							   Paths.get("libs\\selenium-server-standalone-2.44.0.jar").toString();
 		assertEquals(aba7_expected,aba7.getTestDep());
+		assertEquals("",aba10.getTestDep());
 		
 		//Failed
 		//assertEquals("",aba9.getTestDep());
@@ -270,6 +275,16 @@ public class OtherBuildFileTest {
 		assertEquals(keyVal5.toString(),aba5.getTestList());
 		assertEquals("",aba6.getTestList());
 		assertEquals("",aba7.getTestList());
+		
+		Map<String, String> keyVal10 = new HashMap<String, String>();
+		keyVal10.put("include", "**/*Test*.java;");
+		keyVal10.put("exclude", "");
+		keyVal10.put("dir", "src\\test\\java");
+		
+		assertEquals(keyVal10.toString(),aba10.getTestList());
+
+		
+		
 		
 		//Failed
 		//assertEquals("",aba9.getTestList());
