@@ -134,6 +134,26 @@ public class OtherBuildFileTest {
 		assertEquals(Paths.get("src/tests/junit").toString(), aba2.getTestDir());
 		assertEquals(Paths.get("test").toString(), aba3.getTestDir());
 		assertEquals(Paths.get("src").toString(), aba4.getTestDir());
+		
+		assertEquals(Paths.get("test").toString(), aba5.getTestDir());
+		
+		String aba7_expected=	Paths.get("src\\com\\gurock\\testrail").toString() + ", " +
+				Paths.get("src\\com\\d3\\testrails").toString() + ", " +
+				Paths.get("src\\com\\d3\\utils").toString() + ", " +
+				Paths.get("src\\com\\d3\\login").toString() + ", " +
+				Paths.get("src\\com\\d3\\accounts").toString() + ", " +
+				Paths.get("src\\com\\d3\\help").toString() + ", " +
+				Paths.get("src\\com\\d3\\dashboard").toString() + ", " +
+				Paths.get("src\\com\\d3\\messages").toString() + ", " +
+				Paths.get("src\\com\\d3\\transactions").toString() + ", " +
+				Paths.get("src\\com\\d3\\moneyMovement").toString() + ", " +
+				Paths.get("src\\com\\d3\\planning").toString() + ", " +
+				Paths.get("src\\com\\d3\\settings").toString() + ", " +
+				Paths.get("src\\com\\d3\\endToEnd").toString();
+		assertEquals(aba7_expected, aba7.getTestDir());
+		
+		//Failed
+		//assertEquals(Paths.get("").toString(), aba9.getTestDir());
 	}
 	
 	@Test
@@ -143,6 +163,12 @@ public class OtherBuildFileTest {
 		assertEquals(Paths.get("build/classes").toString(), aba2.getCompDir());
 		assertEquals(Paths.get("target/classes").toString(), aba3.getCompDir());
 		assertEquals(Paths.get("build/classes").toString(), aba4.getCompDir());
+		
+		assertEquals(Paths.get("target/classes").toString(), aba5.getCompDir());
+		assertEquals(Paths.get("build").toString(), aba7.getCompDir());
+		
+		//Failed
+		//assertEquals(Paths.get("").toString(), aba9.getCompDir());
 	}
 	
 	@Test
@@ -152,6 +178,12 @@ public class OtherBuildFileTest {
 		assertEquals(Paths.get("build/testcases").toString(), aba2.getCompTestDir());
 		assertEquals(Paths.get("target/test-classes").toString(), aba3.getCompTestDir());
 		assertEquals(Paths.get("build/classes").toString(), aba4.getCompTestDir());
+		
+		assertEquals(Paths.get("target/test-classes").toString(), aba5.getCompTestDir());
+		assertEquals(Paths.get("build").toString(), aba7.getCompTestDir());
+		
+		//Failed
+		//assertEquals(Paths.get("").toString(), aba9.getCompTestDir());
 	}
 	
 	@Test
@@ -160,6 +192,18 @@ public class OtherBuildFileTest {
 		assertEquals("",aba1.getSrcDep());
 		assertEquals("",aba2.getSrcDep());
 		assertEquals("",aba3.getSrcDep());
+		
+		assertEquals("",aba5.getSrcDep());
+		String aba7_expected = Paths.get("libs\\selendroid-client-0.13.0.jar").toString()+";" +
+							   Paths.get("libs\\selendroid-standalone-0.13.0-with-dependencies.jar").toString()+";" + 
+							   Paths.get("libs\\testng-6.8.8.jar").toString()+";" + 
+							   Paths.get("libs\\json-simple-1.1.1.jar").toString()+";" + 
+							   Paths.get("libs\\selenium-java-2.44.0.jar").toString() + ";"+
+							   Paths.get("libs\\selenium-server-standalone-2.44.0.jar").toString();
+		assertEquals(aba7_expected,aba7.getSrcDep());
+		
+		//Failed
+		//assertEquals("",aba9.getSrcDep());
 		
 	}
 	
@@ -170,6 +214,19 @@ public class OtherBuildFileTest {
 		assertEquals("",aba2.getTestDep());
 		assertEquals("",aba3.getTestDep());
 		
+		assertEquals("",aba5.getTestDep());
+		String aba7_expected = Paths.get("libs\\selendroid-client-0.13.0.jar").toString()+";" +
+							   Paths.get("libs\\selendroid-standalone-0.13.0-with-dependencies.jar").toString()+";" + 
+							   Paths.get("libs\\testng-6.8.8.jar").toString()+";" + 
+							   Paths.get("libs\\json-simple-1.1.1.jar").toString()+";" + 
+							   Paths.get("libs\\selenium-java-2.44.0.jar").toString() + ";"+
+							   Paths.get("libs\\selenium-server-standalone-2.44.0.jar").toString();
+		assertEquals(aba7_expected,aba7.getTestDep());
+		
+		//Failed
+		//assertEquals("",aba9.getTestDep());
+		
+		
 	}
 	
 	@Test
@@ -177,7 +234,7 @@ public class OtherBuildFileTest {
 		Map<String, String> keyVal0 = new HashMap<String, String>();
 		keyVal0.put("include", "**/*Test.java;");
 		keyVal0.put("exclude", "**/Abstract*Test.java;**/EntitiesPerformanceTest.java;**/RandomUtilsFreqTest.java;");
-		keyVal0.put("dir", "src/test/java");
+		keyVal0.put("dir", Paths.get("src/test/java").toString());
 		
 		Map<String, String> keyVal1 = new HashMap<String, String>();
 		keyVal1.put("include", "com.sandwich.test.AllTests;");
@@ -187,12 +244,17 @@ public class OtherBuildFileTest {
 		Map<String, String> keyVal3 = new HashMap<String, String>();
 		keyVal3.put("include", "**/*Test.class");
 		keyVal3.put("exclude", "");
-		keyVal3.put("dir", "target/test-classes");
+		keyVal3.put("dir", Paths.get("target/test-classes").toString());
 		
 		Map<String, String> keyVal4 = new HashMap<String, String>();
 		keyVal4.put("include", "${unittests.runclass};");
 		keyVal4.put("exclude", "");
 		keyVal4.put("dir", "");
+		
+		Map<String, String> keyVal5 = new HashMap<String, String>();
+		keyVal5.put("include", "**/*Test.class");
+		keyVal5.put("exclude", "");
+		keyVal5.put("dir", Paths.get("target/test-classes").toString());
 		
 		assertEquals(keyVal0.toString(), aba0.getTestList());
 		assertEquals(keyVal1.toString(),aba1.getTestList());
@@ -200,5 +262,10 @@ public class OtherBuildFileTest {
 		assertEquals(keyVal3.toString(),aba3.getTestList());
 		assertEquals(keyVal4.toString(),aba4.getTestList());
 		
+		assertEquals(keyVal5.toString(),aba5.getTestList());
+		assertEquals("",aba7.getTestList());
+		
+		//Failed
+		//assertEquals("",aba9.getTestList());
 	}
 }

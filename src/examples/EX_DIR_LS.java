@@ -21,17 +21,7 @@ public class EX_DIR_LS {
         project.init();
         File buildFile = project.resolveFile("closure-compiler-build.xml");
         helper.configureProject(project, buildFile);
-		// TODO Auto-generated method stub
-//		Path dir = Paths.get(project.getBaseDir().toString());
-//        System.out.println(project.getBaseDir().toString());
-//        try(DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*")){
-//        	for(Path file:stream) {
-//        		System.out.println(file.getFileName());
-//        	}
-//        } catch(IOException e) {
-//        	e.printStackTrace();
-//        }
-        //System.out.println(new PathParser(project).parse("${build.dir}/test"));
+
         String[] result = FileUtility.lsDirectoryRS(project.getBaseDir().toString(), "(.*)[.java]","[Ant](.*)");
 
         for(String name : result)

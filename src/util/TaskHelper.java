@@ -101,7 +101,17 @@ public class TaskHelper {
 		
 		return ret;
 	}
-	
+	/**
+	 * For each Task in array "tasks"
+	 * Look for Task under with "subTaskOfInterest" type
+	 * Look for "attrOfInterest" attr
+	 * @param tasks
+	 * @param subTaskOfInterest
+	 * @param attrOfInterest
+	 * @return
+	 * 
+	 * A list of attrOfInterest in tasks' subTaskOfInterest
+	 */
 	public String[] getSubTaskAttr(Task[] tasks, String subTaskOfInterest,String attrOfInterest) {
 		
 		Vector<String> result_attrs = new Vector(0,1);
@@ -114,7 +124,10 @@ public class TaskHelper {
 				if(curr_sub_rc.getElementTag().equals(subTaskOfInterest)) {
 					Hashtable<String, Object> attr_map = curr_sub_rc.getAttributeMap();
 					if(attr_map.containsKey(attrOfInterest)) {
-						result_attrs.addElement(attr_map.get(attrOfInterest).toString());
+						//Remove duplicate
+						String temp_attri = attr_map.get(attrOfInterest).toString();
+						if(!result_attrs.contains(temp_attri))
+							result_attrs.addElement(temp_attri);
 					}
 				}
 			}

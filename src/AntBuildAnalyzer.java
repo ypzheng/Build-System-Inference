@@ -1,26 +1,19 @@
 import java.io.File;
-import java.io.FilenameFilter;
+
 
 import java.nio.file.Paths;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.soap.Node;
-import javax.annotation.Resource;
-import javax.lang.model.element.Element;
-import javax.xml.parsers.DocumentBuilder;
 import java.util.*;
 
-import org.apache.tools.ant.DirectoryScanner;
+
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Path;
 
-import util.ClassPathParser;
+
 import util.PathParser;
 import util.Debugger;
 import util.FileUtility;
@@ -28,9 +21,6 @@ import util.TaskHelper;
 import util.TestListHelper;
 import util.WildCardResolver;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import org.apache.tools.ant.RuntimeConfigurable;
 
 
 public class AntBuildAnalyzer implements BuildAnalyzer{
@@ -121,10 +111,10 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 */
 	private void enhanceSrcTargetFinding() {
 		if(potentialSrcTargets.size() == 0) {
-			System.out.println("Cannot find target that compiles source.");
+			Debugger.log("Cannot find target that compiles source.");
 		}
 		else if(potentialSrcTargets.size() > 1) {
-			System.out.println("Special case, there might be a top-level compile target.  Requires manual inference.");
+			Debugger.log("Special case, there might be a top-level compile target.  Requires manual inference.");
 			for(Target t : potentialSrcTargets) {
 				if(t.getName().contains("compile")) {
 					if(t.getName().equals("compile") || t.getName().contains("all"))
@@ -199,7 +189,35 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 
 	@Override
 	public String getTestDir() {
-		return taskHelper.getDirectory("javac", "srcdir", compileTestTarget);
+		
+		String result="";
+		result += taskHelper.getDirectory("javac", "srcdir", compileTestTarget);
+		
+		/*
+		 * Handle Edge Case
+		 * <src path> under <javac> 
+		 */
+		List<Task> tasks = taskHelper.getTasks("javac", this.compileSrcTarget);
+		if(tasks != null) {
+			String[] additional_dirs=taskHelper.getSubTaskAttr(tasks.toArray(new Task[tasks.size()]), "src", "path");
+			if(additional_dirs.length > 0 && result.length()>0)
+				result+=";";
+			
+			for(int i = 0; i < additional_dirs.length-1;i++){
+				result+=pp.parse(additional_dirs[i]);
+				result+=", ";
+			}
+			if(additional_dirs.length>0)
+				result+=pp.parse(additional_dirs[additional_dirs.length-1]);
+		}
+			
+		/*
+		 * Handle Edge Case
+		 * End
+		 */
+		
+		
+		return result;
 	}
 
 	/**
@@ -259,7 +277,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		try {
 			ret = this.dependencyHelper(this.compileSrcTarget);
 		} catch (Exception e) {
-			System.out.println("Cannot find the exact source dependency files\n "
+			Debugger.log("Cannot find the exact source dependency files\n "
 					+ "Possible cause: 1) Only build file is passed in or "
 					+ "2) Cannot find jar file locally");
 		}
@@ -275,7 +293,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		try {
 			ret = this.dependencyHelper(this.compileTestTarget);
 		} catch (Exception e) {
-			System.out.println("Cannot find the exact test dependency files\n "
+			Debugger.log("Cannot find the exact test dependency files\n "
 					+ "Possible cause: 1) Only build file is passed in or "
 					+ "2) Cannot find jar file locally");
 		}
@@ -315,7 +333,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     		Map<String, String> keyVal = new HashMap<String, String>();
     		String ret = "";
     		if(junitTargets.size() == 0) {
-    			System.out.println("No junit tasks, make sure this project contains unit tests.");
+    			Debugger.log("No junit tasks, make sure this project contains unit tests.");
     			return "";
     		}
     		keyVal = testHelper.getTestList(junitTargets);
