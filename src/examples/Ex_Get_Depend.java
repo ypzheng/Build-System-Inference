@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.Hashtable;
 
 import org.apache.tools.ant.*;
-import util.ClassPathParser;
+//import util.ClassPathParser;
 
 public class Ex_Get_Depend {
 
@@ -24,10 +24,10 @@ public class Ex_Get_Depend {
         project.init();
         File buildFile = project.resolveFile("/Users/juconghe/Downloads/commons-lang-LANG_2_5/build.xml");
         helper.configureProject(project, buildFile);
-        ClassPathParser classPathParser = new ClassPathParser(project);
-        Hashtable<String, Target> target_table = project.getTargets();
-        Vector<Target> sorted_target = project.topoSort("init",target_table);
-        Enumeration<String > keys = target_table.keys();
+//        ClassPathParser classPathParser = new ClassPathParser(project);
+//        Hashtable<String, Target> target_table = project.getTargets();
+//        Vector<Target> sorted_target = project.topoSort("init",target_table);
+//        Enumeration<String > keys = target_table.keys();
 
 //        for (Target target:sorted_target) {
 //            Task[] tasks = target.getTasks();

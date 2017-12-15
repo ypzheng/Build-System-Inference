@@ -1,26 +1,19 @@
 import java.io.File;
-import java.io.FilenameFilter;
+
 
 import java.nio.file.Paths;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.soap.Node;
-import javax.annotation.Resource;
-import javax.lang.model.element.Element;
-import javax.xml.parsers.DocumentBuilder;
 import java.util.*;
 
-import org.apache.tools.ant.DirectoryScanner;
+
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Path;
 
-import util.ClassPathParser;
+
 import util.PathParser;
 import util.Debugger;
 import util.FileUtility;
@@ -28,9 +21,6 @@ import util.TaskHelper;
 import util.TestListHelper;
 import util.WildCardResolver;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import org.apache.tools.ant.RuntimeConfigurable;
 
 
 public class AntBuildAnalyzer implements BuildAnalyzer{
