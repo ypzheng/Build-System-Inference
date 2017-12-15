@@ -72,6 +72,8 @@ The table below indicates the number of properties that work, out of these 10 bu
 | directory of compiled tests   |10| |
 | test list | 10 | |
 
+Utility Classes:
+-----
 ### src.util:
 This package contains utility classes that help us utilize Ant API for our objectives, and do other miscellaneous taks.
 
@@ -85,6 +87,7 @@ This class contains methods for manipulating file path (in `String`).
 This class is for parsing attributes from `Task` or `Target`, specifically for attributes that represent a file path. `PathParser.parse()` is a static method that takes in a `String` as parameter. It will looks for unresolve property(`${.*}`) in the `String` and resolve it. This includes using Ant Project API's `getProperty()`, looking for properties define under `Target`.  
 
 #### TaskHelper.java:
+This class is for accessing attributes of `Task` under `Task`.
 
 #### TestListHelper.java:
 
