@@ -327,7 +327,10 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		return deps;
 	}
 
-
+	/**
+	 * Use directory scanner to get a list of tests with test dir, include, and exclude
+	 * from map.
+	 */
     @Override
 	public String getTestList() {
     		Map<String, String> keyVal = new HashMap<String, String>();

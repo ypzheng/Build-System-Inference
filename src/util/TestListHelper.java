@@ -10,6 +10,11 @@ import org.apache.tools.ant.RuntimeConfigurable;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 
+/**
+ * Helper class that finds the directory of tests, includes/excludes, and 
+ * name of the tests to run, outputting them in a Map.
+ *
+ */
 public class TestListHelper {
 	private PathParser pp;
 	private TaskHelper taskHelper;
@@ -25,7 +30,9 @@ public class TestListHelper {
 		keyVal.put("exclude", "");
 		keyVal.put("dir", "");
 		for(int i=0; i< junitTargets.size(); i++) {
+			//get a list of tasks under junit
 			List<Task> tasks = taskHelper.getTasks("junit", junitTargets.get(i));
+			
 	    		for(int j=0; j<tasks.size(); j++) {
 	    			RuntimeConfigurable rt = tasks.get(j).getRuntimeConfigurableWrapper();
 	    			Enumeration<RuntimeConfigurable> enumeration= rt.getChildren();
@@ -43,12 +50,12 @@ public class TestListHelper {
 	    						keyVal.put("include", (String)temp.getAttributeMap().get("name")+";");
 	    					else
 	    						keyVal.put("include", keyVal.get("include")+pp.parse((String) temp.getAttributeMap().get("name"))+";");
-	    						System.out.println("looook here why: "+keyVal.get("include")+pp.parse((String) temp.getAttributeMap().get("name")));
+//	    						System.out.println("looook here why: "+keyVal.get("include")+pp.parse((String) temp.getAttributeMap().get("name")));
 	    				}
 	        		}
 	    		}
 		}
-		System.out.println("keyval: "+keyVal);
+//		System.out.println("keyval: "+keyVal);
 		return keyVal;
 	}
 	
