@@ -257,7 +257,7 @@ public class OtherBuildFileTest {
 		keyVal3.put("dir", Paths.get("target/test-classes").toString());
 		
 		Map<String, String> keyVal4 = new HashMap<String, String>();
-		keyVal4.put("include", "${unittests.runclass};");
+		keyVal4.put("include", "com.pensioenpage.jynx.ods2csv.tests.AllTests;");
 		keyVal4.put("exclude", "");
 		keyVal4.put("dir", "");
 		

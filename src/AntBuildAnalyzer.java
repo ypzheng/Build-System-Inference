@@ -310,24 +310,28 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		
 		for(String s : classpath_refid_list) {
 			Path p = this.project.getReference(s);
+			System.out.println(p);
 			//Since we are only insterested in .jar files, filter them out and append to output string
+			
 			String[] filtered_deps = FileUtility.filterPath(p.list(), true,"(.*)[jar]");
 			
 			for(String filtered_dep : filtered_deps) {
 				deps += pp.parse(filtered_dep) +";";
-				
 			}
 		}
 		
 		// TODO Handle fileset tasks
-		
+		Path path = (Path) project.getReference("classpath");
 		//Formating output string, remove last ","
 		if(deps.length()>0 && deps.substring(deps.length()-1).equals(";"))
 			deps = deps.substring(0, deps.length()-1);
 		return deps;
 	}
 
-
+	/**
+	 * Use directory scanner to get a list of tests with test dir, include, and exclude
+	 * from map.
+	 */
     @Override
 	public String getTestList() {
     		Map<String, String> keyVal = new HashMap<String, String>();

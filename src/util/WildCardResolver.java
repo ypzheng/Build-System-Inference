@@ -6,6 +6,11 @@ import java.io.IOException;
 
 import org.apache.tools.ant.DirectoryScanner;
 
+/**
+ * This is a helper class that allows user to input a directory and wildcards,
+ * outputting all file names that match.
+ *
+ */
 public class WildCardResolver {
 	private static DirectoryScanner ds;
 	
@@ -15,6 +20,7 @@ public class WildCardResolver {
 		ds.setExcludes(excludes);
 		ds.setBasedir(baseDir);
 		ds.setCaseSensitive(true);
+		// Catch the exception if the directory cannot be found
 		try {
 			ds.scan();
 		}catch(IllegalStateException e){

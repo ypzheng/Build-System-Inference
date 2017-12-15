@@ -76,7 +76,7 @@
             <classpath refid="BSI.classpath"/>
         </java>
     </target>
-    <target name="files">
+    <target name="inferFiles">
         <java classname="Driver" failonerror="true" fork="yes">
             <classpath refid="BSI.classpath"/>
         </java>
@@ -90,7 +90,7 @@
             <classpath refid="BSI.classpath"/>
         </junit>
     </target>
-    <target name="projects">
+    <target name="inferProjects">
         <java classname="Driver_2" failonerror="true" fork="yes">
             <classpath refid="BSI.classpath"/>
         </java>

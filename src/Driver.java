@@ -16,12 +16,6 @@ public class Driver {
 		String projectPath = "";
 		File buildFile;
 		
-		Map<String, String> keyVal0 = new HashMap<String, String>();
-		keyVal0.put("include", "**/*Test.java");
-		keyVal0.put("exclude", "**/Abstract*Test.java**/EntitiesPerformanceTest.java**/RandomUtilsFreqTest.java");
-		keyVal0.put("dir", "${test.home}");
-		System.out.println(keyVal0.toString());
-		
 		System.out.println("Please input a Dir containing build files: ");
 		Scanner scanner = new Scanner(System.in);
 		path = scanner.nextLine();
