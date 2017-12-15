@@ -17,7 +17,7 @@ public class OtherBuildFileTest {
 	AntBuildAnalyzer aba5 = new AntBuildAnalyzer(new File("test/TestBuildFile5.xml"),"");
 	
 	//Duplicate
-	//AntBuildAnalyzer aba6 = new AntBuildAnalyzer(new File("test/TestBuildFile6.xml"),"");
+	AntBuildAnalyzer aba6 = new AntBuildAnalyzer(new File("test/TestBuildFile6.xml"),"");
 	AntBuildAnalyzer aba7 = new AntBuildAnalyzer(new File("test/Consumer2/build.xml"),"");
 	
 	//Duplicate
@@ -36,7 +36,7 @@ public class OtherBuildFileTest {
 		assertEquals("compile", aba4.getCompileSrcTarget());
 		
 		assertEquals("compile", aba5.getCompileSrcTarget());
-		
+		assertEquals("build", aba6.getCompileSrcTarget());
 		
 		
 		assertEquals("compile", aba7.getCompileSrcTarget());
@@ -56,7 +56,7 @@ public class OtherBuildFileTest {
 		assertEquals("unittests", aba4.getCompileTestTarget());
 		
 		assertEquals("test", aba5.getCompileTestTarget());
-		
+		assertEquals("compile-tests", aba6.getCompileTestTarget());
 		
 		assertEquals("compile", aba7.getCompileTestTarget());
 		
@@ -89,7 +89,7 @@ public class OtherBuildFileTest {
 		assertEquals(Paths.get("src").toString(), aba4.getSrcDir());
 		
 		assertEquals(Paths.get("src").toString(), aba5.getSrcDir());
-		
+		assertEquals(Paths.get("src/main").toString(), aba6.getSrcDir());
 		
 		String aba7_expected=	Paths.get("src\\com\\gurock\\testrail").toString() + ", " +
 								Paths.get("src\\com\\d3\\testrails").toString() + ", " +
@@ -136,6 +136,7 @@ public class OtherBuildFileTest {
 		assertEquals(Paths.get("src").toString(), aba4.getTestDir());
 		
 		assertEquals(Paths.get("test").toString(), aba5.getTestDir());
+		assertEquals(Paths.get("src/tests/junit").toString(), aba6.getTestDir());
 		
 		String aba7_expected=	Paths.get("src\\com\\gurock\\testrail").toString() + ", " +
 				Paths.get("src\\com\\d3\\testrails").toString() + ", " +
@@ -165,6 +166,7 @@ public class OtherBuildFileTest {
 		assertEquals(Paths.get("build/classes").toString(), aba4.getCompDir());
 		
 		assertEquals(Paths.get("target/classes").toString(), aba5.getCompDir());
+		assertEquals(Paths.get("build/classes").toString(), aba6.getCompDir());
 		assertEquals(Paths.get("build").toString(), aba7.getCompDir());
 		
 		//Failed
@@ -180,6 +182,7 @@ public class OtherBuildFileTest {
 		assertEquals(Paths.get("build/classes").toString(), aba4.getCompTestDir());
 		
 		assertEquals(Paths.get("target/test-classes").toString(), aba5.getCompTestDir());
+		assertEquals(Paths.get("build/testcases").toString(), aba6.getCompTestDir());
 		assertEquals(Paths.get("build").toString(), aba7.getCompTestDir());
 		
 		//Failed
@@ -194,6 +197,7 @@ public class OtherBuildFileTest {
 		assertEquals("",aba3.getSrcDep());
 		
 		assertEquals("",aba5.getSrcDep());
+		assertEquals("",aba6.getSrcDep());
 		String aba7_expected = Paths.get("libs\\selendroid-client-0.13.0.jar").toString()+";" +
 							   Paths.get("libs\\selendroid-standalone-0.13.0-with-dependencies.jar").toString()+";" + 
 							   Paths.get("libs\\testng-6.8.8.jar").toString()+";" + 
@@ -215,6 +219,7 @@ public class OtherBuildFileTest {
 		assertEquals("",aba3.getTestDep());
 		
 		assertEquals("",aba5.getTestDep());
+		assertEquals("",aba6.getTestDep());
 		String aba7_expected = Paths.get("libs\\selendroid-client-0.13.0.jar").toString()+";" +
 							   Paths.get("libs\\selendroid-standalone-0.13.0-with-dependencies.jar").toString()+";" + 
 							   Paths.get("libs\\testng-6.8.8.jar").toString()+";" + 
@@ -263,6 +268,7 @@ public class OtherBuildFileTest {
 		assertEquals(keyVal4.toString(),aba4.getTestList());
 		
 		assertEquals(keyVal5.toString(),aba5.getTestList());
+		assertEquals("",aba6.getTestList());
 		assertEquals("",aba7.getTestList());
 		
 		//Failed
