@@ -1,7 +1,8 @@
 # Build-System-Inference
-Build-System-Inference is a system that allows user to extract information that are needed to compile and run projects from bulks of Ant Build Files and Ant Projects. By feeding the program appropriate directories containing projects or build files, the analyzer will write essential information to property files.  This implementation is intended to help with software testing by enabling the compilation and running tests of multiple projects.
+Build-System-Inference is a system that allows user to extract information that are needed to compile and run projects with different configurations. By feeding the program appropriate directories containing projects or build files, the analyzer will write essential information to output property files.  This implementation is intended to help with software testing by enabling the compilation and running tests of multiple projects.
 
-There are two ways to run this project:
+
+### There are two ways to run this project:
 
 1. Import this project into an IDEA (Ideally, Eclipse or IntelliJ)
 2. To analyze build files only:
@@ -10,20 +11,25 @@ There are two ways to run this project:
     Run Driver_2 and input a directory containing the actual projects
 4. Finally, a list of .properties files containing the essential information will be generated
 
-Alternatively, you can run this analyzer from terminal:
+
+#### Alternatively, you can run this analyzer from terminal:
 
 1. cd into the analyzer
-2. ant build
-3. ant inferFiles (for build files only) and input a directory containing the build files
-4. ant inferProjects and input a directory containing the actual projects
+2. ```ant build```
+3. ```ant inferFiles``` (for build files only) and input a directory containing the build files
+4. ```ant inferProjects``` and input a directory containing the actual projects
 5. a "build.properties" file listing all of the outputs will be generated
 
-To run the tests:
+### To run the tests:
 
-ant test
+```ant test```
+or
+Run the test suite in Eclipse
 
-Program Features:
+
+### Program Features:
 Properties Inferred from projects:
+-----
 The analyzer will automatically find the build file and the .properties file defined in the project directory, and output
 1. target to compile sources
 2. target to compile tests
@@ -36,6 +42,7 @@ The analyzer will automatically find the build file and the .properties file def
 9. a list of developer written tests
 
 Properties Inferred from build file only:
+-----
 The analyzer will automatically read the build files and output
 1. target to compile sources
 2. target to compile tests
@@ -47,4 +54,28 @@ The analyzer will automatically read the build files and output
 8. directory of compiled tests
 9. a list of developer written tests in wildcard form and the directory containing the tests
 
-Empirical Evaluation:
+### Empirical Evaluation:
+10 build files from different projects were selected for testing Ant Analyzer.  
+*Selection Criteria*: Java projects with Junit tests.  There are no more specific guidelines for selecting the projects because we want to make this analyzer more generalizable (bad choice).
+The table below indicates the number of properties that work, out of these 10 build files:
+
+
+| Property          | # of Correct Inferral (out of 10) |Why Does It Not Work |
+| -------------     |:-----------------------:          | -----|
+| compile target    | 10                                | |
+| compile test target     | 10     |   |
+| dependencies for compiling source |8| <li>Dependencies that need to be downloaded from online library is not handled</li> <li> File sets inside path are not handled</li>|
+| dependencies for compiling test   |8 |   <li>Dependencies that need to be downloaded from online library is not handled</li> <li> File sets inside path are not handled</li>|
+| directory of sources | 8 | ``<javac><src><pathelement location = xxxx></src></javac>`` pattern not handled |
+| directory of tests | 8 |  ``<javac><src><pathelement location = xxxx></src></javac>`` pattern not handled |
+| directory of compiled sources |10| |
+| directory of compiled tests   |10| |
+| test list | 10 | |
+
+### Checklist for Future Development:
+1. Solve overlapping property file problem
+2. Improve the accuracy of inferral by handling more edge cases
+3. Write more flexible helper methods and classify them 
+4. Check Issue Board
+5. Not finished yet and it sucks.  Sighhhhhhhhhhhhhhh.
+
