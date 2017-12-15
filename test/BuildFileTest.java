@@ -1,4 +1,4 @@
-import static org.junit.Assert.assertEquals;
+ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-public class OtherBuildFileTest {
+public class BuildFileTest {
 
 	AntBuildAnalyzer aba0 = new AntBuildAnalyzer(new File("test/TestBuildFile0.xml"),"");
 	AntBuildAnalyzer aba1 = new AntBuildAnalyzer(new File("test/TestBuildFile1.xml"),"");
@@ -23,7 +23,6 @@ public class OtherBuildFileTest {
 	//Duplicate
 	AntBuildAnalyzer aba8 = new AntBuildAnalyzer(new File("test/TestBuildFile8.xml"),"");
 	AntBuildAnalyzer aba9 = new AntBuildAnalyzer(new File("test/TestBuildFile9.xml"),"");
-	AntBuildAnalyzer aba10 = new AntBuildAnalyzer(new File("test/TestBuildFile10.xml"),"");
 
 
 	@Test
@@ -42,7 +41,7 @@ public class OtherBuildFileTest {
 		assertEquals("compile", aba7.getCompileSrcTarget());
 		assertEquals("compile", aba8.getCompileSrcTarget());
 
-		assertEquals("compile", aba10.getCompileSrcTarget());
+		assertEquals("compile", aba9.getCompileSrcTarget());
 
 		//Failed
 		//assertEquals("build", aba9.getCompileSrcTarget());
@@ -62,7 +61,7 @@ public class OtherBuildFileTest {
 
 		assertEquals("compile", aba7.getCompileTestTarget());
 		assertEquals("compile-tests", aba8.getCompileTestTarget());
-		assertEquals("compile-test", aba10.getCompileTestTarget());
+		assertEquals("compile-test", aba9.getCompileTestTarget());
 
 		//Failed
 		//assertEquals("build", aba9.getCompileTestTarget());
@@ -85,7 +84,6 @@ public class OtherBuildFileTest {
 								Paths.get("src").toString() + ", " +
 								Paths.get("unit").toString() + ", " +
 								Paths.get("integration").toString();
-		System.out.println("here: "+aba8.getSrcDir());
 		assertEquals(aba1_expected, aba1.getSrcDir());
 		assertEquals(Paths.get("src/main").toString(), aba2.getSrcDir());
 		assertEquals(Paths.get("src").toString(), aba3.getSrcDir());
@@ -109,7 +107,7 @@ public class OtherBuildFileTest {
 								Paths.get("src\\com\\d3\\endToEnd").toString();
 
 		assertEquals(aba7_expected, aba7.getSrcDir());
-		assertEquals(Paths.get("src/main/java").toString(), aba10.getSrcDir());
+		assertEquals(Paths.get("src/main/java").toString(), aba9.getSrcDir());
 
 		//Failed because <javac><src><pathelement location = xxxx></src></javac> pattern not handled
 //		assertEquals(Paths.get("src/java"), aba8.getSrcDir());
@@ -136,7 +134,6 @@ public class OtherBuildFileTest {
 				Paths.get("src").toString() + ", " +
 				Paths.get("unit").toString() + ", " +
 				Paths.get("integration").toString();
-		System.out.println("zzz: "+aba8.getTestDir());
 		assertEquals(aba1_expected, aba1.getTestDir()); //There are multiple, need to work on this
 		assertEquals(Paths.get("src/tests/junit").toString(), aba2.getTestDir());
 		assertEquals(Paths.get("test").toString(), aba3.getTestDir());
@@ -159,7 +156,7 @@ public class OtherBuildFileTest {
 				Paths.get("src\\com\\d3\\settings").toString() + ", " +
 				Paths.get("src\\com\\d3\\endToEnd").toString();
 		assertEquals(aba7_expected, aba7.getTestDir());
-		assertEquals(Paths.get("src/test/java").toString(), aba10.getTestDir());
+		assertEquals(Paths.get("src/test/java").toString(), aba9.getTestDir());
 
 		//Failed because <javac><src><pathelement location = xxxx></src></javac> pattern not handled
 //		assertEquals("src/test", aba8.getTestDir());
@@ -169,7 +166,6 @@ public class OtherBuildFileTest {
 
 	@Test
 	public void getCompDir() {
-		System.out.println("comp dir: "+aba8.getCompDir());
 		assertEquals(Paths.get("target/classes").toString(), aba0.getCompDir());
 		assertEquals(Paths.get("../build/classes").toString(), aba1.getCompDir()); //There are multiple, need to work on this
 		assertEquals(Paths.get("build/classes").toString(), aba2.getCompDir());
@@ -180,7 +176,7 @@ public class OtherBuildFileTest {
 		assertEquals(Paths.get("target/classes").toString(), aba6.getCompDir());
 		assertEquals(Paths.get("build").toString(), aba7.getCompDir());
 		assertEquals(Paths.get("target/classes").toString(), aba8.getCompDir());
-		assertEquals(Paths.get("target/classes").toString(), aba10.getCompDir());
+		assertEquals(Paths.get("target/classes").toString(), aba9.getCompDir());
 
 		//Failed
 		//assertEquals(Paths.get("").toString(), aba9.getCompDir());
@@ -188,7 +184,6 @@ public class OtherBuildFileTest {
 
 	@Test
 	public void getCompTestDir() {
-		System.out.println("test dir: "+aba8.getCompTestDir());
 		assertEquals(Paths.get("target/tests").toString(), aba0.getCompTestDir());
 		assertEquals(Paths.get("../build/classes").toString(), aba1.getCompTestDir()); //There are multiple, need to work on this
 		assertEquals(Paths.get("build/testcases").toString(), aba2.getCompTestDir());
@@ -199,14 +194,13 @@ public class OtherBuildFileTest {
 		assertEquals(Paths.get("target/tests").toString(), aba6.getCompTestDir());
 		assertEquals(Paths.get("build").toString(), aba7.getCompTestDir());
 		assertEquals(Paths.get("target/test-classes").toString(), aba8.getCompTestDir());
-		assertEquals(Paths.get("target/test-classes").toString(), aba10.getCompTestDir());
+		assertEquals(Paths.get("target/test-classes").toString(), aba9.getCompTestDir());
 		//Failed
 		//assertEquals(Paths.get("").toString(), aba9.getCompTestDir());
 	}
 
 	@Test
 	public void getSrcDep() {
-		System.out.println("omg srcdep: "+aba8.getSrcDep());
 		assertEquals("",aba0.getSrcDep());
 		assertEquals("",aba1.getSrcDep());
 		assertEquals("",aba2.getSrcDep());
@@ -221,7 +215,7 @@ public class OtherBuildFileTest {
 							   Paths.get("libs/selenium-java-2.44.0.jar").toString() + ";"+
 							   Paths.get("libs/selenium-server-standalone-2.44.0.jar").toString();
 		assertEquals(aba7_expected,aba7.getSrcDep());
-		assertEquals("",aba10.getSrcDep());
+		assertEquals("",aba9.getSrcDep());
 
 		String aba8_expected = Paths.get("xerces-2.4.0.jar").toString()+";" +
 				   				Paths.get("servletapi-2.4.jar").toString()+";" +
@@ -242,7 +236,6 @@ public class OtherBuildFileTest {
 
 	@Test
 	public void getTestDep() {
-		System.out.println("omg: "+aba8.getTestDep());
 		assertEquals(Paths.get("${junit.home}/junit-3.8.1.jar").toString(),aba0.getTestDep());
 		assertEquals("",aba1.getTestDep());
 		assertEquals("",aba2.getTestDep());
@@ -257,7 +250,7 @@ public class OtherBuildFileTest {
 							   Paths.get("libs/selenium-java-2.44.0.jar").toString() + ";"+
 							   Paths.get("libs/selenium-server-standalone-2.44.0.jar").toString();
 		assertEquals(aba7_expected,aba7.getTestDep());
-		assertEquals("",aba10.getTestDep());
+		assertEquals("",aba9.getTestDep());
 
 		String aba8_expected = Paths.get("xerces-2.4.0.jar").toString()+";" +
    				Paths.get("servletapi-2.4.jar").toString()+";" +
@@ -314,7 +307,6 @@ public class OtherBuildFileTest {
 		keyVal6.put("exclude", "");
 		keyVal6.put("dir", Paths.get("src/test").toString());
 
-		System.out.println("test list-------------: "+aba6.getTestList());
 		assertEquals(keyVal0.toString(), aba0.getTestList());
 		assertEquals(keyVal1.toString(),aba1.getTestList());
 		assertEquals("",aba2.getTestList());
@@ -330,7 +322,7 @@ public class OtherBuildFileTest {
 		keyVal10.put("exclude", "");
 		keyVal10.put("dir", "src\\test\\java");
 
-		assertEquals(keyVal10.toString(),aba10.getTestList());
+		assertEquals(keyVal10.toString(),aba9.getTestList());
 
 
 
