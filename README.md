@@ -27,9 +27,10 @@ or
 Run the test suite in Eclipse
 
 
-### Program Features:
-Properties Inferred from projects:
+Program Features:
 -----
+### Properties Inferred from projects:
+
 The analyzer will automatically find the build file and the .properties file defined in the project directory, and output
 1. target to compile sources
 2. target to compile tests
@@ -41,8 +42,8 @@ The analyzer will automatically find the build file and the .properties file def
 8. directory of compiled tests
 9. a list of developer written tests
 
-Properties Inferred from build file only:
------
+### Properties Inferred from build file only:
+
 The analyzer will automatically read the build files and output
 1. target to compile sources
 2. target to compile tests
@@ -54,7 +55,9 @@ The analyzer will automatically read the build files and output
 8. directory of compiled tests
 9. a list of developer written tests in wildcard form and the directory containing the tests
 
-### Empirical Evaluation:
+Empirical Evaluation:
+----
+
 10 build files from different projects were selected for testing Ant Analyzer.  
 *Selection Criteria*: Java projects with Junit tests.  There are no more specific guidelines for selecting the projects because we want to make this analyzer more generalizable (bad choice).
 The table below indicates the number of properties that work, out of these 10 build files:
@@ -72,29 +75,36 @@ The table below indicates the number of properties that work, out of these 10 bu
 | directory of compiled tests   |10| |
 | test list | 10 | |
 
-Utility Classes:
------
+Project Structure:
+----
+
 ### src.util:
 This package contains utility classes that help us utilize Ant API for our objectives, and do other miscellaneous taks.
 
-#### Debugger.java:
+##### Debugger.java:
 This class is for controlling console printing. `Debugger.log()` is a wrapper method for `System.out.println()`.
 
-#### FileUtility.java:
+##### FileUtility.java:
 This class contains methods for manipulating file path (in `String`).
 
-#### PathParser.java:
+##### PathParser.java:
 This class is for parsing attributes from `Task` or `Target`, specifically for attributes that represent a file path. `PathParser.parse()` is a static method that takes in a `String` as parameter. It will looks for unresolve property(`${.*}`) in the `String` and resolve it. This includes using Ant Project API's `getProperty()`, looking for properties define under `Target`.  
 
-#### TaskHelper.java:
-This class is for accessing attributes of `Task` under `Task`.
+##### TargetHelper.java:
+This class contains methods to get important targets. It contains mechanism to infer compile source/test targets, and it also contains other helpful methods such as getting a list of target of interest.
 
-#### TestListHelper.java:
+##### TaskHelper.java:
+This class contains methods to do task-related operation.  For example: given a target, returns tasks of interest.
 
-#### WildCardResolver.java:
+##### TestListHelper.java:
+This class contains methods to get information(directory, includes, and excludes wildcards) from junit targets.
+
+##### WildCardResolver.java:
+This class uses Directory Scanner to resolve wildcards.  Given a directory and wildcards, it will return all file names that match the pattern.
 
 
-### Checklist for Future Development:
+Checklist for Future Development:
+----
 1. Solve overlapping property file problem
 2. Improve the accuracy of inferral by handling more edge cases
 3. Write more flexible helper methods and classify them 
