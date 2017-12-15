@@ -72,6 +72,25 @@ The table below indicates the number of properties that work, out of these 10 bu
 | directory of compiled tests   |10| |
 | test list | 10 | |
 
+### src.util:
+This package contains utility classes that help us utilize Ant API for our objectives, and do other miscellaneous taks.
+
+#### Debugger.java:
+This class is for controlling console printing. `Debugger.log()` is a wrapper method for `System.out.println()`.
+
+#### FileUtility.java:
+This class contains methods for manipulating file path (in `String`).
+
+#### PathParser.java:
+This class is for parsing attributes from `Task` or `Target`, specifically for attributes that represent a file path. `PathParser.parse()` is a static method that takes in a `String` as parameter. It will looks for unresolve property(`${.*}`) in the `String` and resolve it. This includes using Ant Project API's `getProperty()`, looking for properties define under `Target`.  
+
+#### TaskHelper.java:
+
+#### TestListHelper.java:
+
+#### WildCardResolver.java:
+
+
 ### Checklist for Future Development:
 1. Solve overlapping property file problem
 2. Improve the accuracy of inferral by handling more edge cases
