@@ -111,10 +111,10 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	 */
 	private void enhanceSrcTargetFinding() {
 		if(potentialSrcTargets.size() == 0) {
-			System.out.println("Cannot find target that compiles source.");
+			Debugger.log("Cannot find target that compiles source.");
 		}
 		else if(potentialSrcTargets.size() > 1) {
-			System.out.println("Special case, there might be a top-level compile target.  Requires manual inference.");
+			Debugger.log("Special case, there might be a top-level compile target.  Requires manual inference.");
 			for(Target t : potentialSrcTargets) {
 				if(t.getName().contains("compile")) {
 					if(t.getName().equals("compile") || t.getName().contains("all"))
@@ -277,7 +277,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		try {
 			ret = this.dependencyHelper(this.compileSrcTarget);
 		} catch (Exception e) {
-			System.out.println("Cannot find the exact source dependency files\n "
+			Debugger.log("Cannot find the exact source dependency files\n "
 					+ "Possible cause: 1) Only build file is passed in or "
 					+ "2) Cannot find jar file locally");
 		}
@@ -293,7 +293,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		try {
 			ret = this.dependencyHelper(this.compileTestTarget);
 		} catch (Exception e) {
-			System.out.println("Cannot find the exact test dependency files\n "
+			Debugger.log("Cannot find the exact test dependency files\n "
 					+ "Possible cause: 1) Only build file is passed in or "
 					+ "2) Cannot find jar file locally");
 		}
@@ -333,7 +333,7 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
     		Map<String, String> keyVal = new HashMap<String, String>();
     		String ret = "";
     		if(junitTargets.size() == 0) {
-    			System.out.println("No junit tasks, make sure this project contains unit tests.");
+    			Debugger.log("No junit tasks, make sure this project contains unit tests.");
     			return "";
     		}
     		keyVal = testHelper.getTestList(junitTargets);
