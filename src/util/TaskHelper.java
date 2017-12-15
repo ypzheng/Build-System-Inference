@@ -19,9 +19,15 @@ public class TaskHelper {
 		this.pp = pp;
 	}
 	
+	/**
+	 * Given a target and task of interest, it returns a list of tasks.
+	 * @param taskType
+	 * @param target
+	 * @return
+	 */
 	public List<Task> getTasks(String taskType, Target target) {
 		if(target == null) {
-			System.out.println("target is null when trying to get task.");
+			Debugger.log("target is null when trying to get task.");
 			return null;
 		}
 		Task[] tasks = target.getTasks();
@@ -39,6 +45,11 @@ public class TaskHelper {
 		return tasksOfInterest;
 	}
 	
+	/**
+	 * Given a task, it returns a hashtable of attributes
+	 * @param t
+	 * @return
+	 */
 	public Hashtable getAttributes(Task t){
 		RuntimeConfigurable rt =t.getRuntimeConfigurableWrapper();
 		Hashtable att_map = rt.getAttributeMap();
@@ -58,6 +69,14 @@ public class TaskHelper {
 		return false;
 	}
 	
+	/**
+	 * Given a task type (ex "javac"), a directory type ("srcdir" or "destdir"),
+	 * and target, it returns the directory.
+	 * @param taskType
+	 * @param dirType
+	 * @param target
+	 * @return
+	 */
 	public String getDirectory(String taskType, String dirType, Target target) {
 		//Compile Target is not found yet
 		List<String> javacTasks = new ArrayList<String>();

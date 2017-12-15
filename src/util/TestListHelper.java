@@ -12,7 +12,7 @@ import org.apache.tools.ant.Task;
 
 /**
  * Helper class that finds the directory of tests, includes/excludes, and 
- * name of the tests to run, outputting them in a Map.
+ * name of the tests to run, writing them onto a Map.
  *
  */
 public class TestListHelper {
@@ -23,7 +23,13 @@ public class TestListHelper {
 		this.pp = pp;
 		this.taskHelper = taskHelper;
 	}
-	
+	/**
+	 * Given a list of targets that contain Junit task, it will check if the targets contain
+	 * "test" or "batchtest".  At last, write the test directory, includes, and excludes into 
+	 * a map.
+	 * @param junitTargets
+	 * @return
+	 */
 	public Map<String, String> getTestList(List<Target> junitTargets ){
 		Map<String, String> keyVal = new HashMap<String, String>();
 		keyVal.put("include", "");
@@ -50,12 +56,10 @@ public class TestListHelper {
 	    						keyVal.put("include", (String)temp.getAttributeMap().get("name")+";");
 	    					else
 	    						keyVal.put("include", keyVal.get("include")+pp.parse((String) temp.getAttributeMap().get("name"))+";");
-//	    						System.out.println("looook here why: "+keyVal.get("include")+pp.parse((String) temp.getAttributeMap().get("name")));
 	    				}
 	        		}
 	    		}
 		}
-//		System.out.println("keyval: "+keyVal);
 		return keyVal;
 	}
 	
@@ -99,7 +103,6 @@ public class TestListHelper {
 			else {
 				if(filesets.getElementTag().equalsIgnoreCase(elem)) {
 					if(attr_map.containsKey(attr)) {
-//						System.out.println("for here: "+attr_map.get(attr));
 						return (String) attr_map.get(attr);
 					}
 				}

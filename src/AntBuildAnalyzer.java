@@ -15,6 +15,7 @@ import org.apache.tools.ant.types.Path;
 
 
 import util.PathParser;
+import util.TargetHelper;
 import util.Debugger;
 import util.FileUtility;
 import util.TaskHelper;
@@ -25,20 +26,19 @@ import util.WildCardResolver;
 
 public class AntBuildAnalyzer implements BuildAnalyzer{
 	private Vector sortedTargets;
-	private ArrayList<Target> potentialSrcTargets, potentialTestTargets, junitTargets;
+	private ArrayList<Target> junitTargets;
 	private Target compileSrcTarget, compileTestTarget;
 
 	private PathParser pp;
 	private TaskHelper taskHelper;
     private TestListHelper testHelper;
+    private TargetHelper targetHelper;
     private Project project;
 
     public AntBuildAnalyzer(File f, String projectPath) {
 		//Initialize Variables
 		compileSrcTarget = null;
 		compileTestTarget = null;
-		potentialSrcTargets = new ArrayList<Target>();
-		potentialTestTargets = new ArrayList<Target>();
 		junitTargets = new ArrayList<Target>();
 
 		//Enable Console printing
@@ -72,84 +72,15 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 	    taskHelper = new TaskHelper(pp);
 	    
 	    testHelper = new TestListHelper(pp, taskHelper);
-	    this.getPotentialCompileTargets();
 	    
+	    targetHelper = new TargetHelper(sortedTargets, taskHelper);
+	    
+	    //Initialize targets needed
+	    this.compileSrcTarget = targetHelper.getCompileTarget();
+	    this.compileTestTarget = targetHelper.getCompileTestTarget();
+	    this.junitTargets = targetHelper.getTargets("junit");
 	    
     }
-
-	/**
-	 * If a target contains javac: check if the target name contains "test",
-	 * add it to the list that contains potential compile-test targets; if it does
-	 * not contain "test", add it to the list that contains potential compile-source
-	 * target.  This reduces returning false positives of special naming on targets.
-	 *
-	 */
-	private void getPotentialCompileTargets() {
-		Enumeration vEnum = sortedTargets.elements();
-		while(vEnum.hasMoreElements()) {
-			Target t = (Target) vEnum.nextElement();
-			if(taskHelper.containsTask(t.getTasks(),"javac")) {
-				if(t.getName().contains("test")) {
-					potentialTestTargets.add(t);
-					Debugger.log("test: "+t.getName());
-				}
-				else{
-					potentialSrcTargets.add(t);
-					Debugger.log("src: "+t.getName());
-				}
-			}
-			if(taskHelper.containsTask(t.getTasks(), "junit")) {
-				junitTargets.add(t);
-			}
-		}
-		enhanceSrcTargetFinding();
-		enhanceTestTargetFinding();
-	}
-
-	/**
-	 * Helper method to find compile target
-	 */
-	private void enhanceSrcTargetFinding() {
-		if(potentialSrcTargets.size() == 0) {
-			Debugger.log("Cannot find target that compiles source.");
-		}
-		else if(potentialSrcTargets.size() > 1) {
-			Debugger.log("Special case, there might be a top-level compile target.  Requires manual inference.");
-			for(Target t : potentialSrcTargets) {
-				if(t.getName().contains("compile")) {
-					if(t.getName().equals("compile") || t.getName().contains("all"))
-						this.compileSrcTarget = t;
-				}
-			}
-		}
-		else {
-			this.compileSrcTarget = potentialSrcTargets.get(0);
-		}
-		
-		if(this.compileSrcTarget == null && potentialSrcTargets.size()>0)
-			this.compileSrcTarget = potentialSrcTargets.get(potentialSrcTargets.size()-1);
-		
-	}
-	
-	/**
-	 * Helper method to find test target
-	 */
-	private void enhanceTestTargetFinding() {
-		// if no target name that contains "test" and there is exactly one compile source target,
-		// check if the compile source target contains multiple javac.  If true, test.compile = src.compile
-		if(potentialTestTargets.size() == 0 && potentialSrcTargets.size() == 1) {
-			Target target = potentialSrcTargets.get(0);
-			if(taskHelper.getTasks("javac", target).size()>1) {
-				this.compileTestTarget = target;
-			}
-		}
-		else{
-			if(potentialTestTargets.size()>0)
-				this.compileTestTarget = potentialTestTargets.get(potentialTestTargets.size()-1);
-		}
-
-	}
-
 
 	/**
 	 * Get compile-source target
@@ -310,7 +241,6 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 		
 		for(String s : classpath_refid_list) {
 			Path p = this.project.getReference(s);
-			System.out.println(p);
 			//Since we are only insterested in .jar files, filter them out and append to output string
 			
 			String[] filtered_deps = FileUtility.filterPath(p.list(), true,"(.*)[jar]");
