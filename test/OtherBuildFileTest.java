@@ -134,6 +134,26 @@ public class OtherBuildFileTest {
 		assertEquals(Paths.get("src/tests/junit").toString(), aba2.getTestDir());
 		assertEquals(Paths.get("test").toString(), aba3.getTestDir());
 		assertEquals(Paths.get("src").toString(), aba4.getTestDir());
+		
+		assertEquals(Paths.get("test").toString(), aba5.getTestDir());
+		
+		String aba7_expected=	Paths.get("src\\com\\gurock\\testrail").toString() + ", " +
+				Paths.get("src\\com\\d3\\testrails").toString() + ", " +
+				Paths.get("src\\com\\d3\\utils").toString() + ", " +
+				Paths.get("src\\com\\d3\\login").toString() + ", " +
+				Paths.get("src\\com\\d3\\accounts").toString() + ", " +
+				Paths.get("src\\com\\d3\\help").toString() + ", " +
+				Paths.get("src\\com\\d3\\dashboard").toString() + ", " +
+				Paths.get("src\\com\\d3\\messages").toString() + ", " +
+				Paths.get("src\\com\\d3\\transactions").toString() + ", " +
+				Paths.get("src\\com\\d3\\moneyMovement").toString() + ", " +
+				Paths.get("src\\com\\d3\\planning").toString() + ", " +
+				Paths.get("src\\com\\d3\\settings").toString() + ", " +
+				Paths.get("src\\com\\d3\\endToEnd").toString();
+		assertEquals(aba7_expected, aba7.getTestDir());
+		
+		//Failed
+		//assertEquals(Paths.get("").toString(), aba9.getTestDir());
 	}
 	
 	@Test

@@ -199,7 +199,35 @@ public class AntBuildAnalyzer implements BuildAnalyzer{
 
 	@Override
 	public String getTestDir() {
-		return taskHelper.getDirectory("javac", "srcdir", compileTestTarget);
+		
+		String result="";
+		result += taskHelper.getDirectory("javac", "srcdir", compileTestTarget);
+		
+		/*
+		 * Handle Edge Case
+		 * <src path> under <javac> 
+		 */
+		List<Task> tasks = taskHelper.getTasks("javac", this.compileSrcTarget);
+		if(tasks != null) {
+			String[] additional_dirs=taskHelper.getSubTaskAttr(tasks.toArray(new Task[tasks.size()]), "src", "path");
+			if(additional_dirs.length > 0 && result.length()>0)
+				result+=";";
+			
+			for(int i = 0; i < additional_dirs.length-1;i++){
+				result+=pp.parse(additional_dirs[i]);
+				result+=", ";
+			}
+			if(additional_dirs.length>0)
+				result+=pp.parse(additional_dirs[additional_dirs.length-1]);
+		}
+			
+		/*
+		 * Handle Edge Case
+		 * End
+		 */
+		
+		
+		return result;
 	}
 
 	/**
