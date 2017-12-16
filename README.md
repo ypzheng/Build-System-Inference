@@ -77,18 +77,18 @@ The table below indicates the number of properties that work, out of these 10 bu
 
 Project Structure:
 ----
-### Default Package:
+### src(Default Package):
 ##### BuildAnalyzer Interface
-Interface that lists essential properties to infer.
+Interface class. Establish what properties to infer from a build file.
 
 ##### BuildFileAnalyzerAdapter.java
-A class that will allow flexible calls of the methods for different types of build files.
+An adpater class for classes that extended `BuildAnalyzer` interface, which allow flexible calls of the methods for different types of build files.
 
 ##### AntBuildAnalyzer.java
-Analyzes ant build file.
+Analyzes Ant build file. Extended `BuildAnalyzer`.
 
 ##### PropertyWriter.java
-Writes the output from analyzer to property files.
+Writes the outputs from `BuildAnalyzer` to a `.properties` file.
 
 ### src.util:
 This package contains utility classes that help us utilize Ant API for our objectives, and do other miscellaneous taks.
