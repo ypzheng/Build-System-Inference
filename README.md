@@ -1,5 +1,5 @@
 # Build-System-Inference
-Build-System-Inference is a system that allows user to extract information that are needed to compile and run projects with different configurations. By feeding the program appropriate directories containing projects or build files, the analyzer will write essential information to output property files.  This implementation is intended to help with software testing by enabling the compilation and running tests of multiple projects.
+Build-System-Inference is a system that extracts information needed to compile and run Ant projects. By feeding the program appropriate directories containing projects or build files, the analyzer will write essential information to output files.  This implementation is intended to help with software testing by automatically inferring projects' build properties.
 
 
 ### There are two ways to run this project:
@@ -7,7 +7,7 @@ Build-System-Inference is a system that allows user to extract information that 
 1. Import this project into an IDEA (Ideally, Eclipse or IntelliJ)
 2. To analyze build files only:
     Run Driver and input a directory containing the build files
-3. To analyze projects that contain build files:
+3. To analyze projects that contain Ant build files and/or .properties files:
     Run Driver_2 and input a directory containing the actual projects
 4. Finally, a list of .properties files containing the essential information will be generated
 
@@ -53,7 +53,7 @@ The analyzer will automatically read the build files and output
 6. directory of tests
 7. directory of compiled sources
 8. directory of compiled tests
-9. a list of developer written tests in wildcard form and the directory containing the tests
+9. directories that contain tests, and a list of "includes" and "excludes" in wildcard form
 
 Empirical Evaluation:
 ----
@@ -77,6 +77,18 @@ The table below indicates the number of properties that work, out of these 10 bu
 
 Project Structure:
 ----
+### Default Package:
+##### BuildAnalyzer Interface
+Interface that lists essential properties to infer.
+
+##### BuildFileAnalyzerAdapter.java
+A class that will allow flexible calls of the methods for different types of build files.
+
+##### AntBuildAnalyzer.java
+Analyzes ant build file.
+
+##### PropertyWriter.java
+Writes the output from analyzer to property files.
 
 ### src.util:
 This package contains utility classes that help us utilize Ant API for our objectives, and do other miscellaneous taks.
@@ -102,6 +114,8 @@ This class contains methods to get information(directory, includes, and excludes
 ##### WildCardResolver.java:
 This class uses Directory Scanner to resolve wildcards.  Given a directory and wildcards, it will return all file names that match the pattern.
 
+### scripts:
+We have also included scripts that will find compile targets from the property files, and compile all the projects.
 
 Checklist for Future Development:
 ----
@@ -109,5 +123,5 @@ Checklist for Future Development:
 2. Improve the accuracy of inferral by handling more edge cases
 3. Write more flexible helper methods and classify them 
 4. Check Issue Board
-5. Not finished yet and it sucks.  Sighhhhhhhhhhhhhhh.
+5. Implement Maven Analyzer
 
