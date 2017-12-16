@@ -118,7 +118,7 @@ This class uses Directory Scanner to resolve wildcards.  Given a directory and w
 We have also included scripts as an example of using `BuildAnalyzer`. They are in the root directory.
 
 #### ant_compile_one.sh:
-After using `Driver.java` or `Driver.java`, there will be file(s) `.properties` containing the inference results. in root directory. This script will look for the `build0.properties`, find the `src.compile`, and print `src.compile`. 
+After using `Driver.java` or `Driver.java`, there will be file(s) `.properties` containing the inference results in root directory. This script will look for the `build0.properties`, find the `src.compile`, and print `src.compile`. 
 
 ### ant_compile_all.sh:
 Similar to `ant_compile_one.sh`. This script will find all `.properties` files in the root directory that contains `build` in their file name. Instead of printing `src.compile`, run `ant src.compile` in crossponding projects' root directories.
