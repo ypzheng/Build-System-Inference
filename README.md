@@ -6,9 +6,19 @@ Build-System-Inference is a system that extracts information needed to compile a
 
 1. Import this project into an IDEA (Ideally, Eclipse or IntelliJ)
 2. To analyze build files only:
-    Run Driver and input a directory containing the build files
-3. To analyze projects that contain Ant build files and/or .properties files:
+
+
+    Run Driver and input a directory containing the build files 
+    
+    
+    *Note:* The directory must only contain build.xml files and(or) project's property files.  
+3. To analyze projects that contain Ant build files and/or .properties files: 
+
+
     Run Driver_2 and input a directory containing the actual projects
+    
+    
+    *Note:* The directory must contain nothing but the project folders you want to analyze.  For example, `users/sampleProjects` will be the input if there are projects with path users/sampleProjects/commons-lang, users/sampleProjects/commons-math, etc.
 4. Finally, a list of .properties files containing the essential information will be generated
 
 
@@ -77,47 +87,53 @@ The table below indicates the number of properties that work, out of these 10 bu
 
 Project Structure:
 ----
-### src(Default Package):
-##### BuildAnalyzer Interface
+## src(Default Package):
+#### BuildAnalyzer Interface
 Interface class. Establish what properties to infer from a build file.
 
-##### BuildFileAnalyzerAdapter.java
+#### BuildFileAnalyzerAdapter.java
 An adpater class for classes that extended `BuildAnalyzer` interface, which allow flexible calls of the methods for different types of build files.
 
-##### AntBuildAnalyzer.java
+#### AntBuildAnalyzer.java
 Analyzes Ant build file. Extended `BuildAnalyzer`.
 
-##### PropertyWriter.java
+#### PropertyWriter.java
 Writes the outputs from `BuildAnalyzer` to a `.properties` file.
 
-### src.util:
+#### Driver.java
+Driver reads in a directory from user input, finds all build files under the directory, analyzes the build files with Ant Analyzer, and finally, writes inferred properties to output file.  
+
+#### Driver_2.java
+Driver_2 allows user to input a directory that contains a list of Java projects that contains Ant build files. It will find all build files and property files in each project folder, run the analyzer, and writes inferred properties to output file.
+
+## src.util:
 This package contains utility classes that help us utilize Ant API for our objectives, and do other miscellaneous taks.
 
-##### Debugger.java:
+#### Debugger.java:
 This class is for controlling console printing. `Debugger.log()` is a wrapper method for `System.out.println()`.
 
-##### FileUtility.java:
+#### FileUtility.java:
 This class contains methods for manipulating file path (in `String`).
 
-##### PathParser.java:
+#### PathParser.java:
 This class is for parsing attributes from `Task` or `Target`, specifically for attributes that represent a file path. `PathParser.parse()` is a static method that takes in a `String` as parameter. It will looks for unresolve property(`${.*}`) in the `String` and resolve it. This includes using Ant Project API's `getProperty()`, looking for properties define under `Target`.  
 
-##### TargetHelper.java:
+#### TargetHelper.java:
 This class contains methods to get important targets. It contains mechanism to infer compile source/test targets, and it also contains other helpful methods such as getting a list of target of interest.
 
-##### TaskHelper.java:
+#### TaskHelper.java:
 This class contains methods to do task-related operation.  For example: given a target, returns tasks of interest.
 
-##### TestListHelper.java:
+#### TestListHelper.java:
 This class contains methods to get information(directory, includes, and excludes wildcards) from junit targets.
 
-##### WildCardResolver.java:
+#### WildCardResolver.java:
 This class uses Directory Scanner to resolve wildcards.  Given a directory and wildcards, it will return all file names that match the pattern.
 
-### scripts:
+## scripts:
 We have also included scripts as an example of using `BuildAnalyzer`. They are in the root directory.
 
-#### ant_compile_one.sh:
+### ant_compile_one.sh:
 After using `Driver.java` or `Driver.java`, there will be file(s) `.properties` containing the inference results in root directory. This script will look for the `build0.properties`, find the `src.compile`, and print `src.compile`. 
 
 ### ant_compile_all.sh:
